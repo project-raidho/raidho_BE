@@ -1,5 +1,6 @@
 package com.project.raidho.service;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +10,7 @@ import com.project.raidho.domain.oauthMemberInfo.OauthMemberInfoImpl;
 import com.project.raidho.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,77 +21,68 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
-public class KakaoMemberService {
+public class NaverUserService {
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
-    String kakaoClientId;
-    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
-    String kakaoClientSecret;
-    @Value(" ${spring.security.oauth2.client.registration.kakao.redirect-uri}")
-    String kakaoRedirect;
+    @Value("${spring.security.oauth2.client.registration.naver.client-id}")
+    String naverClientId;
+
+    @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
+    String naverClientSecret;
 
     private final MemberRepository memberRepository;
 
-    // 카카오 로그인
-    @Transactional
-    public void kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
-        // 1. auth code 로 (Kakao -> Resource Server 접속이 가능한 ) accessToken 요청
-        String KakaoResourceToken = getResourceToken(code); // 받은 인가코드를 통해 토큰을 받아옴
-        OauthMemberInfoImpl kakaoMemberInfo = getKakaoMemberInfo(KakaoResourceToken); // Resource Server 에서 유저 정보 가져옴
-        Member kakaoMember = joinMemberShip(kakaoMemberInfo); // 회원가입
+    public void naverLogin(String code, String state, HttpServletResponse response) throws JsonProcessingException {
+
+        String NaverResourceToken = getResourceToken(code, state);
+        OauthMemberInfoImpl naverMemberInfo = getNaverMemberInfo(NaverResourceToken);
+        Member naverMember = joinMemberShip(naverMemberInfo);
     }
 
-    private String getResourceToken(String code) throws JsonProcessingException {
-        // Kakao Server 에서 받을 Http 를 만들기 위해 Http Header, body 생성
+    private String getResourceToken(String code, String state) throws JsonProcessingException {
+        // naver Server 에서 받을 Http 를 만들기 위해 Http Header, body 생성
         // header 생성
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-
         // body
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", kakaoClientId);
-        body.add("client_secret", kakaoClientSecret);
-        body.add("redirect_uri", "http://localhost:8080/login/oauth2/code/kakao");
-        // body.add("redirect_uri", kakaoRedirect);
+        body.add("client_id", naverClientId);
+        body.add("client_secret", naverClientSecret);
         body.add("code", code);
-
+        body.add("state", state);
         //POST 요청 보냄
-        HttpEntity<MultiValueMap<String, String>> kakaoResourceTokenRequest =
-                new HttpEntity<>(body, httpHeaders);
+        HttpEntity<MultiValueMap<String, String>> naverResourceTokenRequest = new HttpEntity<>(body, httpHeaders);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(
-                "https://kauth.kakao.com/oauth/token",
+                "https://nid.naver.com/oauth2.0/token",
                 HttpMethod.POST,
-                kakaoResourceTokenRequest,
+                naverResourceTokenRequest,
                 String.class
         );
 
-        // Kakao Server accessToken response (JSON)
+        // naver Server accessToken response (JSON)
         String ResponseResourceToken = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper(); // json 형태의 객체 생성 (읽는 공간 생성)
         JsonNode jsonNode = objectMapper.readTree(ResponseResourceToken);
         return jsonNode.get("access_token").asText();
     }
 
+    private OauthMemberInfoImpl getNaverMemberInfo(String NaverResourceToken) throws JsonProcessingException{
 
-    // 발급받은 토큰으로 Resource Server 에서 토큰을 검증해 유효한 토큰이면 User Info 를 response 해줌
-    private OauthMemberInfoImpl getKakaoMemberInfo(String KakaoResourceToken) throws JsonProcessingException{
-        //Resource Server => new
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "Bearer "+ KakaoResourceToken);
+        httpHeaders.add("Authorization", "Bearer "+ NaverResourceToken);
         httpHeaders.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        HttpEntity<MultiValueMap<String, String>> kakaoResourceInfoRequest = new HttpEntity<>(httpHeaders);
+        HttpEntity<MultiValueMap<String, String>> naverResourceInfoRequest = new HttpEntity<>(httpHeaders);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(
-                "https://kapi.kakao.com/v2/user/me",
+                "https://openapi.naver.com/v1/nid/me",
                 HttpMethod.POST,
-                kakaoResourceInfoRequest,
+                naverResourceInfoRequest,
                 String.class
         );
 
@@ -97,26 +90,24 @@ public class KakaoMemberService {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(ResponseResourceInfo);
 
-        String providerId = jsonNode.get("id").asText();
-        String memberName = jsonNode.get("kakao_account").get("profile").get("nickname").asText();
-        String email = jsonNode.get("kakao_account").get("email").asText();
-        String provider = "kakao";
+        String providerId = jsonNode.get("response").get("id").asText();
+        String memberName = jsonNode.get("response").get("nickname").asText();
+        String email = jsonNode.get("response").get("email").asText();
+        String provider = "naver";
 
         return new OauthMemberInfoImpl(memberName, email, providerId, provider);
     }
 
-    // Raidho 회원가입 (회원정보 존재시 바로 로그인)
-    private Member joinMemberShip(OauthMemberInfoImpl kakaoMemberInfo) {
-
-        String provider = kakaoMemberInfo.getProvider();
-        String providerId = kakaoMemberInfo.getProviderId();
-        String memberName = kakaoMemberInfo.getMemberName();
-        Member kakaoMember = memberRepository.findMember(provider, providerId, memberName)
+    private Member joinMemberShip(OauthMemberInfoImpl naverMemberInfo) {
+        String provider = naverMemberInfo.getProvider();
+        String providerId = naverMemberInfo.getProviderId();
+        String memberName = naverMemberInfo.getMemberName();
+        Member naverMember = memberRepository.findMember(provider, providerId, memberName)
                 .orElse(null);
 
         // 회원가입이 되어있지 않으면 Null
-        if (kakaoMember == null) {
-            String email = kakaoMemberInfo.getEmail();
+        if (naverMember == null) {
+            String email = naverMemberInfo.getEmail();
             String memberImage = null; // Todo :: default image 필요
             String memberIntro = "인사말을 등록해주세요.";
             MemberRole role = MemberRole.USER;
@@ -134,6 +125,6 @@ public class KakaoMemberService {
             memberRepository.save(member);
             return member;
         }
-        return kakaoMember;
+        return naverMember;
     }
 }

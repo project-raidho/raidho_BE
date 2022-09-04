@@ -2,6 +2,7 @@ package com.project.raidho.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.project.raidho.service.KakaoMemberService;
+import com.project.raidho.service.NaverUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,8 @@ public class OAuthLoginController {
 
     private final KakaoMemberService kakaoMemberService;
 
+    private final NaverUserService naverUserService;
+
     // 카카오 로그인
     @GetMapping("/kakao")
     public ResponseEntity<?> kakaoLogin (@RequestParam String code, HttpServletResponse response) {
@@ -33,5 +36,14 @@ public class OAuthLoginController {
         }
     }
 
-
+    @GetMapping("/naver")
+    public ResponseEntity<?> naverLogin(@RequestParam String code, @RequestParam String state, HttpServletResponse response) throws JsonProcessingException {
+        try {
+            naverUserService.naverLogin(code, state, response);
+            return new ResponseEntity<>("네이버 로그인 성공", HttpStatus.OK);
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("카카오 로그인 실패");
+        }
+    }
 }
