@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 
@@ -41,14 +42,13 @@ public class Member {
     private MemberRole role;
 
     @Builder
-    public Member(Long id, String memberName, String email, String memberImage, String memberIntro, String provider, String providerId) {
-        this.id = id;
+    public Member(String memberName, String email, String memberImage, String memberIntro, String provider, String providerId, MemberRole role) {
         this.memberName = memberName;
         this.email = email;
         this.memberImage = memberImage;
         this.memberIntro = memberIntro;
         this.provider = provider;
         this.providerId = providerId;
-        this.role = MemberRole.USER;
+        this.role = role;
     }
 }

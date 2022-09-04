@@ -3,6 +3,8 @@ package com.project.raidho.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.raidho.domain.member.Member;
+import com.project.raidho.domain.member.MemberRole;
 import com.project.raidho.domain.oauthMemberInfo.OauthMemberInfoImpl;
 import com.project.raidho.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +39,8 @@ public class KakaoMemberService {
     public void kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 1. auth code 로 (Kakao -> Resource Server 접속이 가능한 ) accessToken 요청
         String KakaoResourceToken = getResourceToken(code); // 받은 인가코드를 통해 토큰을 받아옴
-        OauthMemberInfoImpl kakaoMemberInfo = getKakaoMemberInfo(KakaoResourceToken);
+        OauthMemberInfoImpl kakaoMemberInfo = getKakaoMemberInfo(KakaoResourceToken); // Resource Server 에서 유저 정보 가져옴
+        Member kakaoMember = joinMemberShip(kakaoMemberInfo); // 회원가입
     }
 
     private String getResourceToken(String code) throws JsonProcessingException {
@@ -99,8 +102,38 @@ public class KakaoMemberService {
         String email = jsonNode.get("kakao_account").get("email").asText();
         String provider = "kakao";
 
-        System.out.println(memberName + "////" +email + "////" + providerId);
-
         return new OauthMemberInfoImpl(memberName, email, providerId, provider);
+    }
+
+    // Raidho 회원가입 (회원정보 존재시 바로 로그인)
+    private Member joinMemberShip(OauthMemberInfoImpl kakaoMemberInfo) {
+
+        String provider = kakaoMemberInfo.getProvider();
+        String providerId = kakaoMemberInfo.getProviderId();
+        String memberName = kakaoMemberInfo.getMemberName();
+        Member kakaoMember = memberRepository.findMember(provider, providerId, memberName)
+                .orElse(null);
+
+        // 회원가입이 되어있지 않으면 Null
+        if (kakaoMember == null) {
+            String email = kakaoMemberInfo.getEmail();
+            String memberImage = null; // Todo :: default image 필요
+            String memberIntro = "인사말을 등록해주세요.";
+            MemberRole role = MemberRole.USER;
+
+            Member member = Member.builder()
+                    .memberName(memberName)
+                    .email(email)
+                    .memberImage(memberImage)
+                    .memberIntro(memberIntro)
+                    .provider(provider)
+                    .providerId(providerId)
+                    .role(role)
+                    .build();
+
+            memberRepository.save(member);
+            return member;
+        }
+        return kakaoMember;
     }
 }
