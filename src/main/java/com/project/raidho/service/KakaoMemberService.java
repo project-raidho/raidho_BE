@@ -152,11 +152,11 @@ public class KakaoMemberService {
         UserDetails userDetails = new PrincipalDetails(kakaoMember);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         // SecurityContextHolder (Authentication (UserDetails))
+        Member member = ((PrincipalDetails) authentication.getPrincipal()).getMember();
 
-        // PrincipalDetails principalDetails = ((PrincipalDetails) authentication.getPrincipal());
-
-        JwtTokenDto jwtTokenDto = jwtTokenProvider.generateTokenDto(kakaoMember);
+        JwtTokenDto jwtTokenDto = jwtTokenProvider.generateTokenDto(member);
         String accessToken = jwtTokenDto.getAuthorization();
         String refreshToken = jwtTokenDto.getRefreshToken();
         HttpHeaders httpHeaders = new HttpHeaders();

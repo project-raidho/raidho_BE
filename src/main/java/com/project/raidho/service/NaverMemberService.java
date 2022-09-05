@@ -147,8 +147,9 @@ public class NaverMemberService {
         // SecurityContextHolder (Authentication (UserDetails))
 
         // PrincipalDetails principalDetails = ((PrincipalDetails) authentication.getPrincipal());
+        Member member = ((PrincipalDetails) authentication.getPrincipal()).getMember();
 
-        JwtTokenDto jwtTokenDto = jwtTokenProvider.generateTokenDto(naverMember);
+        JwtTokenDto jwtTokenDto = jwtTokenProvider.generateTokenDto(member);
         String accessToken = jwtTokenDto.getAuthorization();
         String refreshToken = jwtTokenDto.getRefreshToken();
         HttpHeaders httpHeaders = new HttpHeaders();
