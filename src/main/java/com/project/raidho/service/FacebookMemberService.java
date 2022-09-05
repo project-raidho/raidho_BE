@@ -5,8 +5,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.member.MemberRole;
+import com.project.raidho.domain.member.dto.OauthLoginResponseDto;
 import com.project.raidho.domain.oauthMemberInfo.OauthMemberInfoImpl;
+import com.project.raidho.domain.token.dto.JwtTokenDto;
+import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.MemberRepository;
+import com.project.raidho.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +18,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -32,12 +40,14 @@ public class FacebookMemberService {
     String facebookClientSecret;
 
     private final MemberRepository memberRepository;
-
-    public void facebookLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+    private final JwtTokenProvider jwtTokenProvider;
+    public OauthLoginResponseDto facebookLogin(String code, HttpServletResponse response) throws JsonProcessingException {
 
         String facebookResourceToken = getResourceToken(code);
         OauthMemberInfoImpl facebookMemberInfo = getFacebookMemberInfo(facebookResourceToken);
         Member facebookMember = joinMemberShip(facebookMemberInfo);
+        HttpHeaders httpHeaders = raidhoJwtTokenGenerate(facebookMember,response);
+        return new OauthLoginResponseDto(httpHeaders, facebookMember);
     }
 
     private String getResourceToken(String code) throws JsonProcessingException {
@@ -124,6 +134,24 @@ public class FacebookMemberService {
             return member;
         }
         return facebookMember;
+    }
+    private HttpHeaders raidhoJwtTokenGenerate(Member facebookMember, HttpServletResponse response) {
+        UserDetails userDetails = new PrincipalDetails(facebookMember);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // SecurityContextHolder (Authentication (UserDetails))
+
+        // PrincipalDetails principalDetails = ((PrincipalDetails) authentication.getPrincipal());
+
+        JwtTokenDto jwtTokenDto = jwtTokenProvider.generateTokenDto(facebookMember);
+        String accessToken = jwtTokenDto.getAuthorization();
+        String refreshToken = jwtTokenDto.getRefreshToken();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", accessToken);
+        httpHeaders.add("RefreshToken", refreshToken);
+
+        return httpHeaders;
+
     }
 }
 

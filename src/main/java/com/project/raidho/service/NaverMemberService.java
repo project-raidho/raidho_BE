@@ -6,8 +6,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.member.MemberRole;
+import com.project.raidho.domain.member.dto.OauthLoginResponseDto;
 import com.project.raidho.domain.oauthMemberInfo.OauthMemberInfoImpl;
+import com.project.raidho.domain.token.dto.JwtTokenDto;
+import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.MemberRepository;
+import com.project.raidho.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +19,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -27,6 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 public class NaverMemberService {
 
+
+
     @Value("${spring.security.oauth2.client.registration.naver.client-id}")
     String naverClientId;
 
@@ -34,12 +44,14 @@ public class NaverMemberService {
     String naverClientSecret;
 
     private final MemberRepository memberRepository;
-
-    public void naverLogin(String code, String state, HttpServletResponse response) throws JsonProcessingException {
+    private final JwtTokenProvider jwtTokenProvider;
+    public OauthLoginResponseDto naverLogin(String code, String state, HttpServletResponse response) throws JsonProcessingException {
 
         String NaverResourceToken = getResourceToken(code, state);
         OauthMemberInfoImpl naverMemberInfo = getNaverMemberInfo(NaverResourceToken);
         Member naverMember = joinMemberShip(naverMemberInfo);
+        HttpHeaders httpHeaders = raidhoJwtTokenGenerate(naverMember,response);
+        return new OauthLoginResponseDto(httpHeaders, naverMember);
     }
 
     private String getResourceToken(String code, String state) throws JsonProcessingException {
@@ -127,4 +139,24 @@ public class NaverMemberService {
         }
         return naverMember;
     }
+
+    private HttpHeaders raidhoJwtTokenGenerate(Member naverMember, HttpServletResponse response) {
+        UserDetails userDetails = new PrincipalDetails(naverMember);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // SecurityContextHolder (Authentication (UserDetails))
+
+        // PrincipalDetails principalDetails = ((PrincipalDetails) authentication.getPrincipal());
+
+        JwtTokenDto jwtTokenDto = jwtTokenProvider.generateTokenDto(naverMember);
+        String accessToken = jwtTokenDto.getAuthorization();
+        String refreshToken = jwtTokenDto.getRefreshToken();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", accessToken);
+        httpHeaders.add("RefreshToken", refreshToken);
+
+        return httpHeaders;
+
+    }
+
 }

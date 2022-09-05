@@ -46,8 +46,10 @@ public class OAuthLoginController {
     @GetMapping("/naver")
     public ResponseEntity<?> naverLogin (@RequestParam String code, @RequestParam String state, HttpServletResponse response) {
         try {
-            naverMemberService.naverLogin(code, state, response);
-            return new ResponseEntity<>("네이버 로그인 성공", HttpStatus.OK);
+            OauthLoginResponseDto oauthLoginResponseDto = naverMemberService.naverLogin(code,state,response);
+            MemberDto memberDto = new MemberDto(oauthLoginResponseDto);
+            return ResponseEntity.ok().headers(oauthLoginResponseDto.getHttpHeaders()).
+                    body(memberDto);
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("네이버 로그인 실패");
@@ -57,8 +59,11 @@ public class OAuthLoginController {
     @GetMapping("/facebook")
     public ResponseEntity<?> facebookLogin (@RequestParam String code, HttpServletResponse response) {
         try {
-            facebookMemberService.facebookLogin(code, response);
-            return new ResponseEntity<>("페이스북 로그인 성공", HttpStatus.OK);
+            OauthLoginResponseDto oauthLoginResponseDto = facebookMemberService.facebookLogin(code,response);
+            MemberDto memberDto = new MemberDto(oauthLoginResponseDto);
+            return ResponseEntity.ok().headers(oauthLoginResponseDto.getHttpHeaders()).
+                    body(memberDto);
+
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("페이스북 로그인 실패");
