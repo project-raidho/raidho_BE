@@ -10,7 +10,7 @@ server:
 spring:
 
   profiles:
-    include: oauth
+    include: oauth, jwt
 
   h2:
     console:

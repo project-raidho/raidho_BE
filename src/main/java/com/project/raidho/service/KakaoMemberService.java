@@ -5,14 +5,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.member.MemberRole;
+import com.project.raidho.domain.member.dto.OauthLoginResponseDto;
 import com.project.raidho.domain.oauthMemberInfo.OauthMemberInfoImpl;
+import com.project.raidho.domain.token.dto.JwtTokenDto;
+import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.MemberRepository;
+import com.project.raidho.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -33,14 +41,17 @@ public class KakaoMemberService {
     String kakaoRedirect;
 
     private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 카카오 로그인
     @Transactional
-    public void kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+    public OauthLoginResponseDto kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 1. auth code 로 (Kakao -> Resource Server 접속이 가능한 ) accessToken 요청
         String KakaoResourceToken = getResourceToken(code); // 받은 인가코드를 통해 토큰을 받아옴
         OauthMemberInfoImpl kakaoMemberInfo = getKakaoMemberInfo(KakaoResourceToken); // Resource Server 에서 유저 정보 가져옴
         Member kakaoMember = joinMemberShip(kakaoMemberInfo); // 회원가입
+        HttpHeaders httpHeaders =raidhoJwtTokenGenerate(kakaoMember, response);
+        return new OauthLoginResponseDto(httpHeaders, kakaoMember);
     }
 
     private String getResourceToken(String code) throws JsonProcessingException {
@@ -135,5 +146,24 @@ public class KakaoMemberService {
             return member;
         }
         return kakaoMember;
+    }
+
+    private HttpHeaders raidhoJwtTokenGenerate(Member kakaoMember, HttpServletResponse response) {
+        UserDetails userDetails = new PrincipalDetails(kakaoMember);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // SecurityContextHolder (Authentication (UserDetails))
+
+        // PrincipalDetails principalDetails = ((PrincipalDetails) authentication.getPrincipal());
+
+        JwtTokenDto jwtTokenDto = jwtTokenProvider.generateTokenDto(kakaoMember);
+        String accessToken = jwtTokenDto.getAuthorization();
+        String refreshToken = jwtTokenDto.getRefreshToken();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", accessToken);
+        httpHeaders.add("RefreshToken", refreshToken);
+
+        return httpHeaders;
+
     }
 }
