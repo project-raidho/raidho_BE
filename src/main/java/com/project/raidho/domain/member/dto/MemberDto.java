@@ -1,5 +1,6 @@
 package com.project.raidho.domain.member.dto;
 
+import com.project.raidho.domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,10 +16,11 @@ public class MemberDto {
     private String memberImage;
     private String memberIntro;
 
-    public MemberDto (OauthLoginResponseDto oauthLoginResponseDto) {
-        this.id = oauthLoginResponseDto.getMember().getId();
-        this.memberName = oauthLoginResponseDto.getMember().getMemberName();
-        this.memberImage = oauthLoginResponseDto.getMember().getMemberImage();
-        this.memberIntro = oauthLoginResponseDto.getMember().getMemberIntro();
+    @Builder
+    public MemberDto (Member member) {
+        this.id = member.getId();
+        this.memberName = member.getMemberName();
+        this.memberImage = member.getMemberImage();
+        this.memberIntro = member.getMemberIntro();
     }
 }

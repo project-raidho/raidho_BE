@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.member.MemberRole;
+import com.project.raidho.domain.member.dto.MemberDto;
 import com.project.raidho.domain.member.dto.OauthLoginResponseDto;
 import com.project.raidho.domain.oauthMemberInfo.OauthMemberInfoImpl;
 import com.project.raidho.domain.token.dto.JwtTokenDto;
@@ -41,13 +42,13 @@ public class FacebookMemberService {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    public OauthLoginResponseDto facebookLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+    public MemberDto facebookLogin(String code, HttpServletResponse response) throws JsonProcessingException {
 
         String facebookResourceToken = getResourceToken(code);
         OauthMemberInfoImpl facebookMemberInfo = getFacebookMemberInfo(facebookResourceToken);
         Member facebookMember = joinMemberShip(facebookMemberInfo);
-        HttpHeaders httpHeaders = raidhoJwtTokenGenerate(facebookMember,response);
-        return new OauthLoginResponseDto(httpHeaders, facebookMember);
+        raidhoJwtTokenGenerate(facebookMember,response);
+        return MemberDto.builder().member(facebookMember).build();
     }
 
     private String getResourceToken(String code) throws JsonProcessingException {
@@ -135,7 +136,7 @@ public class FacebookMemberService {
         }
         return facebookMember;
     }
-    private HttpHeaders raidhoJwtTokenGenerate(Member facebookMember, HttpServletResponse response) {
+    private void raidhoJwtTokenGenerate(Member facebookMember, HttpServletResponse response) {
         UserDetails userDetails = new PrincipalDetails(facebookMember);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -147,11 +148,15 @@ public class FacebookMemberService {
         JwtTokenDto jwtTokenDto = jwtTokenProvider.generateTokenDto(member);
         String accessToken = jwtTokenDto.getAuthorization();
         String refreshToken = jwtTokenDto.getRefreshToken();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", accessToken);
-        httpHeaders.add("RefreshToken", refreshToken);
 
-        return httpHeaders;
+        response.addHeader("Authorization", accessToken);
+        response.addHeader("RefreshToken", refreshToken);
+
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add("Authorization", accessToken);
+//        httpHeaders.add("RefreshToken", refreshToken);
+//
+//        return httpHeaders;
 
     }
 }

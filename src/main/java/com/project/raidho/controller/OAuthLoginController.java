@@ -28,10 +28,9 @@ public class OAuthLoginController {
 
     // 카카오 로그인
     @GetMapping("/kakao")
-    public ResponseEntity<?> kakaoLogin (@RequestParam String code, HttpServletResponse response) {
+    public ResponseEntity<?> kakaoLogin (@RequestParam(value = "code") String code, HttpServletResponse response) {
         try {
-            OauthLoginResponseDto oauthLoginResponseDto = kakaoMemberService.kakaoLogin(code, response);
-            MemberDto memberDto = new MemberDto(oauthLoginResponseDto);
+            MemberDto memberDto = kakaoMemberService.kakaoLogin(code, response);
             return ResponseEntity.ok().body(memberDto);
             //return new ResponseEntity<>("카카오 로그인 성공", HttpStatus.OK);
         } catch (JsonProcessingException e) {
@@ -43,10 +42,9 @@ public class OAuthLoginController {
     @GetMapping("/naver")
     public ResponseEntity<?> naverLogin (@RequestParam String code, @RequestParam String state, HttpServletResponse response) {
         try {
-            OauthLoginResponseDto oauthLoginResponseDto = naverMemberService.naverLogin(code,state,response);
-            MemberDto memberDto = new MemberDto(oauthLoginResponseDto);
-            return ResponseEntity.ok().headers(oauthLoginResponseDto.getHttpHeaders()).
-                    body(memberDto);
+            MemberDto memberDto = naverMemberService.naverLogin(code,state,response);
+            return ResponseEntity.ok().body(memberDto);
+
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("네이버 로그인 실패");
@@ -56,10 +54,8 @@ public class OAuthLoginController {
     @GetMapping("/facebook")
     public ResponseEntity<?> facebookLogin (@RequestParam String code, HttpServletResponse response) {
         try {
-            OauthLoginResponseDto oauthLoginResponseDto = facebookMemberService.facebookLogin(code,response);
-            MemberDto memberDto = new MemberDto(oauthLoginResponseDto);
-            return ResponseEntity.ok().headers(oauthLoginResponseDto.getHttpHeaders()).
-                    body(memberDto);
+            MemberDto memberDto = facebookMemberService.facebookLogin(code,response);
+            return ResponseEntity.ok().body(memberDto);
 
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());

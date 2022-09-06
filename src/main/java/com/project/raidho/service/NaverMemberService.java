@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.member.MemberRole;
+import com.project.raidho.domain.member.dto.MemberDto;
 import com.project.raidho.domain.member.dto.OauthLoginResponseDto;
 import com.project.raidho.domain.oauthMemberInfo.OauthMemberInfoImpl;
 import com.project.raidho.domain.token.dto.JwtTokenDto;
@@ -45,13 +46,13 @@ public class NaverMemberService {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    public OauthLoginResponseDto naverLogin(String code, String state, HttpServletResponse response) throws JsonProcessingException {
+    public MemberDto naverLogin(String code, String state, HttpServletResponse response) throws JsonProcessingException {
 
         String NaverResourceToken = getResourceToken(code, state);
         OauthMemberInfoImpl naverMemberInfo = getNaverMemberInfo(NaverResourceToken);
         Member naverMember = joinMemberShip(naverMemberInfo);
-        HttpHeaders httpHeaders = raidhoJwtTokenGenerate(naverMember,response);
-        return new OauthLoginResponseDto(httpHeaders, naverMember);
+        raidhoJwtTokenGenerate(naverMember,response);
+        return MemberDto.builder().member(naverMember).build();
     }
 
     private String getResourceToken(String code, String state) throws JsonProcessingException {
@@ -140,7 +141,7 @@ public class NaverMemberService {
         return naverMember;
     }
 
-    private HttpHeaders raidhoJwtTokenGenerate(Member naverMember, HttpServletResponse response) {
+    private void raidhoJwtTokenGenerate(Member naverMember, HttpServletResponse response) {
         UserDetails userDetails = new PrincipalDetails(naverMember);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -152,11 +153,15 @@ public class NaverMemberService {
         JwtTokenDto jwtTokenDto = jwtTokenProvider.generateTokenDto(member);
         String accessToken = jwtTokenDto.getAuthorization();
         String refreshToken = jwtTokenDto.getRefreshToken();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", accessToken);
-        httpHeaders.add("RefreshToken", refreshToken);
 
-        return httpHeaders;
+        response.addHeader("Authorization", accessToken);
+        response.addHeader("RefreshToken", refreshToken);
+
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add("Authorization", accessToken);
+//        httpHeaders.add("RefreshToken", refreshToken);
+//
+//        return httpHeaders;
 
     }
 
