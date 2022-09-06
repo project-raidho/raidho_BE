@@ -20,6 +20,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // Filter �
                                                                     // @Override doFilterInternal 를 구현해야한다.
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
+
     public static final String REFRESH_AUTHORIZATION_HEADER = "RefreshToken";
     public static final String BEARER_PREFIX = "Bearer";
 

@@ -65,7 +65,7 @@ public class KakaoMemberService {
         body.add("grant_type", "authorization_code");
         body.add("client_id", kakaoClientId);
         body.add("client_secret", kakaoClientSecret);
-        body.add("redirect_uri", "http://localhost:8080/login/oauth2/code/kakao");
+        body.add("redirect_uri", "https://raidho.site/login/oauth2/code/kakao");
         // body.add("redirect_uri", kakaoRedirect);
         body.add("code", code);
 
@@ -122,9 +122,8 @@ public class KakaoMemberService {
         String provider = kakaoMemberInfo.getProvider();
         String providerId = kakaoMemberInfo.getProviderId();
         String memberName = kakaoMemberInfo.getMemberName();
-        Member kakaoMember = memberRepository.findMember(provider, providerId, memberName)
+        Member kakaoMember = memberRepository.findByProviderId(providerId)
                 .orElse(null);
-
         // 회원가입이 되어있지 않으면 Null
         if (kakaoMember == null) {
             String email = kakaoMemberInfo.getEmail();
@@ -159,6 +158,10 @@ public class KakaoMemberService {
         JwtTokenDto jwtTokenDto = jwtTokenProvider.generateTokenDto(member);
         String accessToken = jwtTokenDto.getAuthorization();
         String refreshToken = jwtTokenDto.getRefreshToken();
+
+        response.addHeader("Authorization", accessToken);
+        response.addHeader("RefreshToken", refreshToken);
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization", accessToken);
         httpHeaders.add("RefreshToken", refreshToken);

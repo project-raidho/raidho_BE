@@ -25,16 +25,12 @@ public class Member {
     @Column(nullable = false)
     private String email;
 
-    @Column
     private String memberImage;
 
-    @Column
     private String memberIntro;
 
-    @Column(unique = true)
     private String provider; //소셜 종류 구분 version1
 
-    @Column(unique = true)
     private String providerId; //소셜 종류 구분 version2
 
     @Column(nullable = false)

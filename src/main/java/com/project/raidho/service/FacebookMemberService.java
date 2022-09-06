@@ -60,7 +60,7 @@ public class FacebookMemberService {
         body.add("grant_type", "authorization_code");
         body.add("client_id", facebookClientId);
         body.add("client_secret", facebookClientSecret);
-        body.add("redirect_uri", "http://localhost:8080/login/oauth2/code/facebook");
+        body.add("redirect_uri", "http://localhost:3000/login/oauth2/code/facebook");
         body.add("code", code);
         //POST 요청 보냄
         HttpEntity<MultiValueMap<String, String>> facebookResourceTokenRequest = new HttpEntity<>(body, httpHeaders);
