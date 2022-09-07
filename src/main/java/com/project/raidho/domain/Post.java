@@ -1,4 +1,4 @@
-package com.project.raidho.domine;
+package com.project.raidho.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

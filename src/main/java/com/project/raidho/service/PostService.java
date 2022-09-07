@@ -1,6 +1,6 @@
 package com.project.raidho.service;
 
-import com.project.raidho.domine.Post;
+import com.project.raidho.domain.Post;
 import com.project.raidho.dto.request.PostRequestDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
 import lombok.Builder;
