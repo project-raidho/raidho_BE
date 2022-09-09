@@ -20,6 +20,7 @@ bin/
 ### IntelliJ IDEA ###
 application-oauth.yml
 application-jwt.yml
+application.yaml
 .idea
 *.iws
 *.iml

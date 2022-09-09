@@ -1,7 +1,7 @@
 package com.project.raidho.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.project.raidho.domain.member.dto.MemberDto;
+import com.project.raidho.domain.MemberDto;
 import com.project.raidho.domain.member.dto.OauthLoginResponseDto;
 
 import com.project.raidho.service.KakaoMemberService;

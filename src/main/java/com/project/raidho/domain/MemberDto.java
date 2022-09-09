@@ -1,5 +1,6 @@
-package com.project.raidho.domain.member.dto;
+package com.project.raidho.domain;
 
+import com.project.raidho.domain.member.dto.OauthLoginResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

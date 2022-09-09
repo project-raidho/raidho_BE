@@ -24,13 +24,13 @@ public class PostService extends Timestamped {
     private final JwtTokenProvider jwtTokenProvider;
     private final PostRepository postRepository;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+//    @Value("${cloud.aws.s3.bucket}")
+//    private String bucket;
 
 
     //게시물 업로드
     @Transactional
-    public ResponseDto<?> createPost(ContentRequestDto contentRequestDto, HttpServletRequest httpServletRequest) {
+    public ResponseDto<?> createPost(ContentRequestDto contentRequestDto) {
 //        if (null == request.getHeader("Refresh-Token")){
 //            return ResponseDto.fail("401","No right to create new post, Please login.");
 //        }
@@ -47,8 +47,6 @@ public class PostService extends Timestamped {
                 .build();
         postRepository.save(post);
 
-        LocalDateTime createdAt = post.getCreatedAt();
-        String createTime = createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 //        MembersDto membersDto = MembersDto.builder()
 //                .memberName(post.getMember().getMemberName())
 //                .memberImage(post.getMember().getMemberImage())
@@ -59,7 +57,7 @@ public class PostService extends Timestamped {
                         .id(post.getId())
                         .content(post.getContent())
 //                        .author(membersDto)
-                        .createdAt(createTime)
+                        .createdAt(post.getCreatedAt())
                         .modifiedAt(post.getModifiedAt())
                         .build()
         );
