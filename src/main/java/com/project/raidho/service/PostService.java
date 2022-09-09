@@ -47,8 +47,6 @@ public class PostService extends Timestamped {
                 .build();
         postRepository.save(post);
 
-        LocalDateTime createdAt = post.getCreatedAt();
-        String createTime = createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 //        MembersDto membersDto = MembersDto.builder()
 //                .memberName(post.getMember().getMemberName())
 //                .memberImage(post.getMember().getMemberImage())
@@ -59,7 +57,7 @@ public class PostService extends Timestamped {
                         .id(post.getId())
                         .content(post.getContent())
 //                        .author(membersDto)
-                        .createdAt(createTime)
+                        .createdAt(post.getCreatedAt())
                         .modifiedAt(post.getModifiedAt())
                         .build()
         );

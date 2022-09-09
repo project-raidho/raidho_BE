@@ -15,7 +15,7 @@ import java.util.List;
 public class PostResponseDto {
     private Long id;
     private String content;
-    private String createdAt;
+    private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
 }
