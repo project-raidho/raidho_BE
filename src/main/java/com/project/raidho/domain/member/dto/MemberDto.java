@@ -21,4 +21,7 @@ public class MemberDto {
         this.memberImage = oauthLoginResponseDto.getMember().getMemberImage();
         this.memberIntro = oauthLoginResponseDto.getMember().getMemberIntro();
     }
+
+
+
 }

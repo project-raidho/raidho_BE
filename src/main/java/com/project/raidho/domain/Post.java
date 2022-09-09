@@ -1,11 +1,14 @@
 package com.project.raidho.domain;
 
+import com.project.raidho.domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
@@ -20,14 +23,22 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private String images;
-
-    @Column(nullable = false)
+    @Column
     private String tags;
 
-    @Column(nullable = false)
+//    @Transient
+//    private final List<Images> imgList = new ArrayList<>();
+
+    @Column
     private String locationTags;
 
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "memberId",nullable = false)
+//    private Member member;
+
+//    public Post(String content, Member member) {
+//        this.content = content;
+//        this.member = member;
+//    }
 
 }
