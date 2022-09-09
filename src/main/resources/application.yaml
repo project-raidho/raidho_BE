@@ -1,0 +1,17 @@
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAQPOXFNFS3UVJGPCP
+      secret-key: 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
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: hgdjt-s3-bucket
+    stack:
+      auto: false
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
