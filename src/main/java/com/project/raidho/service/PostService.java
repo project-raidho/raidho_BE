@@ -1,5 +1,6 @@
 package com.project.raidho.service;
 
+import com.project.raidho.domain.Images;
 import com.project.raidho.domain.Post;
 import com.project.raidho.domain.Timestamped;
 import com.project.raidho.dto.request.ContentRequestDto;
@@ -7,22 +8,19 @@ import com.project.raidho.dto.resposnse.PostResponseDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
 import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.PostRepository;
+import com.project.raidho.repository.ImgRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PostService extends Timestamped {
-
-    private final JwtTokenProvider jwtTokenProvider;
     private final PostRepository postRepository;
+    private final ImgRepository imgRepository;
 
 //    @Value("${cloud.aws.s3.bucket}")
 //    private String bucket;
@@ -30,7 +28,7 @@ public class PostService extends Timestamped {
 
     //게시물 업로드
     @Transactional
-    public ResponseDto<?> createPost(ContentRequestDto contentRequestDto) {
+    public ResponseDto<?> createPost(ContentRequestDto contentRequestDto, List<String> imgPaths) {
 //        if (null == request.getHeader("Refresh-Token")){
 //            return ResponseDto.fail("401","No right to create new post, Please login.");
 //        }
@@ -52,18 +50,24 @@ public class PostService extends Timestamped {
 //                .memberImage(post.getMember().getMemberImage())
 //                .build();
 
-        return ResponseDto.success(
-                PostResponseDto.builder()
-                        .id(post.getId())
-                        .content(post.getContent())
+        List<String> imgList = new ArrayList<>();
+        for (String imgUrl : imgPaths) {
+            Images images = new Images(imgUrl, post);
+            imgRepository.save(images);
+            imgList.add(images.getImgUrl());
+
+            return ResponseDto.success(
+                    PostResponseDto.builder()
+                            .id(post.getId())
+                            .content(post.getContent())
 //                        .author(membersDto)
-                        .createdAt(post.getCreatedAt())
-                        .modifiedAt(post.getModifiedAt())
-                        .build()
-        );
+                            .createdAt(post.getCreatedAt())
+                            .modifiedAt(post.getModifiedAt())
+                            .build()
+            );
 
 
+        }
+        return ResponseDto.success("ok");
     }
-
-
 }

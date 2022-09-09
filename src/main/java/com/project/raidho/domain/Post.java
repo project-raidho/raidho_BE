@@ -20,14 +20,14 @@ public class Post extends Timestamped {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private String content;
 
     @Column
     private String tags;
 
-//    @Transient
-//    private final List<Images> imgList = new ArrayList<>();
+    @Transient
+    private final List<Images> imgList = new ArrayList<>();
 
     @Column
     private String locationTags;
