@@ -26,8 +26,8 @@ public class Post extends Timestamped {
     @Column
     private String tags;
 
-//    @Transient
-//    private final List<Images> imgList = new ArrayList<>();
+    @Transient
+    private final List<Images> imgList = new ArrayList<>();
 
     @Column
     private String locationTags;

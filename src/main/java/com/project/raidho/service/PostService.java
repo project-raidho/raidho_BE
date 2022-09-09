@@ -1,5 +1,6 @@
 package com.project.raidho.service;
 
+import com.project.raidho.domain.Images;
 import com.project.raidho.domain.Post;
 import com.project.raidho.domain.Timestamped;
 import com.project.raidho.dto.request.ContentRequestDto;
@@ -16,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +33,7 @@ public class PostService extends Timestamped {
 
     //게시물 업로드
     @Transactional
-    public ResponseDto<?> createPost(ContentRequestDto contentRequestDto, HttpServletRequest httpServletRequest) {
+    public ResponseDto<?> createPost(ContentRequestDto contentRequestDto, HttpServletRequest httpServletRequest,List<String> imgPaths) {
 //        if (null == request.getHeader("Refresh-Token")){
 //            return ResponseDto.fail("401","No right to create new post, Please login.");
 //        }
@@ -61,6 +64,11 @@ public class PostService extends Timestamped {
                         .modifiedAt(post.getModifiedAt())
                         .build()
         );
+        List<String> imgList = new ArrayList<>();
+        for (String imgUrl : imgPaths) {
+            Images images = new Images(imgUrl, post);
+            imgRepository.save(images);
+            imgList.add(images.getImgUrl());
 
 
     }
