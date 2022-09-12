@@ -28,8 +28,8 @@ public class PostService extends Timestamped {
     private final ImgRepository imgRepository;
 
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+//    @Value("${cloud.aws.s3.bucket}")
+//    private String bucket;
 
 
     //게시물 업로드
@@ -74,7 +74,7 @@ public class PostService extends Timestamped {
 
 
         }
-        return null;
+        return ResponseDto.success("ok");
     }
 }
 

@@ -35,11 +35,11 @@ public class Post extends Timestamped {
 //        this.content = content;
 //        this.member = member;
 //    }
-    @Column
-    private int heartCount;
+//    @Column
+//    private int heartCount;
 
-    public void update(List<PostHeart> postHearts){
-        this.heartCount = postHearts.size();
-    }
+//    public void update(List<PostHeart> postHearts){
+//        this.heartCount = postHearts.size();
+//    }
 
 }
