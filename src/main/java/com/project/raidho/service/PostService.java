@@ -1,13 +1,11 @@
 package com.project.raidho.service;
 
-import com.project.raidho.domain.MultipartFiles;
-import com.project.raidho.domain.Post;
-import com.project.raidho.domain.Tags;
-import com.project.raidho.domain.Timestamped;
+import com.project.raidho.domain.*;
 import com.project.raidho.dto.request.PostRequestDto;
 import com.project.raidho.dto.resposnse.PostResponseDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
 import com.project.raidho.repository.ImgRepository;
+import com.project.raidho.repository.LocationTagsRepository;
 import com.project.raidho.repository.PostRepository;
 import com.project.raidho.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +22,10 @@ public class PostService extends Timestamped {
     private final PostRepository postRepository;
     private final ImgRepository imgRepository;
     private final TagRepository tagRepository;
+
+    private final LocationTags locationTags;
     private final S3Service s3Service;
+    private final LocationTagsRepository locationTagsRepository;
 
     //게시물 업로드
     @Transactional
@@ -48,7 +49,7 @@ public class PostService extends Timestamped {
 //                .memberImage(post.getMember().getMemberImage())
 //                .build();
 
-        List<MultipartFile> FilesList = postRequestDto.getFiles();
+        List<MultipartFile> FilesList = postRequestDto.getImgUrl();
         if (FilesList != null) {
             for (MultipartFile file : FilesList) {
                 String url = s3Service.upload(file);
@@ -65,6 +66,16 @@ public class PostService extends Timestamped {
                     tagRepository.save(
                             Tags.builder()
                                     .tag(tag)
+                                    .post(post)
+                                    .build()
+                    );
+            }
+            List<String> locationTag = postRequestDto.getLocationTags();
+            if (tags != null) {
+                for (String locationTags : locationTag)
+                    locationTagsRepository.save(
+                            LocationTags.builder()
+                                    .locationtags(locationTags)
                                     .post(post)
                                     .build()
                     );
