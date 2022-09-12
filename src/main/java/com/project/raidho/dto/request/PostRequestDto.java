@@ -10,6 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 public class PostRequestDto {
     private String content;
-    private List<MultipartFile> multipartFile;
+    private List<MultipartFile> files;
     private List<String> tags;
 }

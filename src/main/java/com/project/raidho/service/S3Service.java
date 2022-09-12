@@ -8,24 +8,29 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.project.raidho.Util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.net.URLDecoder;
 
 @Service
 @RequiredArgsConstructor
 public class S3Service  {
 
-    private final AmazonS3 s3Client;
+    private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
@@ -48,25 +53,21 @@ public class S3Service  {
                 .build();
     }
 
-    public List<String> upload(List<MultipartFile> multipartFile) {
-        List<String> imgUrlList = new ArrayList<>();
+    public String upload(MultipartFile file) throws IOException {
 
-        // forEach 구문을 통해 multipartFile로 넘어온 파일들 하나씩 fileNameList에 추가
-        for (MultipartFile file : multipartFile) {
-            String fileName = createFileName(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
+        String fileName = CommonUtils.buildFileName(file.getOriginalFilename()); // 파일이름
+        long size = file.getSize(); // 파일 크기
 
-            try(InputStream inputStream = file.getInputStream()) {
-                s3Client.putObject(new PutObjectRequest(bucket+"/post/image", fileName, inputStream, objectMetadata)
-                        .withCannedAcl(CannedAccessControlList.PublicRead));
-                imgUrlList.add(s3Client.getUrl(bucket+"/post/image", fileName).toString());
-            } catch(IOException e) {
-                System.out.println("실패1");
-            }
-        }
-        return imgUrlList;
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(file.getContentType());  // 이게 머지? : 파일타입
+        objectMetadata.setContentLength(size); //파일크기
+        InputStream inputStream = file.getInputStream();   // 실제 데이터를 넣어준다
+        amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+                .withCannedAcl(CannedAccessControlList.PublicRead));  // S3 저장 및 권한설정
+        String imageUrl = amazonS3.getUrl(bucket, fileName).toString();
+        imageUrl = URLDecoder.decode(imageUrl,"UTF-8");
+        return imageUrl;
+        // URL 대입!, URL 변환시 한글깨짐
     }
 
     // 이미지파일명 중복 방지

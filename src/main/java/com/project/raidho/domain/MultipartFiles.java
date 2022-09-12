@@ -1,5 +1,7 @@
 package com.project.raidho.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -7,10 +9,13 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
-@Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class MultipartFiles {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,8 +28,4 @@ public class MultipartFiles {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Post post;
 
-    public MultipartFiles(String multipartFiles, Post post) {
-        this.multipartFiles = multipartFiles;
-        this.post = post;
-    }
 }

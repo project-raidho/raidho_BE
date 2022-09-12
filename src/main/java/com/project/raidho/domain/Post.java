@@ -23,11 +23,14 @@ public class Post extends Timestamped {
     @Column
     private String content;
 
-    @Transient
-    private List<MultipartFiles> multipartFiles = new ArrayList<>();
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MultipartFiles> multipartFiles;
 
     @Transient
     private List<String> tags = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<String> tags;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "memberId",nullable = false)
