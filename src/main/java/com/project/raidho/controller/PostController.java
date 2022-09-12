@@ -20,7 +20,6 @@ public class PostController {
 
     @RequestMapping(value = "/api/post", method = RequestMethod.POST)
     public ResponseDto<?> createPost(@RequestPart("content") ContentRequestDto contentRequestDto, @RequestPart("imgUrl") List<MultipartFile> multipartFiles) {
-        System.out.println("9384723984732984792384729384");
         List<String> imgPaths = s3Service.upload(multipartFiles);
         return postService.createPost(contentRequestDto, imgPaths);
     }

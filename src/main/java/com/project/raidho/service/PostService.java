@@ -23,6 +23,7 @@ public class PostService extends Timestamped {
     private final JwtTokenProvider jwtTokenProvider;
     private final PostRepository postRepository;
 
+
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
@@ -46,6 +47,7 @@ public class PostService extends Timestamped {
                 .build();
         postRepository.save(post);
 
+
 //        MembersDto membersDto = MembersDto.builder()
 //                .memberName(post.getMember().getMemberName())
 //                .memberImage(post.getMember().getMemberImage())
@@ -56,15 +58,14 @@ public class PostService extends Timestamped {
                         .id(post.getId())
                         .content(post.getContent())
 //                        .author(membersDto)
-                            .createdAt(post.getCreatedAt())
-                            .modifiedAt(post.getModifiedAt())
-                            .build()
-            );
+                        .createdAt(post.getCreatedAt())
+                        .modifiedAt(post.getModifiedAt())
+                        .build()
+        );
 
 
-        }
-        return ResponseDto.success("ok");
     }
-
-
 }
+
+
+

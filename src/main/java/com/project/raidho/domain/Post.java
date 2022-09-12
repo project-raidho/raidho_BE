@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 public class Post extends Timestamped {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -23,14 +24,8 @@ public class Post extends Timestamped {
     @Column
     private String content;
 
-    @Column
-    private String tags;
-
     @Transient
     private final List<Images> imgList = new ArrayList<>();
-
-    @Column
-    private String locationTags;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "memberId",nullable = false)

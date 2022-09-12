@@ -47,6 +47,9 @@ dependencies {
     //S3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+
+    //test
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.4'
 }
 
 tasks.named('test') {
