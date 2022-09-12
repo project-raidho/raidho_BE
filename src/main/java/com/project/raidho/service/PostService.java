@@ -1,11 +1,13 @@
 package com.project.raidho.service;
 
+import com.project.raidho.domain.Images;
 import com.project.raidho.domain.Post;
 import com.project.raidho.domain.Timestamped;
 import com.project.raidho.dto.request.ContentRequestDto;
 import com.project.raidho.dto.resposnse.PostResponseDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
 import com.project.raidho.jwt.JwtTokenProvider;
+import com.project.raidho.repository.ImgRepository;
 import com.project.raidho.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +24,8 @@ public class PostService extends Timestamped {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final PostRepository postRepository;
+
+    private final ImgRepository imgRepository;
 
 
     @Value("${cloud.aws.s3.bucket}")
@@ -52,6 +56,11 @@ public class PostService extends Timestamped {
 //                .memberName(post.getMember().getMemberName())
 //                .memberImage(post.getMember().getMemberImage())
 //                .build();
+        List<String> imgList = new ArrayList<>();
+        for (String imgUrl : imgPaths) {
+            Images images = new Images(imgUrl, post);
+            imgRepository.save(images);
+            imgList.add(images.getImgUrl());
 
         return ResponseDto.success(
                 PostResponseDto.builder()
@@ -64,6 +73,8 @@ public class PostService extends Timestamped {
         );
 
 
+        }
+        return null;
     }
 }
 
