@@ -17,11 +17,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 // Todo :: 모든 Class log 남기기
 
@@ -135,4 +137,5 @@ public class JwtTokenProvider {
             return e.getClaims();
         }
     }
+
 }

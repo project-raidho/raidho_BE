@@ -65,7 +65,7 @@ public class KakaoMemberService {
         body.add("grant_type", "authorization_code");
         body.add("client_id", kakaoClientId);
         body.add("client_secret", kakaoClientSecret);
-        body.add("redirect_uri", "https://raidho.site/login/oauth2/code/kakao");
+        body.add("redirect_uri", "http://localhost:3000/login/oauth2/code/kakao");
         // body.add("redirect_uri", kakaoRedirect);
         body.add("code", code);
 
