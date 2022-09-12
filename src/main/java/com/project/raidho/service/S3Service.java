@@ -69,28 +69,4 @@ public class S3Service  {
         return imageUrl;
         // URL 대입!, URL 변환시 한글깨짐
     }
-
-    // 이미지파일명 중복 방지
-    private String createFileName(String fileName) {
-        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
-    }
-
-    // 파일 유효성 검사
-    private String getFileExtension(String fileName) {
-        if (fileName.length() == 0) {
-            System.out.println("실패2");
-        }
-        ArrayList<String> fileValidate = new ArrayList<>();
-        fileValidate.add(".jpg");
-        fileValidate.add(".jpeg");
-        fileValidate.add(".png");
-        fileValidate.add(".JPG");
-        fileValidate.add(".JPEG");
-        fileValidate.add(".PNG");
-        String idxFileName = fileName.substring(fileName.lastIndexOf("."));
-        if (!fileValidate.contains(idxFileName)) {
-            System.out.println("실패3");
-        }
-        return fileName.substring(fileName.lastIndexOf("."));
-    }
 }

@@ -29,9 +29,6 @@ public class Post extends Timestamped {
     @Transient
     private List<String> tags = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<String> tags;
-
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "memberId",nullable = false)
 //    private Member member;

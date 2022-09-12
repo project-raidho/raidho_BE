@@ -1,7 +1,6 @@
 package com.project.raidho.jwt;
 
 import com.project.raidho.domain.member.Member;
-import com.project.raidho.domain.oauthMemberInfo.OauthMemberInfoImpl;
 import com.project.raidho.domain.token.RefreshToken;
 import com.project.raidho.domain.token.dto.JwtTokenDto;
 import com.project.raidho.repository.RefreshRepository;
@@ -11,19 +10,15 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 // Todo :: 모든 Class log 남기기
 

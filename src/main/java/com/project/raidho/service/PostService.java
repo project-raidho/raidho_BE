@@ -7,7 +7,6 @@ import com.project.raidho.domain.Timestamped;
 import com.project.raidho.dto.request.PostRequestDto;
 import com.project.raidho.dto.resposnse.PostResponseDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
-import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.ImgRepository;
 import com.project.raidho.repository.PostRepository;
 import com.project.raidho.repository.TagRepository;
