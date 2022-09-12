@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.List;
 public class PostResponseDto {
     private Long id;
     private String content;
+    private List<MultipartFile> multipartFiles;
+    private List<String> tags;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 

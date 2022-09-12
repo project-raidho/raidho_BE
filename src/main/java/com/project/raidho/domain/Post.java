@@ -1,6 +1,5 @@
 package com.project.raidho.domain;
 
-import com.project.raidho.domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +24,10 @@ public class Post extends Timestamped {
     private String content;
 
     @Transient
-    private final List<Images> imgList = new ArrayList<>();
+    private List<MultipartFiles> multipartFiles = new ArrayList<>();
+
+    @Transient
+    private List<String> tags = new ArrayList<>();
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "memberId",nullable = false)

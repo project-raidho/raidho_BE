@@ -1,6 +1,6 @@
 package com.project.raidho.controller;
 
-import com.project.raidho.dto.request.ContentRequestDto;
+import com.project.raidho.dto.request.PostRequestDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
 import com.project.raidho.service.PostService;
 import com.project.raidho.service.S3Service;
@@ -19,8 +19,9 @@ public class PostController {
     private final S3Service s3Service;
 
     @RequestMapping(value = "/api/post", method = RequestMethod.POST)
-    public ResponseDto<?> createPost(@RequestPart("content") ContentRequestDto contentRequestDto, @RequestPart("imgUrl") List<MultipartFile> multipartFiles) {
+    public ResponseDto<?> createPost(@ModelAttribute PostRequestDto postRequestDto, @RequestPart("multipartFiles") List<MultipartFile> multipartFiles) {
         List<String> imgPaths = s3Service.upload(multipartFiles);
-        return postService.createPost(contentRequestDto, imgPaths);
+        return postService.createPost(postRequestDto, imgPaths);
+
     }
 }

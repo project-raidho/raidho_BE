@@ -10,21 +10,21 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor
-public class Images {
+public class MultipartFiles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String imgUrl;
+    private String multipartFiles;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId",nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Post post;
 
-    public Images(String imgUrl, Post post) {
-        this.imgUrl = imgUrl;
+    public MultipartFiles(String multipartFiles, Post post) {
+        this.multipartFiles = multipartFiles;
         this.post = post;
     }
 }
