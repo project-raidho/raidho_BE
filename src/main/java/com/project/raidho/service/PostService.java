@@ -74,7 +74,7 @@ public class PostService extends Timestamped {
 
 
         }
-        return ResponseDto.success("ok");
+        return ResponseDto.success("0");
     }
 }
 
