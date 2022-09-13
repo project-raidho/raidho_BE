@@ -22,8 +22,6 @@ public class PostService extends Timestamped {
     private final PostRepository postRepository;
     private final ImgRepository imgRepository;
     private final TagRepository tagRepository;
-
-    private final LocationTags locationTags;
     private final S3Service s3Service;
     private final LocationTagsRepository locationTagsRepository;
 
@@ -60,6 +58,7 @@ public class PostService extends Timestamped {
                                 .build()
                 );
             }
+        }
             List<String> tags = postRequestDto.getTags();
             if (tags != null) {
                 for (String tag : tags)
@@ -71,7 +70,7 @@ public class PostService extends Timestamped {
                     );
             }
             List<String> locationTag = postRequestDto.getLocationTags();
-            if (tags != null) {
+            if (locationTag != null) {
                 for (String locationTags : locationTag)
                     locationTagsRepository.save(
                             LocationTags.builder()
@@ -90,10 +89,9 @@ public class PostService extends Timestamped {
                             .modifiedAt(post.getModifiedAt())
                             .build()
             );
-        }
-        return ResponseDto.success("ok");
     }
 }
+
 
 
 

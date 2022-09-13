@@ -20,16 +20,19 @@ public class Post extends Timestamped {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column
+
     private String content;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(nullable = false)
     private List<MultipartFiles> multipartFiles;
 
     @Transient
+
     private List<String> tags = new ArrayList<>();
 
     @Transient
+
     private List<String> locationTags = new ArrayList<>();
 
 //    @ManyToOne(fetch = FetchType.LAZY)
