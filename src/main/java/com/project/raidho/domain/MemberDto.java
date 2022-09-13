@@ -15,7 +15,7 @@ public class MemberDto {
     private String memberName;
     private String memberImage;
     private String memberIntro;
-
+    @Builder
     public MemberDto (OauthLoginResponseDto oauthLoginResponseDto) {
         this.id = oauthLoginResponseDto.getMember().getId();
         this.memberName = oauthLoginResponseDto.getMember().getMemberName();

@@ -1,6 +1,7 @@
 package com.project.raidho.service;
 
 import com.project.raidho.domain.*;
+import com.project.raidho.domain.member.dto.MembersResponseDto;
 import com.project.raidho.dto.request.PostRequestDto;
 import com.project.raidho.dto.resposnse.PostResponseDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
@@ -8,22 +9,25 @@ import com.project.raidho.repository.ImgRepository;
 import com.project.raidho.repository.LocationTagsRepository;
 import com.project.raidho.repository.PostRepository;
 import com.project.raidho.repository.TagRepository;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Builder
 @RequiredArgsConstructor
 public class PostService extends Timestamped {
     private final PostRepository postRepository;
     private final ImgRepository imgRepository;
     private final TagRepository tagRepository;
 
-    private final LocationTags locationTags;
     private final S3Service s3Service;
     private final LocationTagsRepository locationTagsRepository;
 
@@ -75,7 +79,7 @@ public class PostService extends Timestamped {
                 for (String locationTags : locationTag)
                     locationTagsRepository.save(
                             LocationTags.builder()
-                                    .locationtags(locationTags)
+                                    .locationTags(locationTags)
                                     .post(post)
                                     .build()
                     );
@@ -86,6 +90,7 @@ public class PostService extends Timestamped {
                             .id(post.getId())
                             .content(post.getContent())
 //                        .author(membersDto)
+                            .locationTags(post.getLocationTags())
                             .createdAt(post.getCreatedAt())
                             .modifiedAt(post.getModifiedAt())
                             .build()
@@ -93,6 +98,31 @@ public class PostService extends Timestamped {
         }
         return ResponseDto.success("ok");
     }
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getAllPost(int page, int size){
+        PageRequest pageRequest=PageRequest.of(page,size);
+        List<Post> postList=postRepository.findAll(pageRequest);
+        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+        for (Post post:postList){
+            MembersResponseDto membersResponseDto = MembersResponseDto.builder()
+                    .memberName(post.getMember().getMemberName())
+                    .memberImage(post.getMember().getMemberImage())
+                    .build();
+            PostResponseDto postResponseDto=PostResponseDto.builder()
+                    .content(post.getContent())
+                    .id(post.getId())
+                    .membersResponseDto(membersResponseDto)
+                    .locationTags(post.getLocationTags())
+                    .tags(post.getTags())
+                    .createdAt(post.getCreatedAt())
+                    .modifiedAt(post.getModifiedAt())
+                    .multipartFiles(post.getMultipartFiles())
+                    .build();
+            postResponseDtoList.add(postResponseDto);
+        }
+        return ResponseDto.success(postResponseDtoList);
+    }
+
 }
 
 

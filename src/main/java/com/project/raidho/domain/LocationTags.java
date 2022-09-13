@@ -20,7 +20,7 @@ public class LocationTags {
     private Long id;
 
     @Column
-    private String locationtags;
+    private String locationTags;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId",nullable = false)

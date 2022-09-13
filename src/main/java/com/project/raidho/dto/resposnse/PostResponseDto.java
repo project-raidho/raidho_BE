@@ -1,5 +1,7 @@
 package com.project.raidho.dto.resposnse;
 
+import com.project.raidho.domain.MultipartFiles;
+import com.project.raidho.domain.member.dto.MembersResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +18,11 @@ import java.util.List;
 public class PostResponseDto {
     private Long id;
     private String content;
-    private List<MultipartFile> multipartFiles;
+    private MembersResponseDto membersResponseDto;
+//    private List<MultipartFile> multipartFiles;
+    private List<MultipartFiles> multipartFiles;
     private List<String> tags;
+    private List<String> locationTags;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
