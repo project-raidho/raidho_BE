@@ -1,6 +1,5 @@
 package com.project.raidho.domain;
 
-import com.project.raidho.domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,22 +20,24 @@ public class Post extends Timestamped {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
+
     private String content;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(nullable = false)
     private List<MultipartFiles> multipartFiles;
 
     @Transient
+
     private List<String> tags = new ArrayList<>();
 
     @Transient
-    @Column(nullable = false)
+
     private List<String> locationTags = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "memberId")
-    private Member member;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "memberId",nullable = false)
+//    private Member member;
 
 //    public Post(String content, Member member) {
 //        this.content = content;

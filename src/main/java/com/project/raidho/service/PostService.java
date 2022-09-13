@@ -1,7 +1,6 @@
 package com.project.raidho.service;
 
 import com.project.raidho.domain.*;
-import com.project.raidho.domain.member.dto.MembersResponseDto;
 import com.project.raidho.dto.request.PostRequestDto;
 import com.project.raidho.dto.resposnse.PostResponseDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
@@ -28,6 +27,7 @@ public class PostService extends Timestamped {
     private final ImgRepository imgRepository;
     private final TagRepository tagRepository;
 
+    private final LocationTags locationTags;
     private final S3Service s3Service;
     private final LocationTagsRepository locationTagsRepository;
 
@@ -64,6 +64,7 @@ public class PostService extends Timestamped {
                                 .build()
                 );
             }
+        }
             List<String> tags = postRequestDto.getTags();
             if (tags != null) {
                 for (String tag : tags)
@@ -75,7 +76,7 @@ public class PostService extends Timestamped {
                     );
             }
             List<String> locationTag = postRequestDto.getLocationTags();
-            if (tags != null) {
+            if (locationTag != null) {
                 for (String locationTags : locationTag)
                     locationTagsRepository.save(
                             LocationTags.builder()
@@ -90,13 +91,12 @@ public class PostService extends Timestamped {
                             .id(post.getId())
                             .content(post.getContent())
 //                        .author(membersDto)
-                            .locationTags(post.getLocationTags())
                             .createdAt(post.getCreatedAt())
                             .modifiedAt(post.getModifiedAt())
                             .build()
             );
         }
-        return ResponseDto.success("ok");
+
     }
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllPost(int page, int size){
@@ -124,6 +124,7 @@ public class PostService extends Timestamped {
     }
 
 }
+
 
 
 

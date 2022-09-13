@@ -16,12 +16,12 @@
 //
 //    private final PostHeartService postHeartService;
 //
-//    @PostMapping("/api/postLike/{postId}")
+//    @PostMapping("/api/postheart/{postId}")
 //    public ResponseDto<?> postHeart(@PathVariable("postId") Long postId, HttpServletRequest httpServletRequest) {
 //        return postHeartService.createPostHeart(postId, httpServletRequest);
 //    }
 //
-//    @DeleteMapping("/api/postLike/{postId}")
+//    @DeleteMapping("/api/postheart/{postId}")
 //    public ResponseDto<?> postHeartDelete(@PathVariable("postId") Long postId, HttpServletRequest httpServletRequest) {
 //        return postHeartService.deletePostHeart(postId, httpServletRequest);
 //    }
