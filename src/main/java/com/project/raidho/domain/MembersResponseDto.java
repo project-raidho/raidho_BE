@@ -1,22 +1,21 @@
 package com.project.raidho.domain;
 
 import com.project.raidho.domain.member.dto.OauthLoginResponseDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class MemberDto {
+@Builder
+@Setter
+public class MembersResponseDto {
 
     private Long id;
     private String memberName;
     private String memberImage;
     private String memberIntro;
     @Builder
-    public MemberDto (OauthLoginResponseDto oauthLoginResponseDto) {
+    public MembersResponseDto(OauthLoginResponseDto oauthLoginResponseDto) {
         this.id = oauthLoginResponseDto.getMember().getId();
         this.memberName = oauthLoginResponseDto.getMember().getMemberName();
         this.memberImage = oauthLoginResponseDto.getMember().getMemberImage();

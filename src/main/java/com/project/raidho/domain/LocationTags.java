@@ -15,6 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 public class LocationTags {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

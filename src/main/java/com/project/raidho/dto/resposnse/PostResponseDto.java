@@ -1,12 +1,11 @@
 package com.project.raidho.dto.resposnse;
 
+import com.project.raidho.domain.MembersResponseDto;
 import com.project.raidho.domain.MultipartFiles;
-import com.project.raidho.domain.member.dto.MembersResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;

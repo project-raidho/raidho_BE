@@ -21,7 +21,6 @@ public class Post extends Timestamped {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-
     private String content;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -29,16 +28,14 @@ public class Post extends Timestamped {
     private List<MultipartFiles> multipartFiles;
 
     @Transient
-
     private List<String> tags = new ArrayList<>();
 
     @Transient
-
     private List<String> locationTags = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "memberId",nullable = false)
-    private Member member;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "memberId",nullable = false)
+//    private Member member;
 
 //    public Post(String content, Member member) {
 //        this.content = content;

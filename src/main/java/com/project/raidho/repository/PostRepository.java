@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post,Long> {
-    List<Post> findAll (PageRequest pageRequest);
+
+//    List<Post> findAll (PageRequest pageRequest);
 //    Optional<Post> findByIdAndActivateIsTrue(Long id);
 }
