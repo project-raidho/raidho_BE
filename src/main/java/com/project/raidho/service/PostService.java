@@ -1,6 +1,7 @@
 package com.project.raidho.service;
 
 import com.project.raidho.domain.*;
+import com.project.raidho.domain.member.dto.MembersResponseDto;
 import com.project.raidho.dto.request.PostRequestDto;
 import com.project.raidho.dto.resposnse.PostResponseDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
@@ -97,7 +98,7 @@ public class PostService extends Timestamped {
             );
         }
 
-    }
+
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllPost(int page, int size){
         PageRequest pageRequest=PageRequest.of(page,size);
