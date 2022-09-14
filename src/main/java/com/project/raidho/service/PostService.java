@@ -10,11 +10,13 @@ import com.project.raidho.repository.ImgRepository;
 import com.project.raidho.repository.LocationTagsRepository;
 import com.project.raidho.repository.PostRepository;
 import com.project.raidho.repository.TagRepository;
+import com.project.raidho.security.PrincipalDetails;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -102,11 +104,13 @@ public class PostService extends Timestamped {
 
     // Todo :: 게시글 최신순 전체 조회
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllPost(int page, int size) {
+    public ResponseDto<?> getAllPost(int page, int size, UserDetails userDetails) {
+
         PageRequest pageRequest = PageRequest.of(page, size);
+
         Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
 
-        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList);
+        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList, userDetails);
 
         return ResponseDto.success(postResponseDtos);
 
@@ -116,7 +120,12 @@ public class PostService extends Timestamped {
 
 
     // Todo :: pagenation 처리
-    private Page<PostResponseDto> convertToBasicResponseDto(Page<Post> postList) {
+    private Page<PostResponseDto> convertToBasicResponseDto(Page<Post> postList, UserDetails userDetails) {
+
+        Member member = ((PrincipalDetails) userDetails).getMember();
+
+        boolean isMine = false;
+
         List<PostResponseDto> posts = new ArrayList<>();
         for (Post post : postList) {
 
@@ -125,10 +134,11 @@ public class PostService extends Timestamped {
             for (MultipartFiles c : multipartFile) {
                 multipartFiles.add(c.getMultipartFiles());
             }
-//                MembersResponseDto membersResponseDto =MembersResponseDto.builder()
-//                                .memberName(post.getMember().getMemberName())
-//                                        .memberImage(post.getMember().getMemberImage())
-//                                                .build();
+
+            if (member.getProviderId().equals(post.getMember().getProviderId())) {
+                isMine = true;
+            }
+
                 posts.add(
                     PostResponseDto.builder()
                             .id(post.getId())
@@ -137,11 +147,11 @@ public class PostService extends Timestamped {
                             .content(post.getContent())
                             .multipartFiles(multipartFiles)
                             .heartCount(post.getHeartCount())
+                            .isMine(isMine)
                             .createdAt(post.getCreatedAt())
                             .modifiedAt(post.getModifiedAt())
-
                             .build()
-            );
+                        );
         }
         return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
     }

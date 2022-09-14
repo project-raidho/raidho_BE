@@ -37,15 +37,12 @@ public class Post extends Timestamped {
     @JoinColumn(name = "memberId",nullable = false)
     private Member member;
 
-//    public Post(String content, Member member) {
-//        this.content = content;
-//        this.member = member;
-//    }
     @Column
     private int heartCount;
 
     public void update(List<PostHeart> postHearts){
         this.heartCount = postHearts.size();
     }
+
 
 }
