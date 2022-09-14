@@ -9,9 +9,7 @@ import org.springframework.security.core.parameters.P;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-
 //    @Query("SELECT m FROM Member m WHERE m.provider = :provider and m.providerId = :providerId and m.memberName = :memberName")
 //    Optional<Member> findMember(@Param(value = "provider") String provider, @Param(value = "providerId") String providerId, @Param(value = "memberName") String memberName);
-
     Optional<Member> findByProviderId(String providerId);
 }

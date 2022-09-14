@@ -13,10 +13,8 @@ import java.util.Optional;
 public interface PostHeartRepository extends JpaRepository<PostHeart, Long> {
     List<PostHeart> findByPost(Post post);
     Optional<PostHeart> findByPostAndMember(Post post, Member member);
-
     @Query("SELECT COUNT(u) FROM PostHeart u WHERE u.post = :post")
     int getCountOfPostHeart(@Param(value = "post") Post post);
-
     @Query("SELECT COUNT(u) FROM PostHeart u WHERE u.post = :post and u.member = :member")
     int getCountOfPostAndMemberPostHeart(@Param(value = "post") Post post, @Param(value = "member") Member member);
 }

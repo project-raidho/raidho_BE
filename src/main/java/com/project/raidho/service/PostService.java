@@ -16,14 +16,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Builder
@@ -108,7 +106,7 @@ public class PostService extends Timestamped {
 
         Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
 
-        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList,userDetails);
+        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList, userDetails);
 
         return ResponseDto.success(postResponseDtos);
 
@@ -120,13 +118,80 @@ public class PostService extends Timestamped {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        Page<Post> postList = postRepository.findAllByOrderByHeartCountAsc(pageRequest);
+        Page<Post> postList = postRepository.findAllByOrderByHeartCountDesc(pageRequest);
 
-        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList,userDetails);
+        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList, userDetails);
 
         return ResponseDto.success(postResponseDtos);
 
     }
+
+    // Todo :: 게시글 단건 조회
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getPostDetail(UserDetails userDetails, Long postId) {
+        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+
+        Post post = postRepository.findById(postId).orElse(null);
+        if (post == null) {
+            throw new NullPointerException("존재하지 않는 게시글 입니다..");
+        }
+
+        List<LocationTags> locationTag = locationTagsRepository.findAllByPost_Id(post.getId());
+        List<String> locationTags = new ArrayList<>();
+        for (LocationTags a : locationTag) {
+            locationTags.add(a.getLocationTags());
+        }
+
+        List<Tags> tag = tagRepository.findAllByPost_Id(post.getId());
+        List<String> tags = new ArrayList<>();
+        for (Tags b : tag) {
+            tags.add(b.getTag());
+        }
+
+        List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
+        List<String> multipartFiles = new ArrayList<>();
+        for (MultipartFiles c : multipartFile) {
+            multipartFiles.add(c.getMultipartFiles());
+        }
+        Member member = new Member();
+
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
+
+        Boolean isMine = false;
+        Boolean isHeartMine = false;
+
+        if (member.getProviderId() != null) {
+            if (member.getProviderId().equals(post.getMember().getProviderId())) {
+                isMine = true;
+            }
+        }
+
+        int heartCount = postHeartRepository.getCountOfPostHeart(post);
+        if (member.getProviderId() != null) {
+            int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
+            if (isHeartMineCh >= 1) {
+                isHeartMine = true;
+            }
+        }
+
+        PostResponseDto postResponseDto = PostResponseDto.builder()
+                .content(post.getContent())
+                .id(post.getId())
+                .locationTags(locationTags)
+                .tags(tags)
+                .heartCount(heartCount)
+                .isMine(isMine)
+                .isHeartMine(isHeartMine)
+                .createdAt(post.getCreatedAt())
+                .modifiedAt(post.getModifiedAt())
+                .multipartFiles(multipartFiles)
+                .build();
+        postResponseDtoList.add(postResponseDto);
+        return ResponseDto.success(postResponseDtoList);
+    }
+
     // Todo :: pagenation 처리
     private Page<PostResponseDto> convertToBasicResponseDto(Page<Post> postList, UserDetails userDetails) {
 
@@ -163,7 +228,7 @@ public class PostService extends Timestamped {
                 multipartFiles.add(c.getMultipartFiles());
             }
 
-                posts.add(
+            posts.add(
                     PostResponseDto.builder()
                             .id(post.getId())
                             .memberName(post.getMember().getMemberName())
@@ -176,7 +241,7 @@ public class PostService extends Timestamped {
                             .createdAt(post.getCreatedAt())
                             .modifiedAt(post.getModifiedAt())
                             .build()
-                        );
+            );
             isMine = false;
             isHeartMine = false;
         }

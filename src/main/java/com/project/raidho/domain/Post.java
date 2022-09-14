@@ -36,10 +36,8 @@ public class Post extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberId",nullable = false)
     private Member member;
-
     @Column
     private int heartCount;
-
     public void update(List<PostHeart> postHearts){
         this.heartCount = postHearts.size();
     }

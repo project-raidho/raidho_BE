@@ -7,12 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post,Long> {
-
     Page<Post> findAllByOrderByCreatedAtDesc (PageRequest pageRequest);
-//    Optional<Post> findByIdAndActivateIsTrue(Long id);
-//    List<Post> findAll (PageRequest pageRequest);
-
-    Page<Post> findAllByOrderByHeartCountAsc (PageRequest pageRequest);
-
+    Page<Post> findAllByOrderByHeartCountDesc (PageRequest pageRequest);
     Optional<Post> findById(Long id);
 }
