@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface LocationTagsRepository extends JpaRepository<LocationTags, Long> {
 
-//    List<LocationTags> findAllByPost_Id(Long id);
+    List<LocationTags> findAllByPost_Id(Long id);
 }

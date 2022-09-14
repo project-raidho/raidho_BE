@@ -10,11 +10,14 @@ import com.project.raidho.repository.PostRepository;
 import com.project.raidho.repository.TagRepository;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -94,17 +97,17 @@ public class PostService extends Timestamped {
         }
 
 
-//    @Transactional(readOnly = true)
-//    public ResponseDto<?> getAllPost(int page, int size){
-//        PageRequest pageRequest=PageRequest.of(page,size);
-//        Page<Post> postList = postRepository.findAll(pageRequest);
-//        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getAllPost(int page, int size){
+        PageRequest pageRequest=PageRequest.of(page,size);
+        Page<Post> postList = postRepository.findAll(pageRequest);
+        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 
-//        for (Post post : postList){
-////            MembersResponseDto membersResponseDto = MembersResponseDto.builder()
-////                    .memberName(post.getMember().getMemberName())
-////                    .memberImage(post.getMember().getMemberImage())
-////                    .build();
+        for (Post post : postList){
+//            MembersResponseDto membersResponseDto = MembersResponseDto.builder()
+//                    .memberName(post.getMember().getMemberName())
+//                    .memberImage(post.getMember().getMemberImage())
+//                    .build();
 //            List<LocationTags> locationTag = locationTagsRepository.findAllByPost_Id(post.getId());
 //            List<String> locationTags = new ArrayList<>();
 //            for(LocationTags a : locationTag){
@@ -115,24 +118,24 @@ public class PostService extends Timestamped {
 //            for(Tags b : tag){
 //                tags.add(b.getTag());
 //            }
-//
-//
-//            PostResponseDto postResponseDto=PostResponseDto.builder()
-//                    .content(post.getContent())
-//                    .id(post.getId())
-////                    .membersResponseDto(membersResponseDto)
+
+
+            PostResponseDto postResponseDto=PostResponseDto.builder()
+                    .content(post.getContent())
+                    .id(post.getId())
+//                    .membersResponseDto(membersResponseDto)
 //                    .locationTags(locationTags)
 //                    .tags(tags)
-//                    .createdAt(post.getCreatedAt())
-//                    .modifiedAt(post.getModifiedAt())
-//                    .multipartFiles(post.getMultipartFiles())
-//                    .build();
-//            postResponseDtoList.add(postResponseDto);
-//        }
-       // return ResponseDto.success(postResponseDtoList);
-//        return ResponseDto.success(null);
-//    }
-//
+                    .createdAt(post.getCreatedAt())
+                    .modifiedAt(post.getModifiedAt())
+                    .multipartFiles(post.getMultipartFiles())
+                    .build();
+            postResponseDtoList.add(postResponseDto);
+        }
+        return ResponseDto.success(postResponseDtoList);
+
+    }
+
 }
 
 

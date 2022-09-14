@@ -20,11 +20,11 @@ public class PostController {
         return ResponseDto.success("ok");
     }
 
-//    @GetMapping("/latest")
-//    public ResponseDto<?> getAllPost(@RequestParam (value = "page",defaultValue = "0")int page,
-//                                     @RequestParam (value = "size",defaultValue = "20")int size) {
-////        return postService.getAllPost(page,size);
+    @GetMapping("/latest")
+    public ResponseDto<?> getAllPost(@RequestParam (value = "page",defaultValue = "0")int page,
+                                     @RequestParam (value = "size",defaultValue = "20")int size) {
+        return postService.getAllPost(page,size);
 //        return null;
-//
-//    }
+
+    }
 }

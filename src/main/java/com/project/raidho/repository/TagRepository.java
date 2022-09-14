@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TagRepository extends JpaRepository<Tags, Long> {
-//    List<Tags> findAllByPost_Id(Long id);
+    List<Tags> findAllByPost_Id(Long id);
 }
