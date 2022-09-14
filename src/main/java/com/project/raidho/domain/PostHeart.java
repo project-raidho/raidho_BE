@@ -1,5 +1,6 @@
 package com.project.raidho.domain;
 
+import com.project.raidho.domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,5 +28,9 @@ public class PostHeart {
     @JoinColumn(name = "postId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "memberId",nullable = false)
+    private Member member;
 
 }
