@@ -16,4 +16,7 @@ public interface PostHeartRepository extends JpaRepository<PostHeart, Long> {
 
     @Query("SELECT COUNT(u) FROM PostHeart u WHERE u.post = :post")
     int getCountOfPostHeart(@Param(value = "post") Post post);
+
+    @Query("SELECT COUNT(u) FROM PostHeart u WHERE u.post = :post and u.member = :member")
+    int getCountOfPostAndMemberPostHeart(@Param(value = "post") Post post, @Param(value = "member") Member member);
 }

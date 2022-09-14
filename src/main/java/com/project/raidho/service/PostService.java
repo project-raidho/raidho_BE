@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Builder
@@ -136,6 +137,7 @@ public class PostService extends Timestamped {
         }
 
         Boolean isMine = false;
+        Boolean isHeartMine = false;
 
         List<PostResponseDto> posts = new ArrayList<>();
         for (Post post : postList) {
@@ -147,6 +149,10 @@ public class PostService extends Timestamped {
             }
 
             int heartCount = postHeartRepository.getCountOfPostHeart(post);
+            int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
+            if (isHeartMineCh >= 1) {
+                isHeartMine = true;
+            }
 
             List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
             List<String> multipartFiles = new ArrayList<>();
@@ -163,11 +169,13 @@ public class PostService extends Timestamped {
                             .multipartFiles(multipartFiles)
                             .heartCount(heartCount)
                             .isMine(isMine)
+                            .isHeartMine(isHeartMine)
                             .createdAt(post.getCreatedAt())
                             .modifiedAt(post.getModifiedAt())
                             .build()
                         );
             isMine = false;
+            isHeartMine = false;
         }
         return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
     }
