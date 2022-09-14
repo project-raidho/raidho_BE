@@ -34,9 +34,13 @@ public class PostHeartService {
 
         Post post = postRepository.findById(postId).orElse(null);
         if (post == null) {
-            throw new NullPointerException("존재하지 않는 게시글 입니다..");
+            throw new NullPointerException("존재하지 않는 게시글 입니다.");
         }
         Optional<PostHeart> postHeartOptional = postHeartRepository.findByPostAndMember(post, member);
+        if (postHeartOptional.isPresent()) {
+            throw new NullPointerException("이미 좋아요를 눌렀습니다.");
+        }
+        if (!postHeartOptional.isPresent()) {
             PostHeart postHeart = PostHeart.builder()
                     .postHeart(1)
                     .member(member)
@@ -46,6 +50,8 @@ public class PostHeartService {
             List<PostHeart> postHearts = postHeartRepository.findByPost(post);
             post.update(postHearts);
 
+
+        }
         return ResponseDto.success("좋아요 증가");
     }
 
@@ -62,10 +68,12 @@ public class PostHeartService {
         }
 
         Optional<PostHeart> postHeartOptional = postHeartRepository.findByPostAndMember(post, member);
+        if (!postHeartOptional.isPresent()) {
+            throw new NullPointerException("좋아요를 누르지않았습니다.");
+        }
         postHeartRepository.delete(postHeartOptional.get());
         List<PostHeart> postHearts = postHeartRepository.findByPost(post);
         post.update(postHearts);
-
         return ResponseDto.success("좋아요 감소");
     }
 
