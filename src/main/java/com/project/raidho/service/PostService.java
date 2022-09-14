@@ -179,6 +179,8 @@ public class PostService extends Timestamped {
         PostResponseDto postResponseDto = PostResponseDto.builder()
                 .content(post.getContent())
                 .id(post.getId())
+                .memberName(post.getMember().getMemberName())
+                .memberImage(post.getMember().getMemberImage())
                 .locationTags(locationTags)
                 .tags(tags)
                 .heartCount(heartCount)
@@ -191,7 +193,23 @@ public class PostService extends Timestamped {
         postResponseDtoList.add(postResponseDto);
         return ResponseDto.success(postResponseDtoList);
     }
-
+    // Todo :: 게시글 삭제
+    @Transactional
+    public ResponseDto<?> deletePost(Long postId, UserDetails userDetails){
+        Post post = postRepository.findById(postId).orElse(null);
+        Member member = new Member();
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
+        if (post == null) {
+            throw new NullPointerException("존재하지 않는 게시글 입니다.");
+        } else if (member.getProviderId().equals(post.getMember().getProviderId())){
+            throw new NullPointerException("게시글 주인이 아닙니다.");
+        }else {
+            postRepository.delete(post);
+            return ResponseDto.success("게시글 삭제 성공");
+        }
+    }
     // Todo :: pagenation 처리
     private Page<PostResponseDto> convertToBasicResponseDto(Page<Post> postList, UserDetails userDetails) {
 

@@ -31,7 +31,7 @@ public class PostController {
     }
     @GetMapping("/likelist")
     public ResponseDto<?> getAlllikePost(@RequestParam (value = "page",defaultValue = "0")int page,
-                                     @RequestParam (value = "size",defaultValue = "20")int size,
+                                     @RequestParam (value = "size",defaultValue = "5")int size,
                                      @AuthenticationPrincipal UserDetails userDetails
     ) {
         return postService.getAlllikePost(page,size,userDetails);
@@ -39,5 +39,9 @@ public class PostController {
     @GetMapping("/{postId}")
     public ResponseDto<?> getPostDetail(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails){
      return postService.getPostDetail(userDetails, postId);
+    }
+    @DeleteMapping("/{postId}")
+    public ResponseDto<?> deletePost(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails){
+        return postService.deletePost(postId, userDetails);
     }
 }

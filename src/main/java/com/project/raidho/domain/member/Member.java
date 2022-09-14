@@ -21,7 +21,7 @@ public class Member {
     @Column(nullable = false)
     private String memberName;
 
-    @Column(nullable = false)
+    @Column
     private String email;
 
     private String memberImage;

@@ -30,7 +30,7 @@ import java.util.Map;
 public class JwtTokenProvider {
 
     private static final String BEARER_TYPE = "Bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 10 * 30; // accessToken exp 10분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60; // accessToken exp 10분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // RefreshToken 7일
 
     private final Key key;

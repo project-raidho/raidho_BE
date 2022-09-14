@@ -42,5 +42,4 @@ public class Post extends Timestamped {
         this.heartCount = postHearts.size();
     }
 
-
 }
