@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +50,7 @@ public class PostService extends Timestamped {
 
         Post post = postRepository.save(
                 Post.builder()
+                        .member(member)
                         .content(postRequestDto.getContent())
                         .build()
         );
@@ -75,6 +77,7 @@ public class PostService extends Timestamped {
                                 .build()
                 );
         }
+
         List<String> locationTag = postRequestDto.getLocationTags();
         if (locationTag != null) {
             for (String locationTags : locationTag)
@@ -103,7 +106,6 @@ public class PostService extends Timestamped {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
 
-
         Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList);
 
         return ResponseDto.success(postResponseDtos);
@@ -123,15 +125,21 @@ public class PostService extends Timestamped {
             for (MultipartFiles c : multipartFile) {
                 multipartFiles.add(c.getMultipartFiles());
             }
-
-            posts.add(
+//                MembersResponseDto membersResponseDto =MembersResponseDto.builder()
+//                                .memberName(post.getMember().getMemberName())
+//                                        .memberImage(post.getMember().getMemberImage())
+//                                                .build();
+                posts.add(
                     PostResponseDto.builder()
                             .id(post.getId())
+                            .memberName(post.getMember().getMemberName())
+                            .memberImage(post.getMember().getMemberImage())
                             .content(post.getContent())
                             .multipartFiles(multipartFiles)
                             .heartCount(post.getHeartCount())
                             .createdAt(post.getCreatedAt())
                             .modifiedAt(post.getModifiedAt())
+
                             .build()
             );
         }

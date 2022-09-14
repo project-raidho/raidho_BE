@@ -14,6 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 public class PostResponseDto {
     private Long id;
+    private String memberName;
+    private String memberImage;
     private String content;
     private MembersResponseDto membersResponseDto;
 //    private List<MultipartFile> multipartFiles;
