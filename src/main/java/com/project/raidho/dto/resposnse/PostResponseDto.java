@@ -14,8 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 public class PostResponseDto {
     private Long id;
-    private boolean isMine;
-    private boolean isHeartMine;
+    private Boolean isMine;
+    private Boolean isHeartMine;
     private String memberName;
     private String memberImage;
     private String content;

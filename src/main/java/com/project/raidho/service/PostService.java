@@ -104,13 +104,13 @@ public class PostService extends Timestamped {
 
     // Todo :: 게시글 최신순 전체 조회
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllPost(int page, int size) {
+    public ResponseDto<?> getAllPost(int page, int size, UserDetails userDetails) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
         Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
 
-        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList);
+        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList,userDetails);
 
         return ResponseDto.success(postResponseDtos);
 
@@ -120,12 +120,24 @@ public class PostService extends Timestamped {
 
 
     // Todo :: pagenation 처리
-    private Page<PostResponseDto> convertToBasicResponseDto(Page<Post> postList) {
+    private Page<PostResponseDto> convertToBasicResponseDto(Page<Post> postList, UserDetails userDetails) {
 
-        boolean isMine = false;
+        Member member = new Member();
+
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
+
+        Boolean isMine = false;
 
         List<PostResponseDto> posts = new ArrayList<>();
         for (Post post : postList) {
+
+            if (member != null) {
+                if (member.getProviderId().equals(post.getMember().getProviderId())) {
+                    isMine = true;
+                }
+            }
 
             List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
             List<String> multipartFiles = new ArrayList<>();

@@ -6,16 +6,12 @@ import com.project.raidho.dto.resposnse.ResponseDto;
 import com.project.raidho.security.PrincipalDetails;
 import com.project.raidho.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -30,18 +26,9 @@ public class PostController {
     @GetMapping("/latest")
     public ResponseDto<?> getAllPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                      @RequestParam (value = "size",defaultValue = "20")int size,
-                                     @AuthenticationPrincipal UserDetails userDetails,
-                                     @AuthenticationPrincipal PrincipalDetails principalDetails
+                                     @AuthenticationPrincipal UserDetails userDetails
                                         ) {
 
-        Member member = ((PrincipalDetails) userDetails).getMember();
-        System.out.println(member.getProviderId());
-        System.out.println(member.getMemberName());
-
-        Member member1 = principalDetails.getMember();
-        System.out.println(member1.getMemberName());
-        System.out.println(member1.getProviderId());
-
-        return postService.getAllPost(page,size);
+        return postService.getAllPost(page,size,userDetails);
     }
 }
