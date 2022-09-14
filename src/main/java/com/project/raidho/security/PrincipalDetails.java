@@ -1,8 +1,11 @@
 package com.project.raidho.security;
 
+
 import com.project.raidho.domain.member.Member;
+import com.project.raidho.domain.member.MemberRole;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -20,13 +23,15 @@ public class PrincipalDetails implements UserDetails {
     // 해당 회원의 권한을 Return
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        SimpleGrantedAuthority GrantedAuthority = new SimpleGrantedAuthority(MemberRole.USER.toString());
         Collection<GrantedAuthority> collection = new ArrayList<>();
-        collection.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return member.getRole().toString();
-            }
-        });
+        collection.add(GrantedAuthority);
+
+//            @Override
+//            public String getAuthority() {
+//                return member.getRole().toString();
+//            }
+//        });
         return collection;
     }
 
