@@ -115,18 +115,18 @@ public class PostService extends Timestamped {
     }
 
     // Todo :: 게시글 좋아요 순 전체조회
-//    @Transactional(readOnly = true)
-//    public ResponseDto<?> getAlllikePost(int page, int size, UserDetails userDetails) {
-//
-//        PageRequest pageRequest = PageRequest.of(page, size);
-//
-//        Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
-//
-//        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList,userDetails);
-//
-//        return ResponseDto.success(postResponseDtos);
-//
-//    }
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getAlllikePost(int page, int size, UserDetails userDetails) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        Page<Post> postList = postRepository.findAllByOrderByHeartCountAsc(pageRequest);
+
+        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList,userDetails);
+
+        return ResponseDto.success(postResponseDtos);
+
+    }
     // Todo :: pagenation 처리
     private Page<PostResponseDto> convertToBasicResponseDto(Page<Post> postList, UserDetails userDetails) {
 
@@ -155,6 +155,7 @@ public class PostService extends Timestamped {
                     isHeartMine = true;
                 }
             }
+
 
             List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
             List<String> multipartFiles = new ArrayList<>();

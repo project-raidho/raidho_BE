@@ -11,5 +11,8 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     Page<Post> findAllByOrderByCreatedAtDesc (PageRequest pageRequest);
 //    Optional<Post> findByIdAndActivateIsTrue(Long id);
 //    List<Post> findAll (PageRequest pageRequest);
+
+    Page<Post> findAllByOrderByHeartCountAsc (PageRequest pageRequest);
+
     Optional<Post> findById(Long id);
 }
