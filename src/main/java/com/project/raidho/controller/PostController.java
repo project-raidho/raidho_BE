@@ -32,11 +32,11 @@ public class PostController {
         return postService.getAllPost(page,size,userDetails);
     }
 
-    @GetMapping("/likelist")
-    public ResponseDto<?> getAlllikePost(@RequestParam (value = "page",defaultValue = "0")int page,
-                                     @RequestParam (value = "size",defaultValue = "20")int size,
-                                     @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        return postService.getAlllikePost(page,size,userDetails);
-    }
+//    @GetMapping("/likelist")
+//    public ResponseDto<?> getAlllikePost(@RequestParam (value = "page",defaultValue = "0")int page,
+//                                     @RequestParam (value = "size",defaultValue = "20")int size,
+//                                     @AuthenticationPrincipal UserDetails userDetails
+//    ) {
+//        return postService.getAlllikePost(page,size,userDetails);
+//    }
 }

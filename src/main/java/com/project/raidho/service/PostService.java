@@ -149,9 +149,11 @@ public class PostService extends Timestamped {
             }
 
             int heartCount = postHeartRepository.getCountOfPostHeart(post);
-            int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
-            if (isHeartMineCh >= 1) {
-                isHeartMine = true;
+            if (member.getProviderId() != null) {
+                int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
+                if (isHeartMineCh >= 1) {
+                    isHeartMine = true;
+                }
             }
 
             List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
