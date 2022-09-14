@@ -17,7 +17,7 @@ public class PostResponseDto {
     private String content;
     private MembersResponseDto membersResponseDto;
 //    private List<MultipartFile> multipartFiles;
-    private List<MultipartFiles> multipartFiles;
+    private List<String> multipartFiles;
     private List<String> tags;
     private List<String> locationTags;
     private int heartCount;
