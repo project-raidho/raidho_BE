@@ -121,6 +121,14 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
+    public Member getMemberFromAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || AnonymousAuthenticationToken.class.isAssignableFrom(authentication.getClass())) {
+            return null;
+        }
+        return ((PrincipalDetails) authentication.getPrincipal()).getMember();
+    }
+
     // 토큰 복호화
     // Todo :: 나 이 부분 이해 안되..
     private Claims parseClaims(String jwtToken) {

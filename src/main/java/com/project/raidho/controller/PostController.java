@@ -6,6 +6,7 @@ import com.project.raidho.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
@@ -14,8 +15,10 @@ import java.io.IOException;
 public class PostController {
     private final PostService postService;
     @PostMapping
-    public ResponseDto<?> createPost(@ModelAttribute PostRequestDto postRequestDto) throws IOException {
-        postService.createPost(postRequestDto);
+    public ResponseDto<?> createPost(@ModelAttribute PostRequestDto postRequestDto, HttpServletRequest request) throws IOException {
+
+        System.out.println("request.getHeader(\"Authorization\") = " + request.getHeader("Authorization"));
+        postService.createPost(postRequestDto, request);
         return ResponseDto.success("ok");
     }
     @GetMapping("/latest")

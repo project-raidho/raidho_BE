@@ -1,9 +1,11 @@
 package com.project.raidho.service;
 
 import com.project.raidho.domain.*;
+import com.project.raidho.domain.member.Member;
 import com.project.raidho.dto.request.PostRequestDto;
 import com.project.raidho.dto.resposnse.PostResponseDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
+import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.ImgRepository;
 import com.project.raidho.repository.LocationTagsRepository;
 import com.project.raidho.repository.PostRepository;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,27 +34,24 @@ public class PostService extends Timestamped {
     private final S3Service s3Service;
     private final LocationTagsRepository locationTagsRepository;
 
-    //게시물 업로드
+    private final JwtTokenProvider jwtTokenProvider;
+
+    // Todo :: 게시물 업로드
     @Transactional
-    public ResponseDto<?> createPost(PostRequestDto postRequestDto) throws IOException {
-//        if (null == request.getHeader("Refresh-Token")){
-//            return ResponseDto.fail("401","No right to create new post, Please login.");
-//        }
-//        if (null == request.getHeader("Authorization")){
-//            return ResponseDto.fail("401","No right to create new post, Please login.");
-//        }
-//        if (null == member) {
-//            return ResponseDto.fail("400","Fail to create new post.(Token값이 유효하지 않습니다.)");
-//        }
+    public ResponseDto<?> createPost(PostRequestDto postRequestDto, HttpServletRequest request) throws IOException {
+
+        // 회원정보 확인 로직
+        Member member = validateMember(request);
+
+        if (member == null) {
+            throw new NullPointerException("회원만 사용 가능합니다.");
+        }
+
         Post post = postRepository.save(
                 Post.builder()
                         .content(postRequestDto.getContent())
                         .build()
         );
-//        MembersDto membersDto = MembersDto.builder()
-//                .memberName(post.getMember().getMemberName())
-//                .memberImage(post.getMember().getMemberImage())
-//                .build();
 
         List<MultipartFile> FilesList = postRequestDto.getImgUrl();
         if (FilesList != null) {
@@ -85,7 +85,6 @@ public class PostService extends Timestamped {
                                 .build()
                 );
         }
-
         return ResponseDto.success(
                 PostResponseDto.builder()
                         .id(post.getId())
@@ -98,6 +97,7 @@ public class PostService extends Timestamped {
     }
 
 
+    // Todo :: 게시글 최신순 전체 조회
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllPost(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
@@ -108,42 +108,12 @@ public class PostService extends Timestamped {
 
         return ResponseDto.success(postResponseDtos);
 
-//        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
-//
-//        for (Post post : postList){
-////            MembersResponseDto membersResponseDto = MembersResponseDto.builder()
-////                    .memberName(post.getMember().getMemberName())
-////                    .memberImage(post.getMember().getMemberImage())
-////                    .build();
-////            List<LocationTags> locationTag = locationTagsRepository.findAllByPost_Id(post.getId());
-////            List<String> locationTags = new ArrayList<>();
-////            for(LocationTags a : locationTag){
-////                locationTags.add(a.getLocationTags());
-////            }
-////            List<Tags> tag = tagRepository.findAllByPost_Id(post.getId());
-////            List<String> tags = new ArrayList<>();
-////            for(Tags b : tag){
-////                tags.add(b.getTag());
-////            }
-//
-//
-//            PostResponseDto postResponseDto=PostResponseDto.builder()
-//                    .content(post.getContent())
-//                    .id(post.getId())
-////                    .membersResponseDto(membersResponseDto)
-////                    .locationTags(locationTags)
-////                    .tags(tags)
-//                    .createdAt(post.getCreatedAt())
-//                    .modifiedAt(post.getModifiedAt())
-//                    .multipartFiles(post.getMultipartFiles())
-//                    .build();
-//            postResponseDtoList.add(postResponseDto);
-//        }
-//        return ResponseDto.success(postResponseDtoList);
-
-
     }
 
+    // Todo :: 게시글 좋아요 순 전체조회
+
+
+    // Todo :: pagenation 처리
     private Page<PostResponseDto> convertToBasicResponseDto(Page<Post> postList) {
         List<PostResponseDto> posts = new ArrayList<>();
         for (Post post : postList) {
@@ -168,7 +138,24 @@ public class PostService extends Timestamped {
         return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
     }
 
+    // Todo :: accessToken validation
+    @Transactional
+    public Member validateMember(HttpServletRequest request) {
+        String accessToken = resolveToken(request.getHeader("Authorization"));
 
+        if (!jwtTokenProvider.validationToken(accessToken)) {
+            return null;
+        }
+        return jwtTokenProvider.getMemberFromAuthentication();
+    }
+
+    // Todo :: Authorization 에서 받아온 accessToken bearer 제거
+    private String resolveToken(String accessToken) {
+        if (accessToken.startsWith("Bearer ")) {
+            return accessToken.substring(7);
+        }
+        throw new RuntimeException("NOT VALID ACCESS TOKEN");
+    }
 }
 
 
