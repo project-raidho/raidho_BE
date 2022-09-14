@@ -1,6 +1,5 @@
 package com.project.raidho.controller;
 
-import com.project.raidho.domain.member.Member;
 import com.project.raidho.dto.request.PostRequestDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
 import com.project.raidho.security.PrincipalDetails;
