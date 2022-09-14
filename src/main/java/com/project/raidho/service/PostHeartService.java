@@ -28,6 +28,7 @@ public class PostHeartService {
     public ResponseDto<?> createPostHeart(Long postId, HttpServletRequest request) {
 
         Member member = validateMember(request);
+
         if (member == null) {
             throw new NullPointerException("회원만 사용 가능합니다.");
         }

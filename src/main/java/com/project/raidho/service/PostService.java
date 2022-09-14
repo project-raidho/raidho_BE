@@ -6,10 +6,7 @@ import com.project.raidho.dto.request.PostRequestDto;
 import com.project.raidho.dto.resposnse.PostResponseDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
 import com.project.raidho.jwt.JwtTokenProvider;
-import com.project.raidho.repository.ImgRepository;
-import com.project.raidho.repository.LocationTagsRepository;
-import com.project.raidho.repository.PostRepository;
-import com.project.raidho.repository.TagRepository;
+import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Builder
@@ -34,9 +32,9 @@ public class PostService extends Timestamped {
     private final PostRepository postRepository;
     private final ImgRepository imgRepository;
     private final TagRepository tagRepository;
+    private final PostHeartRepository postHeartRepository;
     private final S3Service s3Service;
     private final LocationTagsRepository locationTagsRepository;
-
     private final JwtTokenProvider jwtTokenProvider;
 
     // Todo :: 게시물 업로드
@@ -139,6 +137,7 @@ public class PostService extends Timestamped {
         }
 
         Boolean isMine = false;
+        Boolean isHeartMine = false;
 
         List<PostResponseDto> posts = new ArrayList<>();
         for (Post post : postList) {
@@ -147,6 +146,12 @@ public class PostService extends Timestamped {
                 if (member.getProviderId().equals(post.getMember().getProviderId())) {
                     isMine = true;
                 }
+            }
+
+            int heartCount = postHeartRepository.getCountOfPostHeart(post);
+            int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
+            if (isHeartMineCh >= 1) {
+                isHeartMine = true;
             }
 
             List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
@@ -162,13 +167,15 @@ public class PostService extends Timestamped {
                             .memberImage(post.getMember().getMemberImage())
                             .content(post.getContent())
                             .multipartFiles(multipartFiles)
-                            .heartCount(post.getHeartCount())
+                            .heartCount(heartCount)
                             .isMine(isMine)
+                            .isHeartMine(isHeartMine)
                             .createdAt(post.getCreatedAt())
                             .modifiedAt(post.getModifiedAt())
                             .build()
                         );
             isMine = false;
+            isHeartMine = false;
         }
         return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
     }
