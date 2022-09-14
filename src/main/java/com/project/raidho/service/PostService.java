@@ -11,6 +11,7 @@ import com.project.raidho.repository.TagRepository;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,80 +65,110 @@ public class PostService extends Timestamped {
                 );
             }
         }
-            List<String> tags = postRequestDto.getTags();
-            if (tags != null) {
-                for (String tag : tags)
-                    tagRepository.save(
-                            Tags.builder()
-                                    .tag(tag)
-                                    .post(post)
-                                    .build()
-                    );
-            }
-            List<String> locationTag = postRequestDto.getLocationTags();
-            if (locationTag != null) {
-                for (String locationTags : locationTag)
-                    locationTagsRepository.save(
-                            LocationTags.builder()
-                                    .locationTags(locationTags)
-                                    .post(post)
-                                    .build()
-                    );
+        List<String> tags = postRequestDto.getTags();
+        if (tags != null) {
+            for (String tag : tags)
+                tagRepository.save(
+                        Tags.builder()
+                                .tag(tag)
+                                .post(post)
+                                .build()
+                );
+        }
+        List<String> locationTag = postRequestDto.getLocationTags();
+        if (locationTag != null) {
+            for (String locationTags : locationTag)
+                locationTagsRepository.save(
+                        LocationTags.builder()
+                                .locationTags(locationTags)
+                                .post(post)
+                                .build()
+                );
+        }
+
+        return ResponseDto.success(
+                PostResponseDto.builder()
+                        .id(post.getId())
+                        .content(post.getContent())
+//                        .author(membersDto)
+                        .createdAt(post.getCreatedAt())
+                        .modifiedAt(post.getModifiedAt())
+                        .build()
+        );
+    }
+
+
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getAllPost(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
+
+
+        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList);
+
+        return ResponseDto.success(postResponseDtos);
+
+//        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+//
+//        for (Post post : postList){
+////            MembersResponseDto membersResponseDto = MembersResponseDto.builder()
+////                    .memberName(post.getMember().getMemberName())
+////                    .memberImage(post.getMember().getMemberImage())
+////                    .build();
+////            List<LocationTags> locationTag = locationTagsRepository.findAllByPost_Id(post.getId());
+////            List<String> locationTags = new ArrayList<>();
+////            for(LocationTags a : locationTag){
+////                locationTags.add(a.getLocationTags());
+////            }
+////            List<Tags> tag = tagRepository.findAllByPost_Id(post.getId());
+////            List<String> tags = new ArrayList<>();
+////            for(Tags b : tag){
+////                tags.add(b.getTag());
+////            }
+//
+//
+//            PostResponseDto postResponseDto=PostResponseDto.builder()
+//                    .content(post.getContent())
+//                    .id(post.getId())
+////                    .membersResponseDto(membersResponseDto)
+////                    .locationTags(locationTags)
+////                    .tags(tags)
+//                    .createdAt(post.getCreatedAt())
+//                    .modifiedAt(post.getModifiedAt())
+//                    .multipartFiles(post.getMultipartFiles())
+//                    .build();
+//            postResponseDtoList.add(postResponseDto);
+//        }
+//        return ResponseDto.success(postResponseDtoList);
+
+
+    }
+
+    private Page<PostResponseDto> convertToBasicResponseDto(Page<Post> postList) {
+        List<PostResponseDto> posts = new ArrayList<>();
+        for (Post post : postList) {
+
+            List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
+            List<String> multipartFiles = new ArrayList<>();
+            for (MultipartFiles c : multipartFile) {
+                multipartFiles.add(c.getMultipartFiles());
             }
 
-            return ResponseDto.success(
+            posts.add(
                     PostResponseDto.builder()
                             .id(post.getId())
                             .content(post.getContent())
-//                        .author(membersDto)
+                            .multipartFiles(multipartFiles)
                             .createdAt(post.getCreatedAt())
                             .modifiedAt(post.getModifiedAt())
                             .build()
             );
         }
-
-
-    @Transactional(readOnly = true)
-    public ResponseDto<?> getAllPost(int page, int size){
-        PageRequest pageRequest=PageRequest.of(page,size);
-        Page<Post> postList = postRepository.findAll(pageRequest);
-        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
-
-        for (Post post : postList){
-//            MembersResponseDto membersResponseDto = MembersResponseDto.builder()
-//                    .memberName(post.getMember().getMemberName())
-//                    .memberImage(post.getMember().getMemberImage())
-//                    .build();
-//            List<LocationTags> locationTag = locationTagsRepository.findAllByPost_Id(post.getId());
-//            List<String> locationTags = new ArrayList<>();
-//            for(LocationTags a : locationTag){
-//                locationTags.add(a.getLocationTags());
-//            }
-//            List<Tags> tag = tagRepository.findAllByPost_Id(post.getId());
-//            List<String> tags = new ArrayList<>();
-//            for(Tags b : tag){
-//                tags.add(b.getTag());
-//            }
-
-
-            PostResponseDto postResponseDto=PostResponseDto.builder()
-                    .content(post.getContent())
-                    .id(post.getId())
-//                    .membersResponseDto(membersResponseDto)
-//                    .locationTags(locationTags)
-//                    .tags(tags)
-                    .createdAt(post.getCreatedAt())
-                    .modifiedAt(post.getModifiedAt())
-                    .multipartFiles(post.getMultipartFiles())
-                    .build();
-            postResponseDtoList.add(postResponseDto);
-        }
-        return ResponseDto.success(postResponseDtoList);
-
+        return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
     }
 
-}
 
+}
 
 
 
