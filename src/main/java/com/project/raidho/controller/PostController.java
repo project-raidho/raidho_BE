@@ -37,7 +37,6 @@ public class PostController {
                                      @RequestParam (value = "size",defaultValue = "20")int size,
                                      @AuthenticationPrincipal UserDetails userDetails
     ) {
-
         return postService.getAlllikePost(page,size,userDetails);
     }
 }

@@ -6,10 +6,7 @@ import com.project.raidho.dto.request.PostRequestDto;
 import com.project.raidho.dto.resposnse.PostResponseDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
 import com.project.raidho.jwt.JwtTokenProvider;
-import com.project.raidho.repository.ImgRepository;
-import com.project.raidho.repository.LocationTagsRepository;
-import com.project.raidho.repository.PostRepository;
-import com.project.raidho.repository.TagRepository;
+import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +31,9 @@ public class PostService extends Timestamped {
     private final PostRepository postRepository;
     private final ImgRepository imgRepository;
     private final TagRepository tagRepository;
+    private final PostHeartRepository postHeartRepository;
     private final S3Service s3Service;
     private final LocationTagsRepository locationTagsRepository;
-
     private final JwtTokenProvider jwtTokenProvider;
 
     // Todo :: 게시물 업로드
@@ -149,6 +146,8 @@ public class PostService extends Timestamped {
                 }
             }
 
+            int heartCount = postHeartRepository.getCountOfPostHeart(post);
+
             List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
             List<String> multipartFiles = new ArrayList<>();
             for (MultipartFiles c : multipartFile) {
@@ -162,7 +161,7 @@ public class PostService extends Timestamped {
                             .memberImage(post.getMember().getMemberImage())
                             .content(post.getContent())
                             .multipartFiles(multipartFiles)
-                            .heartCount(post.getHeartCount())
+                            .heartCount(heartCount)
                             .isMine(isMine)
                             .createdAt(post.getCreatedAt())
                             .modifiedAt(post.getModifiedAt())
