@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Enumeration;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +19,15 @@ public class PostController {
     public ResponseDto<?> createPost(@ModelAttribute PostRequestDto postRequestDto, HttpServletRequest request) throws IOException {
 
         System.out.println("request.getHeader(\"Authorization\") = " + request.getHeader("Authorization"));
+        System.out.println(request.getHeader("authorization"));
+        Enumeration params = request.getParameterNames();
+        System.out.println("======================================");
+        while(params.hasMoreElements()) {
+            String name = (String) params.nextElement();
+            System.out.println(name + " : " + request.getParameter(name));
+        }
+        System.out.println("======================================");
+
         postService.createPost(postRequestDto, request);
         return ResponseDto.success("ok");
     }

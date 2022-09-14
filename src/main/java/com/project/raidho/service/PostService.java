@@ -75,6 +75,7 @@ public class PostService extends Timestamped {
                                 .build()
                 );
         }
+
         List<String> locationTag = postRequestDto.getLocationTags();
         if (locationTag != null) {
             for (String locationTags : locationTag)
