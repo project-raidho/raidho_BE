@@ -25,9 +25,9 @@ public class PostController {
     }
     @GetMapping("/latest")
     public ResponseDto<?> getAllPost(@RequestParam (value = "page",defaultValue = "0")int page,
-                                     @RequestParam (value = "size",defaultValue = "20")int size,
-                                     @AuthenticationPrincipal UserDetails userDetails
+                                     @RequestParam (value = "size",defaultValue = "20")int size
                                      ) {
-        return postService.getAllPost(page,size,userDetails);
+
+        return postService.getAllPost(page,size);
     }
 }

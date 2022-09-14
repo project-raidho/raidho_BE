@@ -104,13 +104,13 @@ public class PostService extends Timestamped {
 
     // Todo :: 게시글 최신순 전체 조회
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllPost(int page, int size, UserDetails userDetails) {
+    public ResponseDto<?> getAllPost(int page, int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
         Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
 
-        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList, userDetails);
+        Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList);
 
         return ResponseDto.success(postResponseDtos);
 
@@ -120,9 +120,7 @@ public class PostService extends Timestamped {
 
 
     // Todo :: pagenation 처리
-    private Page<PostResponseDto> convertToBasicResponseDto(Page<Post> postList, UserDetails userDetails) {
-
-        Member member = ((PrincipalDetails) userDetails).getMember();
+    private Page<PostResponseDto> convertToBasicResponseDto(Page<Post> postList) {
 
         boolean isMine = false;
 
@@ -133,10 +131,6 @@ public class PostService extends Timestamped {
             List<String> multipartFiles = new ArrayList<>();
             for (MultipartFiles c : multipartFile) {
                 multipartFiles.add(c.getMultipartFiles());
-            }
-
-            if (member.getProviderId().equals(post.getMember().getProviderId())) {
-                isMine = true;
             }
 
                 posts.add(
