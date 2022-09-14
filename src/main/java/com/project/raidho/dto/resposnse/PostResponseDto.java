@@ -2,14 +2,12 @@ package com.project.raidho.dto.resposnse;
 
 import com.project.raidho.domain.MembersResponseDto;
 import com.project.raidho.domain.MultipartFiles;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Data
 @Builder
 @Getter
 @NoArgsConstructor
@@ -22,6 +20,7 @@ public class PostResponseDto {
     private List<MultipartFiles> multipartFiles;
     private List<String> tags;
     private List<String> locationTags;
+    private int heartCount;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 

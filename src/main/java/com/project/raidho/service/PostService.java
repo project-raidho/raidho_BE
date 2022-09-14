@@ -4,10 +4,7 @@ import com.project.raidho.domain.*;
 import com.project.raidho.dto.request.PostRequestDto;
 import com.project.raidho.dto.resposnse.PostResponseDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
-import com.project.raidho.repository.ImgRepository;
-import com.project.raidho.repository.LocationTagsRepository;
-import com.project.raidho.repository.PostRepository;
-import com.project.raidho.repository.TagRepository;
+import com.project.raidho.repository.*;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -118,8 +115,6 @@ public class PostService extends Timestamped {
 //            for(Tags b : tag){
 //                tags.add(b.getTag());
 //            }
-
-
             PostResponseDto postResponseDto=PostResponseDto.builder()
                     .content(post.getContent())
                     .id(post.getId())
@@ -129,11 +124,11 @@ public class PostService extends Timestamped {
                     .createdAt(post.getCreatedAt())
                     .modifiedAt(post.getModifiedAt())
                     .multipartFiles(post.getMultipartFiles())
+                    .heartCount(post.getHeartCount())
                     .build();
             postResponseDtoList.add(postResponseDto);
         }
         return ResponseDto.success(postResponseDtoList);
-
     }
 
 }
