@@ -107,6 +107,8 @@ public class PostService extends Timestamped {
 
         Member member = new Member();
         Post post = postRepository.findById(postId).orElse(null);
+        tagRepository.deleteAllByPost_Id(post.getId());
+        //LocationTags locationTag = locationTagsRepository.findById(postId).orElse(null);
 
         if (post == null) {
             throw new NullPointerException("존재하지 않는 게시글 입니다..");
@@ -118,6 +120,16 @@ public class PostService extends Timestamped {
         if (member.getProviderId() != null) {
             if (member.getProviderId().equals(post.getMember().getProviderId())) {
                 post.updatePost(updatePostRequestDto);
+                List<String> tags = updatePostRequestDto.getTags();
+                if (tags != null) {
+                    for (String tag : tags)
+                        tagRepository.save(
+                                Tags.builder()
+                                        .tag(tag)
+                                        .post(post)
+                                        .build()
+                        );
+                }
             }
         }
 

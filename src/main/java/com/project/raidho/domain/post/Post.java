@@ -48,8 +48,6 @@ public class Post extends Timestamped {
     }
     public void updatePost(UpdatePostRequestDto updatePostRequestDto){
         this.content= updatePostRequestDto.getContent();
-        this.tags=updatePostRequestDto.getTags();
-        this.locationTags=updatePostRequestDto.getLocationTags();
     }
 
 

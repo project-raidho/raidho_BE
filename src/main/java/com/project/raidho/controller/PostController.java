@@ -52,7 +52,7 @@ public class PostController {
         return postService.deletePost(postId, userDetails);
     }
     //TODO :: 수정
-    @PutMapping("{/postId}")
+    @PutMapping("/{postId}")
     public ResponseDto<?> updatePost(@PathVariable("postId") Long postId,
                                      @AuthenticationPrincipal UserDetails userDetails,
                                      UpdatePostRequestDto updatePostRequestDto) {
