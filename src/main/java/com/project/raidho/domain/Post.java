@@ -1,6 +1,7 @@
 package com.project.raidho.domain;
 
 import com.project.raidho.domain.member.Member;
+import com.project.raidho.dto.request.UpdatePostRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,8 +39,14 @@ public class Post extends Timestamped {
     private Member member;
     @Column
     private int heartCount;
+
     public void update(List<PostHeart> postHearts){
         this.heartCount = postHearts.size();
+    }
+    public void updatePost(UpdatePostRequestDto updatePostRequestDto){
+        this.content= updatePostRequestDto.getContent();
+        this.tags=updatePostRequestDto.getTags();
+        this.locationTags=updatePostRequestDto.getLocationTags();
     }
 
 }

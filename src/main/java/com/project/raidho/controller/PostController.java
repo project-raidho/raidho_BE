@@ -1,6 +1,8 @@
 package com.project.raidho.controller;
 
 import com.project.raidho.dto.request.PostRequestDto;
+import com.project.raidho.dto.request.UpdatePostRequestDto;
+import com.project.raidho.dto.resposnse.PostResponseDto;
 import com.project.raidho.dto.resposnse.ResponseDto;
 import com.project.raidho.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class PostController {
         postService.createPost(postRequestDto, request);
         return ResponseDto.success("ok");
     }
+    //전체조회
     @GetMapping("/latest")
     public ResponseDto<?> getAllPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                      @RequestParam (value = "size",defaultValue = "20")int size,
@@ -29,6 +32,7 @@ public class PostController {
 
         return postService.getAllPost(page,size,userDetails);
     }
+
     @GetMapping("/likelist")
     public ResponseDto<?> getAlllikePost(@RequestParam (value = "page",defaultValue = "0")int page,
                                      @RequestParam (value = "size",defaultValue = "5")int size,
@@ -36,12 +40,20 @@ public class PostController {
     ) {
         return postService.getAlllikePost(page,size,userDetails);
     }
+    //단건조회
     @GetMapping("/{postId}")
     public ResponseDto<?> getPostDetail(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails){
      return postService.getPostDetail(userDetails, postId);
     }
+    //삭제
     @DeleteMapping("/{postId}")
     public ResponseDto<?> deletePost(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails){
         return postService.deletePost(postId, userDetails);
+    }
+    //TODO :: 수정
+    @PutMapping("{/postId}")
+    public ResponseDto<?> updatePost(@PathVariable("postId") Long postId,
+                                     @AuthenticationPrincipal UserDetails userDetails, UpdatePostRequestDto updatePostRequestDto) {
+        return postService.updatePost(postId,userDetails,updatePostRequestDto);
     }
 }
