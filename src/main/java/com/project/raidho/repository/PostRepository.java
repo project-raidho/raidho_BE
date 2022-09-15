@@ -13,6 +13,4 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     Page<Post> findAllByOrderByHeartCountDesc (PageRequest pageRequest);
     Optional<Post> findById(Long id);
 
-    @Query("SELECT T.post,L.post FROM Tags T LEFT OUTER JOIN LocationTags L WHERE T.tag = :tag")
-    Page<Post> SearchTag(@Param(value = "tag") String tag, PageRequest pageRequest);
 }

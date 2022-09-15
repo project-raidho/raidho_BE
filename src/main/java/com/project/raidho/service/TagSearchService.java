@@ -8,6 +8,7 @@ import com.project.raidho.domain.s3.MultipartFiles;
 import com.project.raidho.repository.ImgRepository;
 import com.project.raidho.repository.PostHeartRepository;
 import com.project.raidho.repository.PostRepository;
+import com.project.raidho.repository.TagRepository;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,8 @@ import java.util.List;
 public class TagSearchService {
 
     private final PostRepository postRepository;
+
+    private final TagRepository tagRepository;
     private final PostHeartRepository postHeartRepository;
     private final ImgRepository imgRepository;
 
@@ -32,8 +35,17 @@ public class TagSearchService {
     public ResponseDto<?> searchTag(int page, int size, String tag, UserDetails userDetails) {
 
         PageRequest pageRequest = PageRequest.of(page,size);
-        Page<Post> postList = postRepository.SearchTag(tag, pageRequest);
-        for(Post post : postList){
+        Page<Post> postList = tagRepository.SearchTag(tag, pageRequest);
+
+        System.out.println(postList);
+        for (Post c : postList) {
+            System.out.println(c);
+            System.out.println(c.getContent());
+            System.out.println(c.getHeartCount());
+        }
+
+
+        for (Post post : postList) {
             System.out.println(post.getContent());
         }
         Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList, userDetails);
@@ -41,7 +53,7 @@ public class TagSearchService {
     }
 
     // Todo :: pagenation 처리
-    private Page<PostResponseDto> convertToBasicResponseDto (Page<Post> postList, UserDetails userDetails){
+    private Page<PostResponseDto> convertToBasicResponseDto (Page <Post> postList, UserDetails userDetails){
 
         Member member = new Member();
 
@@ -54,6 +66,7 @@ public class TagSearchService {
 
         List<PostResponseDto> posts = new ArrayList<>();
         for (Post post : postList) {
+
             if (member.getProviderId() != null) {
                 if (member.getProviderId().equals(post.getMember().getProviderId())) {
                     isMine = true;
