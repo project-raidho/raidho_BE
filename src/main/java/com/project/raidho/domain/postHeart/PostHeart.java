@@ -1,6 +1,7 @@
-package com.project.raidho.domain;
+package com.project.raidho.domain.postHeart;
 
 import com.project.raidho.domain.member.Member;
+import com.project.raidho.domain.post.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

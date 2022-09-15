@@ -1,7 +1,7 @@
 package com.project.raidho.repository;
 
-import com.project.raidho.domain.Post;
-import com.project.raidho.domain.PostHeart;
+import com.project.raidho.domain.post.Post;
+import com.project.raidho.domain.postHeart.PostHeart;
 import com.project.raidho.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,4 +1,4 @@
-package com.project.raidho.dto.resposnse;
+package com.project.raidho.domain;
 
 
 import lombok.AllArgsConstructor;

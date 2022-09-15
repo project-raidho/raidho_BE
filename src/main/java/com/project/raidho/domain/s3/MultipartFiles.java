@@ -1,5 +1,6 @@
-package com.project.raidho.domain;
+package com.project.raidho.domain.s3;
 
+import com.project.raidho.domain.post.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,17 +15,18 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class LocationTags {
+public class MultipartFiles {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String locationTags;
+    @Column(nullable = false)
+    private String multipartFiles;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId",nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Post post;
+
 }

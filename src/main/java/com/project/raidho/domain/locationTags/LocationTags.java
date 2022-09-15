@@ -1,5 +1,6 @@
-package com.project.raidho.domain;
+package com.project.raidho.domain.locationTags;
 
+import com.project.raidho.domain.post.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,18 +15,17 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class Tags {
+public class LocationTags {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column
-    private String tag;
+    private String locationTags;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId",nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Post post;
-
 }

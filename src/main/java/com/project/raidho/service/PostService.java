@@ -1,11 +1,15 @@
 package com.project.raidho.service;
 
 import com.project.raidho.domain.*;
+import com.project.raidho.domain.locationTags.LocationTags;
 import com.project.raidho.domain.member.Member;
-import com.project.raidho.dto.request.PostRequestDto;
-import com.project.raidho.dto.request.UpdatePostRequestDto;
-import com.project.raidho.dto.resposnse.PostResponseDto;
-import com.project.raidho.dto.resposnse.ResponseDto;
+import com.project.raidho.domain.post.Post;
+import com.project.raidho.domain.post.dto.PostRequestDto;
+import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
+import com.project.raidho.domain.post.dto.PostResponseDto;
+import com.project.raidho.domain.s3.MultipartFiles;
+import com.project.raidho.domain.tags.Tags;
+import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
@@ -98,7 +102,7 @@ public class PostService extends Timestamped {
     }
 
     // Todo :: 게시글 수정
-    @Transactional(readOnly = true)
+    @Transactional
     public ResponseDto<?> updatePost(Long postId, UserDetails userDetails, UpdatePostRequestDto updatePostRequestDto) {
 
         Member member = new Member();
@@ -110,13 +114,13 @@ public class PostService extends Timestamped {
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
-        Boolean isMine = false;
+
         if (member.getProviderId() != null) {
             if (member.getProviderId().equals(post.getMember().getProviderId())) {
-                isMine = true;
+                post.updatePost(updatePostRequestDto);
             }
         }
-        post.updatePost(updatePostRequestDto);
+
         return ResponseDto.success(post);
     }
         // Todo :: 게시글 최신순 전체 조회

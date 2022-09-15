@@ -1,5 +1,6 @@
-package com.project.raidho.domain;
+package com.project.raidho.domain.tags;
 
+import com.project.raidho.domain.post.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,14 +15,14 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class MultipartFiles {
+public class Tags {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
-    private String multipartFiles;
+    @Column
+    private String tag;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId",nullable = false)

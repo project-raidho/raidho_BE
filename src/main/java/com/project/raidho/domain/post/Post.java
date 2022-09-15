@@ -1,7 +1,10 @@
-package com.project.raidho.domain;
+package com.project.raidho.domain.post;
 
+import com.project.raidho.domain.s3.MultipartFiles;
+import com.project.raidho.domain.postHeart.PostHeart;
+import com.project.raidho.domain.Timestamped;
 import com.project.raidho.domain.member.Member;
-import com.project.raidho.dto.request.UpdatePostRequestDto;
+import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,5 +51,6 @@ public class Post extends Timestamped {
         this.tags=updatePostRequestDto.getTags();
         this.locationTags=updatePostRequestDto.getLocationTags();
     }
+
 
 }

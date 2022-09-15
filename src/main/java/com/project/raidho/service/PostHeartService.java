@@ -1,9 +1,9 @@
 package com.project.raidho.service;
 
-import com.project.raidho.domain.Post;
-import com.project.raidho.domain.PostHeart;
+import com.project.raidho.domain.post.Post;
+import com.project.raidho.domain.postHeart.PostHeart;
 import com.project.raidho.domain.member.Member;
-import com.project.raidho.dto.resposnse.ResponseDto;
+import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.PostHeartRepository;
 import com.project.raidho.repository.PostRepository;

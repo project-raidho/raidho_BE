@@ -1,4 +1,4 @@
-package com.project.raidho.domain;
+package com.project.raidho.domain.member.dto;
 
 import com.project.raidho.domain.member.dto.OauthLoginResponseDto;
 import lombok.*;

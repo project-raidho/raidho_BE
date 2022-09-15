@@ -1,9 +1,8 @@
 package com.project.raidho.controller;
 
-import com.project.raidho.dto.request.PostRequestDto;
-import com.project.raidho.dto.request.UpdatePostRequestDto;
-import com.project.raidho.dto.resposnse.PostResponseDto;
-import com.project.raidho.dto.resposnse.ResponseDto;
+import com.project.raidho.domain.post.dto.PostRequestDto;
+import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
+import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,11 +40,13 @@ public class PostController {
         return postService.getAlllikePost(page,size,userDetails);
     }
     //단건조회
+
     @GetMapping("/{postId}")
     public ResponseDto<?> getPostDetail(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails){
      return postService.getPostDetail(userDetails, postId);
     }
     //삭제
+
     @DeleteMapping("/{postId}")
     public ResponseDto<?> deletePost(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails){
         return postService.deletePost(postId, userDetails);
@@ -53,7 +54,10 @@ public class PostController {
     //TODO :: 수정
     @PutMapping("{/postId}")
     public ResponseDto<?> updatePost(@PathVariable("postId") Long postId,
-                                     @AuthenticationPrincipal UserDetails userDetails, UpdatePostRequestDto updatePostRequestDto) {
+                                     @AuthenticationPrincipal UserDetails userDetails,
+                                     UpdatePostRequestDto updatePostRequestDto) {
         return postService.updatePost(postId,userDetails,updatePostRequestDto);
     }
+
+
 }

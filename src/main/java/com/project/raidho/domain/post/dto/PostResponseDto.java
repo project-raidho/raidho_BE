@@ -1,6 +1,5 @@
-package com.project.raidho.dto.resposnse;
+package com.project.raidho.domain.post.dto;
 
-import com.project.raidho.domain.MembersResponseDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,7 +17,6 @@ public class PostResponseDto {
     private String memberName;
     private String memberImage;
     private String content;
-    private MembersResponseDto membersResponseDto;
     private List<String> multipartFiles;
     private List<String> tags;
     private List<String> locationTags;

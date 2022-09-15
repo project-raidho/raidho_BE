@@ -1,6 +1,6 @@
 package com.project.raidho.repository;
 
-import com.project.raidho.domain.Tags;
+import com.project.raidho.domain.tags.Tags;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
