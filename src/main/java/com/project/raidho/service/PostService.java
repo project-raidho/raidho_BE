@@ -95,8 +95,8 @@ public class PostService extends Timestamped {
                         .id(post.getId())
                         .content(post.getContent())
 //                        .author(membersDto)
-                        .createdAt(post.getCreatedAt())
-                        .modifiedAt(post.getModifiedAt())
+                        .createdAt(post.getCreatedAt().toLocalDate())
+                        .modifiedAt(post.getModifiedAt().toLocalDate())
                         .build()
         );
     }
@@ -234,8 +234,8 @@ public class PostService extends Timestamped {
                     .heartCount(heartCount)
                     .isMine(isMine)
                     .isHeartMine(isHeartMine)
-                    .createdAt(post.getCreatedAt())
-                    .modifiedAt(post.getModifiedAt())
+                    .createdAt(post.getCreatedAt().toLocalDate())
+                    .modifiedAt(post.getModifiedAt().toLocalDate())
                     .multipartFiles(multipartFiles)
                     .build();
             postResponseDtoList.add(postResponseDto);
@@ -291,7 +291,7 @@ public class PostService extends Timestamped {
 
 
                 List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
-                if (multipartFile.size() >= 1) {
+                if (multipartFile.size() > 1) {
                     isImages = true;
                 }
                 List<String> multipartFiles = new ArrayList<>();
@@ -311,8 +311,8 @@ public class PostService extends Timestamped {
                                 .isMine(isMine)
                                 .isHeartMine(isHeartMine)
                                 .isImages(isImages)
-                                .createdAt(post.getCreatedAt())
-                                .modifiedAt(post.getModifiedAt())
+                                .createdAt(post.getCreatedAt().toLocalDate())
+                                .modifiedAt(post.getModifiedAt().toLocalDate())
                                 .build()
                 );
                 isMine = false;

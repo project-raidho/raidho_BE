@@ -2,6 +2,7 @@ package com.project.raidho.domain.post.dto;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class PostResponseDto {
     private List<String> tags;
     private List<String> locationTags;
     private int heartCount;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private LocalDate createdAt;
+    private LocalDate modifiedAt;
 
 }
