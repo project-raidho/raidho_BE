@@ -32,7 +32,7 @@ public class TagSearchService {
     public ResponseDto<?> searchTag(int page, int size, String tag, UserDetails userDetails) {
 
         PageRequest pageRequest = PageRequest.of(page,size);
-        Page<Post> postList = postRepository.SearchTag(tag);
+        Page<Post> postList = postRepository.SearchTag(tag, pageRequest);
         Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList, userDetails);
         return ResponseDto.success(postResponseDtos);
     }
