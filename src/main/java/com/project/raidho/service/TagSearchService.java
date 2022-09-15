@@ -36,18 +36,6 @@ public class TagSearchService {
 
         PageRequest pageRequest = PageRequest.of(page,size);
         Page<Post> postList = tagRepository.SearchTag(tag, pageRequest);
-
-        System.out.println(postList);
-        for (Post c : postList) {
-            System.out.println(c);
-            System.out.println(c.getContent());
-            System.out.println(c.getHeartCount());
-        }
-
-
-        for (Post post : postList) {
-            System.out.println(post.getContent());
-        }
         Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList, userDetails);
         return ResponseDto.success(postResponseDtos);
     }
