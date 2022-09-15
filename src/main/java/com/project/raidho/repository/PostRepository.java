@@ -13,6 +13,6 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     Page<Post> findAllByOrderByHeartCountDesc (PageRequest pageRequest);
     Optional<Post> findById(Long id);
 
-    @Query("SELECT T,L FROM Tags T INNER JOIN LocationTags L ON T.tag=L.locationTags WHERE T.tag = :tag")
+    @Query("SELECT T.post,L.post FROM Tags T LEFT OUTER JOIN LocationTags L WHERE T.tag = :tag")
     Page<Post> SearchTag(@Param(value = "tag") String tag, PageRequest pageRequest);
 }
