@@ -24,9 +24,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class TagSearchService {
-
-    private final PostRepository postRepository;
-
     private final TagRepository tagRepository;
     private final PostHeartRepository postHeartRepository;
     private final ImgRepository imgRepository;
@@ -37,17 +34,6 @@ public class TagSearchService {
         PageRequest pageRequest = PageRequest.of(page,size);
         Page<Post> postList = tagRepository.SearchTag(tag, pageRequest);
 
-        System.out.println(postList);
-        for (Post c : postList) {
-            System.out.println(c);
-            System.out.println(c.getContent());
-            System.out.println(c.getHeartCount());
-        }
-
-
-        for (Post post : postList) {
-            System.out.println(post.getContent());
-        }
         Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList, userDetails);
         return ResponseDto.success(postResponseDtos);
     }
@@ -107,5 +93,4 @@ public class TagSearchService {
         }
         return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
     }
-
 }
