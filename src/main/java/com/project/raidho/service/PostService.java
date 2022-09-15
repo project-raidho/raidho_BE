@@ -120,8 +120,7 @@ public class PostService extends Timestamped {
                 post.updatePost(updatePostRequestDto);
             }
         }
-
-        return ResponseDto.success(post);
+        return ResponseDto.success("update success");
     }
         // Todo :: 게시글 최신순 전체 조회
         @Transactional(readOnly = true)
@@ -228,7 +227,8 @@ public class PostService extends Timestamped {
             }
             if (post == null) {
                 throw new NullPointerException("존재하지 않는 게시글 입니다.");
-            } else if (member.getProviderId().equals(post.getMember().getProviderId())) {
+            }
+            if (!member.getProviderId().equals(post.getMember().getProviderId())) {
                 throw new NullPointerException("게시글 주인이 아닙니다.");
             } else {
                 postRepository.delete(post);
