@@ -83,8 +83,8 @@ public class TagSearchService {
                             .heartCount(heartCount)
                             .isMine(isMine)
                             .isHeartMine(isHeartMine)
-                            .createdAt(post.getCreatedAt())
-                            .modifiedAt(post.getModifiedAt())
+                            .createdAt(post.getCreatedAt().toLocalDate())
+                            .modifiedAt(post.getModifiedAt().toLocalDate())
                             .build()
             );
             isMine = false;
