@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface LocationTagsRepository extends JpaRepository<LocationTags, Long> {
     List<LocationTags> findAllByPost_Id(Long id);
+
+    void deleteAllByPost_Id(Long id);
 }

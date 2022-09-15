@@ -108,6 +108,7 @@ public class PostService extends Timestamped {
         Member member = new Member();
         Post post = postRepository.findById(postId).orElse(null);
         tagRepository.deleteAllByPost_Id(post.getId());
+        locationTagsRepository.deleteAllByPost_Id(post.getId());
         //LocationTags locationTag = locationTagsRepository.findById(postId).orElse(null);
 
         if (post == null) {
@@ -120,12 +121,23 @@ public class PostService extends Timestamped {
         if (member.getProviderId() != null) {
             if (member.getProviderId().equals(post.getMember().getProviderId())) {
                 post.updatePost(updatePostRequestDto);
+
                 List<String> tags = updatePostRequestDto.getTags();
                 if (tags != null) {
                     for (String tag : tags)
                         tagRepository.save(
                                 Tags.builder()
                                         .tag(tag)
+                                        .post(post)
+                                        .build()
+                        );
+                }
+                List<String> locationTags = updatePostRequestDto.getLocationTags();
+                if (locationTags != null) {
+                    for (String locationTag : locationTags)
+                        locationTagsRepository.save(
+                                LocationTags.builder()
+                                        .locationTags(locationTag)
                                         .post(post)
                                         .build()
                         );
