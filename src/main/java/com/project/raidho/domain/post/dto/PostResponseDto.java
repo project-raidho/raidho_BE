@@ -14,6 +14,7 @@ public class PostResponseDto {
     private Long id;
     private Boolean isMine;
     private Boolean isHeartMine;
+    private Boolean isImages;
     private String memberName;
     private String memberImage;
     private String content;

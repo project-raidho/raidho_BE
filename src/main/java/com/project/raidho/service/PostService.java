@@ -270,6 +270,7 @@ public class PostService extends Timestamped {
 
             Boolean isMine = false;
             Boolean isHeartMine = false;
+            Boolean isImages = false;
 
             List<PostResponseDto> posts = new ArrayList<>();
             for (Post post : postList) {
@@ -290,10 +291,14 @@ public class PostService extends Timestamped {
 
 
                 List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
+                if (multipartFile.size() >= 1) {
+                    isImages = true;
+                }
                 List<String> multipartFiles = new ArrayList<>();
                 for (MultipartFiles c : multipartFile) {
                     multipartFiles.add(c.getMultipartFiles());
                 }
+
 
                 posts.add(
                         PostResponseDto.builder()
@@ -305,12 +310,14 @@ public class PostService extends Timestamped {
                                 .heartCount(heartCount)
                                 .isMine(isMine)
                                 .isHeartMine(isHeartMine)
+                                .isImages(isImages)
                                 .createdAt(post.getCreatedAt())
                                 .modifiedAt(post.getModifiedAt())
                                 .build()
                 );
                 isMine = false;
                 isHeartMine = false;
+                isImages = false;
             }
             return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
         }
