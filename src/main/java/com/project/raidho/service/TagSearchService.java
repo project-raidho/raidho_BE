@@ -25,8 +25,6 @@ import java.util.List;
 @Service
 public class TagSearchService {
 
-    private final PostRepository postRepository;
-
     private final TagRepository tagRepository;
     private final PostHeartRepository postHeartRepository;
     private final ImgRepository imgRepository;
