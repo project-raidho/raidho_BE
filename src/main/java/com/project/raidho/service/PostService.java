@@ -252,21 +252,9 @@ public class PostService extends Timestamped {
                 Member member = ((PrincipalDetails) userDetails).getMember();
                 if (member != null) {
                     List<Post> postList = postRepository.findAllByMember_IdOrderByCreatedAtDesc(member.getId());
-//                    System.out.println("member.getId---------------" + member.getId());
-//                    System.out.println("postList.size()------------" + postList.size());
-//                    System.out.println("postList-------------------" + postList);
-//                    for (Post a : postList) {
-//                        System.out.println(a.getContent());
-//                    }
-                    List<PostResponseDto> postResponseDtos = convertToBasicResponseDto2(postList, userDetails);
-                    return ResponseDto.success(postResponseDtos);
+                    return ResponseDto.success(convertToBasicResponseDto2(postList, userDetails));
                 }
             }
-
-           // PageRequest pageRequest = PageRequest.of(page, size);
-
-           // Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
-
             return ResponseDto.fail(404,"회원 정보가 없음");
         }
 
