@@ -26,13 +26,19 @@ public class CategoryController {
     }
 
     // Todo :: postman 카테고리 수정 test 용
-    @PutMapping("/api/category/{id}")
+    @PutMapping("/api/category/test/{id}")
     public ResponseDto<?> updateCategory(@PathVariable Long id,
                                          @RequestBody ThemeCategoryRequestDto requestDto) {
         if (requestDto.getCountryName() == null) {
             return ResponseDto.fail(404, "카테고리 정보를 입력해주세요.");
         }
         return categoryService.updateCategoryTest(id, requestDto);
+    }
+    // Todo :: postman 카테고리 삭제 test 용
+    @DeleteMapping("/api/category/test/{id}")
+    public ResponseDto<?> deleteCategory(@PathVariable Long id) {
+
+        return categoryService.deleteCategoryTest(id);
     }
 
     @PostMapping("/api/category")
@@ -52,5 +58,12 @@ public class CategoryController {
             return ResponseDto.fail(404, "카테고리 정보를 입력해주세요.");
         }
         return categoryService.updateCategory(id, requestDto, userDetails);
+    }
+
+    @DeleteMapping("/api/category/{id}")
+    public ResponseDto<?> deleteCategory(@PathVariable Long id,
+                                         @AuthenticationPrincipal UserDetails userDetails) {
+
+        return categoryService.deleteCategory(id, userDetails);
     }
 }

@@ -40,17 +40,6 @@ public class CategoryService {
         return ResponseDto.fail(403,"관리자만 등록할 수 있습니다.");
     }
 
-    // Todo :: Test 배포 전 삭제 해야함
-    @Transactional
-    public ResponseDto<?> createCategoryTest(ThemeCategoryRequestDto requestDto) {
-
-                ThemeCategory themeCategory = ThemeCategory.builder()
-                        .countryName(requestDto.getCountryName())
-                        .build();
-                categoryRepository.save(themeCategory);
-                return ResponseDto.success(requestDto.getCountryName() + " 가 등록되었습니다.");
-    }
-
     @Transactional
     public ResponseDto<?> updateCategory(Long id, ThemeCategoryRequestDto requestDto , UserDetails userDetails) {
         if (userDetails != null) {
@@ -67,7 +56,33 @@ public class CategoryService {
         return ResponseDto.fail(403,"관리자만 변경할 수 있습니다.");
     }
 
-    // 배포전 삭제해야함
+    @Transactional
+    public ResponseDto<?> deleteCategory(Long id, UserDetails userDetails){
+        if (userDetails != null) {
+            Member member = ((PrincipalDetails) userDetails).getMember();
+            if (member.getRole() == MemberRole.ADMIN) {
+                ThemeCategory themeCategory = isPresentTheme(id);
+                categoryRepository.deleteById(id);
+                return ResponseDto.success("삭제가 완료 되었습니다.");
+            }else {
+                return ResponseDto.fail(403, "관리자만 변경할 수 있습니다.");
+            }
+        }
+        return ResponseDto.fail(403,"관리자만 변경할 수 있습니다.");
+    }
+
+    // Todo :: Test 배포 전 삭제 해야함
+    @Transactional
+    public ResponseDto<?> createCategoryTest(ThemeCategoryRequestDto requestDto) {
+
+        ThemeCategory themeCategory = ThemeCategory.builder()
+                .countryName(requestDto.getCountryName())
+                .build();
+        categoryRepository.save(themeCategory);
+        return ResponseDto.success(requestDto.getCountryName() + " 가 등록되었습니다.");
+    }
+
+    // Todo :: Test 배포 전 삭제 해야함
     @Transactional
     public ResponseDto<?> updateCategoryTest(Long id, ThemeCategoryRequestDto requestDto) {
                 ThemeCategory themeCategory = isPresentTheme(id);
@@ -76,7 +91,12 @@ public class CategoryService {
                 return ResponseDto.success(updateCategory.getCountryName());
     }
 
-
+    // Todo :: Test 배포 전 삭제 해야함
+    public ResponseDto<?> deleteCategoryTest(Long id) {
+        ThemeCategory themeCategory = isPresentTheme(id);
+        categoryRepository.deleteById(id);
+        return ResponseDto.success("삭제가 완료 되었습니다.");
+    }
 
     @Transactional(readOnly = true)
     public ThemeCategory isPresentTheme(Long id) {
