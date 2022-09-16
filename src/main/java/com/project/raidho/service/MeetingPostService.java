@@ -126,19 +126,6 @@ public class MeetingPostService {
                 stringTagList.add(mt.getMeetingTag());
             }
 
-//            List<String> meetingTag = meetingPostRequestDto.getMeetingTags();
-//            if (meetingTag != null) {
-//                for (String meetingTags : meetingTag)
-//                    meetingTagRepository.save(
-//                            MeetingTags.builder()
-//                                    .meetingTag(meetingTags)
-//                                    .meetingPost(meetingPost)
-//                                    .build()
-//                    );
-//            }
-
-//            ThemeCategory themeCategory = isPresentThemeCatogory(meetingPostRequestDto);
-
             meetingPosts.add(
                     MeetingPostResponseDto.builder()
                             .id(meetingPost.getId())
