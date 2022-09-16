@@ -9,10 +9,8 @@ import com.project.raidho.domain.tags.MeetingTags;
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.*;
-import com.project.raidho.security.PrincipalDetails;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
