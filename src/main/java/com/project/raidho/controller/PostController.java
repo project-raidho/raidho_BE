@@ -39,8 +39,12 @@ public class PostController {
     ) {
         return postService.getAlllikePost(page,size,userDetails);
     }
-    //단건조회
+    @GetMapping("/mypost")
+    public ResponseDto<?> getAllMyPost(@AuthenticationPrincipal UserDetails userDetails) {
+        return postService.getAllMyPost(userDetails);
+    }
 
+    //단건조회
     @GetMapping("/{postId}")
     public ResponseDto<?> getPostDetail(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails){
      return postService.getPostDetail(userDetails, postId);
