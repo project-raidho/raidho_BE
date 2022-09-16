@@ -89,23 +89,23 @@ public class MeetingPostService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllMeetingPost (int page, int size, HttpServletRequest request) {
+    public ResponseDto<?> getAllMeetingPost (int page, int size,  UserDetails userDetails) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
         Page<MeetingPost> meetingPostList = meetingPostRepository.findAllByOrderByCreatedAtDesc(pageRequest);
 
-        Page<MeetingPostResponseDto> meetingPostResponseDtos = convertToBasicResponseDto(meetingPostList, request);
+        Page<MeetingPostResponseDto> meetingPostResponseDtos = convertToBasicResponseDto(meetingPostList, userDetails);
 
         return ResponseDto.success(meetingPostResponseDtos);
     }
 
-    private Page<MeetingPostResponseDto> convertToBasicResponseDto (Page<MeetingPost> meetingPostList, HttpServletRequest request){
+    private Page<MeetingPostResponseDto> convertToBasicResponseDto (Page<MeetingPost> meetingPostList,  UserDetails userDetails){
 
-        Member member = validateMember(request);
+        Member member = new Member();
 
-        if (member == null) {
-            throw new NullPointerException("회원만 사용 가능합니다.");
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
         }
 
         Boolean isMine = false;
@@ -120,7 +120,11 @@ public class MeetingPostService {
                 }
             }
 
-            List<String> meetingTags = meetingTagRepository.findByMeetingPost(meetingPost);
+            List<MeetingTags> meetingTags = meetingTagRepository.findByMeetingPost(meetingPost);
+            List<String> stringTagList = new ArrayList<>();
+            for (MeetingTags mt : meetingTags) {
+                stringTagList.add(mt.getMeetingTag());
+            }
 
 //            List<String> meetingTag = meetingPostRequestDto.getMeetingTags();
 //            if (meetingTag != null) {
@@ -147,7 +151,7 @@ public class MeetingPostService {
                             .people(2)
                             .roomCloseDate(meetingPost.getRoomCloseDate())
                             .isMine(isMine)
-                            .meetingTags(meetingTags)
+                            .meetingTags(stringTagList)
                             .meetingParticipant(1)
                             .meetingStatus(1)
                             .memberName(meetingPost.getMember().getMemberName())

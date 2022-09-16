@@ -19,5 +19,5 @@ public interface MeetingTagRepository extends JpaRepository<MeetingTags,Long> {
 //    @Query("SELECT DISTINCT t.meetingPost FROM MeetingTags t WHERE t.meetingTag like %:tag%")
 //    Page<MeetingPost> SearchTag(@Param(value = "tag") String tag, PageRequest pageRequest);
 
-    List<String> findByMeetingPost(MeetingPost meetingPost);
+    List<MeetingTags> findByMeetingPost(MeetingPost meetingPost);
 }

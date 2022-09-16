@@ -26,9 +26,8 @@ public class MeetingPostController {
     @GetMapping("/latest")
     public ResponseEntity<?> getAllMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                                @RequestParam (value = "size",defaultValue = "20")int size,
-                                               HttpServletRequest request
-                                            ) throws IOException {
+                                               @AuthenticationPrincipal UserDetails userDetails) {
 
-        return ResponseEntity.ok().body(meetingPostService.getAllMeetingPost(page,size,request));
+        return ResponseEntity.ok().body(meetingPostService.getAllMeetingPost(page,size,userDetails));
     }
 }
