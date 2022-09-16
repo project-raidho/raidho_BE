@@ -1,12 +1,15 @@
 package com.project.raidho.domain.meetingPost;
 
 import com.project.raidho.domain.Timestamped;
+import com.project.raidho.domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -22,5 +25,28 @@ public class MeetingPost extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     private ThemeCategory themeCategory;
 
+    @Transient
+    private List<String> meetingTags = new ArrayList<>();
 
+    @Column
+    private String title;
+
+    @Column
+    private String startDate;
+
+    @Column
+    private String endDate;
+
+    @Column
+    private int people;
+
+    @Column
+    private String roomCloseDate;
+
+    @Column
+    private String departLocation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "memberId",nullable = false)
+    private Member member;
 }

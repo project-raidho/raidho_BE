@@ -1,6 +1,6 @@
 package com.project.raidho.domain.tags;
 
-import com.project.raidho.domain.post.Post;
+import com.project.raidho.domain.meetingPost.MeetingPost;
 import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,14 +23,14 @@ public class MeetingTags {
     private Long id;
 
     @Column
-    private String tag;
+    private String meetingTag;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId",nullable = false)
+    @JoinColumn(name = "meetingPostId",nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Post post;
+    private MeetingPost meetingPost;
 
-    public void updateTags(UpdatePostRequestDto requestDto) {
+    public void updateMeetingTags(UpdatePostRequestDto requestDto) {
 
     }
 
