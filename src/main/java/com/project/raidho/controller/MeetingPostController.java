@@ -1,9 +1,12 @@
 package com.project.raidho.controller;
 
+import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
 import com.project.raidho.service.MeetingPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,5 +21,15 @@ public class MeetingPostController {
     @PostMapping
     public ResponseEntity<?> createMeetingPost(@RequestBody MeetingPostRequestDto meetingPostRequestDto, HttpServletRequest request) throws IOException {
         return ResponseEntity.ok().body(meetingPostService.createMeetingPost(meetingPostRequestDto, request));
+    }
+
+    @GetMapping("/latest")
+    public ResponseEntity<?> getAllMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
+                                            @RequestParam (value = "size",defaultValue = "20")int size,
+                                            HttpServletRequest request,
+                                            @RequestBody MeetingPostRequestDto meetingPostRequestDto
+                                            ) throws IOException {
+
+        return ResponseEntity.ok().body(meetingPostService.getAllMeetingPost(page,size,request,meetingPostRequestDto));
     }
 }

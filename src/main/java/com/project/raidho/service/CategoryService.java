@@ -5,7 +5,7 @@ import com.project.raidho.domain.meetingPost.ThemeCategory;
 import com.project.raidho.domain.meetingPost.dto.ThemeCategoryRequestDto;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.member.MemberRole;
-import com.project.raidho.repository.CategoryRepository;
+import com.project.raidho.repository.ThemeCategoryRepository;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @Service
 public class CategoryService {
 
-    private final CategoryRepository categoryRepository;
+    private final ThemeCategoryRepository themeCategoryRepository;
 
     @Transactional
     public ResponseDto<?> createCategory(ThemeCategoryRequestDto requestDto, UserDetails userDetails) {
@@ -30,7 +30,7 @@ public class CategoryService {
                 ThemeCategory themeCategory = ThemeCategory.builder()
                         .countryName(requestDto.getCountryName())
                         .build();
-                categoryRepository.save(themeCategory);
+                themeCategoryRepository.save(themeCategory);
                 return ResponseDto.success(requestDto.getCountryName() + " 가 등록되었습니다.");
             }
             else {
@@ -62,7 +62,7 @@ public class CategoryService {
             Member member = ((PrincipalDetails) userDetails).getMember();
             if (member.getRole() == MemberRole.ADMIN) {
                 ThemeCategory themeCategory = isPresentTheme(id);
-                categoryRepository.deleteById(id);
+                themeCategoryRepository.deleteById(id);
                 return ResponseDto.success("삭제가 완료 되었습니다.");
             }else {
                 return ResponseDto.fail(403, "관리자만 변경할 수 있습니다.");
@@ -78,7 +78,7 @@ public class CategoryService {
         ThemeCategory themeCategory = ThemeCategory.builder()
                 .countryName(requestDto.getCountryName())
                 .build();
-        categoryRepository.save(themeCategory);
+        themeCategoryRepository.save(themeCategory);
         return ResponseDto.success(requestDto.getCountryName() + " 가 등록되었습니다.");
     }
 
@@ -94,13 +94,13 @@ public class CategoryService {
     // Todo :: Test 배포 전 삭제 해야함
     public ResponseDto<?> deleteCategoryTest(Long id) {
         ThemeCategory themeCategory = isPresentTheme(id);
-        categoryRepository.deleteById(id);
+        themeCategoryRepository.deleteById(id);
         return ResponseDto.success("삭제가 완료 되었습니다.");
     }
 
     @Transactional(readOnly = true)
     public ThemeCategory isPresentTheme(Long id) {
-        Optional<ThemeCategory> themeCategory = categoryRepository.findById(id);
+        Optional<ThemeCategory> themeCategory = themeCategoryRepository.findById(id);
         return themeCategory.orElseThrow(() -> new IllegalArgumentException("등록되지 않은 지역입니다."));
     }
 }

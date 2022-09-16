@@ -1,0 +1,12 @@
+package com.project.raidho.repository;
+
+import com.project.raidho.domain.meetingPost.MeetingPost;
+import com.project.raidho.domain.post.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MeetingPostRepository extends JpaRepository<MeetingPost, Long> {
+
+    Page<MeetingPost> findAllByOrderByCreatedAtDesc (PageRequest pageRequest);
+}
