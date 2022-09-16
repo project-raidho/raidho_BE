@@ -89,19 +89,19 @@ public class MeetingPostService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllMeetingPost (int page, int size, HttpServletRequest request, MeetingPostRequestDto meetingPostRequestDto)throws IOException {
+    public ResponseDto<?> getAllMeetingPost (int page, int size, HttpServletRequest request) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
         Page<MeetingPost> meetingPostList = meetingPostRepository.findAllByOrderByCreatedAtDesc(pageRequest);
 
-        Page<MeetingPostResponseDto> meetingPostResponseDtos = convertToBasicResponseDto(meetingPostList, request, meetingPostRequestDto);
+        Page<MeetingPostResponseDto> meetingPostResponseDtos = convertToBasicResponseDto(meetingPostList, request);
 
         return ResponseDto.success(meetingPostResponseDtos);
     }
 
-    private Page<MeetingPostResponseDto> convertToBasicResponseDto (Page<MeetingPost> meetingPostList, HttpServletRequest request,
-                                                                    MeetingPostRequestDto meetingPostRequestDto){
+    private Page<MeetingPostResponseDto> convertToBasicResponseDto (Page<MeetingPost> meetingPostList, HttpServletRequest request){
+
         Member member = validateMember(request);
 
         if (member == null) {
@@ -111,6 +111,7 @@ public class MeetingPostService {
         Boolean isMine = false;
 
         List<MeetingPostResponseDto> meetingPosts = new ArrayList<>();
+
         for (MeetingPost meetingPost : meetingPostList) {
 
             if (member.getProviderId() != null) {
@@ -119,23 +120,25 @@ public class MeetingPostService {
                 }
             }
 
-            List<String> meetingTag = meetingPostRequestDto.getMeetingTags();
-            if (meetingTag != null) {
-                for (String meetingTags : meetingTag)
-                    meetingTagRepository.save(
-                            MeetingTags.builder()
-                                    .meetingTag(meetingTags)
-                                    .meetingPost(meetingPost)
-                                    .build()
-                    );
-            }
+            List<String> meetingTags = meetingTagRepository.findByMeetingPost(meetingPost);
 
-            ThemeCategory themeCategory = isPresentThemeCatogory(meetingPostRequestDto);
+//            List<String> meetingTag = meetingPostRequestDto.getMeetingTags();
+//            if (meetingTag != null) {
+//                for (String meetingTags : meetingTag)
+//                    meetingTagRepository.save(
+//                            MeetingTags.builder()
+//                                    .meetingTag(meetingTags)
+//                                    .meetingPost(meetingPost)
+//                                    .build()
+//                    );
+//            }
+
+//            ThemeCategory themeCategory = isPresentThemeCatogory(meetingPostRequestDto);
 
             meetingPosts.add(
                     MeetingPostResponseDto.builder()
                             .id(meetingPost.getId())
-                            .themeCategory(themeCategory.toString())
+                            .themeCategory(meetingPost.getThemeCategory().toString())
                             .title(meetingPost.getTitle())
                             .desc(meetingPost.getDesc())
                             .departLocation(meetingPost.getDepartLocation())
@@ -144,13 +147,14 @@ public class MeetingPostService {
                             .people(2)
                             .roomCloseDate(meetingPost.getRoomCloseDate())
                             .isMine(isMine)
-                            .meetingTags(meetingTag)
+                            .meetingTags(meetingTags)
                             .meetingParticipant(1)
                             .meetingStatus(1)
                             .memberName(meetingPost.getMember().getMemberName())
                             .memberImage(meetingPost.getMember().getMemberImage())
                             .build()
             );
+
             isMine = false;
         }
         return new PageImpl<>(meetingPosts, meetingPostList.getPageable(), meetingPostList.getTotalElements());

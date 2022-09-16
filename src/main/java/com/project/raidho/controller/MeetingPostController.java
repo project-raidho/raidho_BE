@@ -25,11 +25,10 @@ public class MeetingPostController {
 
     @GetMapping("/latest")
     public ResponseEntity<?> getAllMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
-                                            @RequestParam (value = "size",defaultValue = "20")int size,
-                                            HttpServletRequest request,
-                                            @RequestBody MeetingPostRequestDto meetingPostRequestDto
+                                               @RequestParam (value = "size",defaultValue = "20")int size,
+                                               HttpServletRequest request
                                             ) throws IOException {
 
-        return ResponseEntity.ok().body(meetingPostService.getAllMeetingPost(page,size,request,meetingPostRequestDto));
+        return ResponseEntity.ok().body(meetingPostService.getAllMeetingPost(page,size,request));
     }
 }
