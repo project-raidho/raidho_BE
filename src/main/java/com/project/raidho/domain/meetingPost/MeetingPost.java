@@ -31,8 +31,8 @@ public class MeetingPost extends Timestamped {
     @Column
     private String title;
 
-    @Column
-    private String descwewewe;
+    @Column(name = "EXDESC")
+    private String desc;
 
     @Column
     private String startDate;
