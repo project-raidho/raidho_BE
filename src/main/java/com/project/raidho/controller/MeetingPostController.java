@@ -23,7 +23,7 @@ public class MeetingPostController {
         return ResponseEntity.ok().body(meetingPostService.createMeetingPost(meetingPostRequestDto, request));
     }
 
-    @GetMapping("/latest")
+    @GetMapping
     public ResponseEntity<?> getAllMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                                @RequestParam (value = "size",defaultValue = "20")int size,
                                                @AuthenticationPrincipal UserDetails userDetails) {
