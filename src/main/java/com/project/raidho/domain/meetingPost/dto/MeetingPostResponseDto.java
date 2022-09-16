@@ -1,15 +1,15 @@
 package com.project.raidho.domain.meetingPost.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-public class MeetingPostRequestDto {
 
+@Builder
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class MeetingPostResponseDto {
+    private Long id;
     private String themeCategory;
     private List<String> meetingTags;
     private String title;
@@ -19,4 +19,5 @@ public class MeetingPostRequestDto {
     private int people;
     private String roomCloseDate;
     private String departLocation;
+
 }

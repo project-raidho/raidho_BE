@@ -1,37 +1,25 @@
 package com.project.raidho.service;
 
-import com.project.raidho.domain.*;
-import com.project.raidho.domain.locationTags.LocationTags;
 import com.project.raidho.domain.meetingPost.MeetingPost;
+import com.project.raidho.domain.meetingPost.ThemeCategory;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
-import com.project.raidho.domain.meetingPost.dto.MeetingResponseDto;
+import com.project.raidho.domain.meetingPost.dto.MeetingPostResponseDto;
 import com.project.raidho.domain.member.Member;
-import com.project.raidho.domain.member.dto.MembersResponseDto;
-import com.project.raidho.domain.post.Post;
-import com.project.raidho.domain.post.dto.PostRequestDto;
-import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
-import com.project.raidho.domain.post.dto.PostResponseDto;
-import com.project.raidho.domain.s3.MultipartFiles;
 import com.project.raidho.domain.tags.MeetingTags;
-import com.project.raidho.domain.tags.Tags;
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Builder
@@ -39,25 +27,36 @@ import java.util.List;
 public class MeetingPostService {
     private final MeetingRepository meetingRepository;
     private final MeetingTagRepository meetingTagRepository;
+    private final CategoryRepository categoryRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public ResponseDto<?> createMeetingPost(MeetingPostRequestDto meetingPostRequestDto, UserDetails userDetails) throws IOException {
+    public ResponseDto<?> createMeetingPost(MeetingPostRequestDto meetingPostRequestDto, HttpServletRequest request) throws IOException {
 
         // 회원정보 확인 로직
-        Member member = new Member();
+        Member member = validateMember(request);
 
-        if (userDetails != null) {
-            member = ((PrincipalDetails) userDetails).getMember();
+        if (member == null) {
+            throw new NullPointerException("회원만 사용 가능합니다.");
         }
+
+        ThemeCategory themeCategory = isPresentThemeCatogory(meetingPostRequestDto);
 
         MeetingPost meetingPost = meetingRepository.save(
                 MeetingPost.builder()
-
+                        .themeCategory(themeCategory)
+                        .title(meetingPostRequestDto.getTitle())
+                        .desc(meetingPostRequestDto.getDesc())
+                        .startDate(meetingPostRequestDto.getStartDate())
+                        .endDate(meetingPostRequestDto.getEndDate())
+                        .people(meetingPostRequestDto.getPeople())
+                        .roomCloseDate(meetingPostRequestDto.getRoomCloseDate())
+                        .departLocation(meetingPostRequestDto.getDepartLocation())
                         .member(member)
                         .build()
 
         );
+
         List<String> meetingTag = meetingPostRequestDto.getMeetingTags();
         if (meetingTag != null) {
             for (String meetingTags : meetingTag)
@@ -70,7 +69,7 @@ public class MeetingPostService {
 
         }
         return ResponseDto.success(
-                MeetingResponseDto.builder()
+                MeetingPostResponseDto.builder()
                         .id(meetingPost.getId())
                         .title(meetingPost.getTitle())
                         .departLocation(meetingPost.getDepartLocation())
@@ -79,7 +78,6 @@ public class MeetingPostService {
                         .people(meetingPost.getPeople())
                         .roomCloseDate(meetingPost.getRoomCloseDate())
                         .meetingTags(meetingTag)
-
                         .build()
         );
     }
@@ -98,5 +96,11 @@ public class MeetingPostService {
             return accessToken.substring(7);
         }
         throw new RuntimeException("NOT VALID ACCESS TOKEN");
+    }
+
+    @Transactional(readOnly = true)
+    public ThemeCategory isPresentThemeCatogory(MeetingPostRequestDto requestDto) {
+        Optional<ThemeCategory> themeCategory = categoryRepository.findByCountryName(requestDto.getThemeCategory());
+        return themeCategory.orElseThrow(() -> new IllegalArgumentException("등록되지 않은 카테고리입니다."));
     }
 }

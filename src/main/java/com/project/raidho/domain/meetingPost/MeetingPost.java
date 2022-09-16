@@ -32,6 +32,9 @@ public class MeetingPost extends Timestamped {
     private String title;
 
     @Column
+    private String desc;
+
+    @Column
     private String startDate;
 
     @Column
