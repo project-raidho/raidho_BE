@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MeetingPostRepository extends JpaRepository<MeetingPost, Long> {
 
     Page<MeetingPost> findAllByOrderByCreatedAtDesc (PageRequest pageRequest);
+    Page<MeetingPost> findAllByThemeCategory_IdOrderByCreatedAtDesc(Long id, PageRequest pageRequest);
 }

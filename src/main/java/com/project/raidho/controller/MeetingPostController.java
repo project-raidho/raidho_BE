@@ -3,6 +3,7 @@ package com.project.raidho.controller;
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
 import com.project.raidho.service.MeetingPostService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,5 +30,15 @@ public class MeetingPostController {
                                                @AuthenticationPrincipal UserDetails userDetails) {
 
         return ResponseEntity.ok().body(meetingPostService.getAllMeetingPost(page,size,userDetails));
+    }
+
+    @GetMapping("/{themeName}")
+    public ResponseEntity<?> getCategoryMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
+                                                    @RequestParam (value = "size",defaultValue = "20")int size,
+                                                    @AuthenticationPrincipal UserDetails userDetails,
+                                                    @PathVariable String themeName) {
+
+
+        return ResponseEntity.ok().body(meetingPostService.getAllCategoryMeetingPost(page,size,userDetails,themeName));
     }
 }
