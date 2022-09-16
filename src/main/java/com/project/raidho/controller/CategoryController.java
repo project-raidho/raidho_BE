@@ -15,7 +15,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    // Todo :: postman test 용
+    // Todo :: postman 카테고리 등록 test 용
     @PostMapping("/api/category/test")
     public ResponseDto<?> createCategory(@RequestBody ThemeCategoryRequestDto requestDto) {
         if (requestDto.getCountryName() == null) {
@@ -25,19 +25,32 @@ public class CategoryController {
         return ResponseDto.success(requestDto.getCountryName());
     }
 
+    // Todo :: postman 카테고리 수정 test 용
+    @PutMapping("/api/category/{id}")
+    public ResponseDto<?> updateCategory(@PathVariable Long id,
+                                         @RequestBody ThemeCategoryRequestDto requestDto) {
+        if (requestDto.getCountryName() == null) {
+            return ResponseDto.fail(404, "카테고리 정보를 입력해주세요.");
+        }
+        return categoryService.updateCategoryTest(id, requestDto);
+    }
+
     @PostMapping("/api/category")
     public ResponseDto<?> createCategory(@RequestBody ThemeCategoryRequestDto requestDto,
                                          @AuthenticationPrincipal UserDetails userDetails) {
         if (requestDto.getCountryName() == null) {
             return ResponseDto.fail(404, "카테고리 정보를 입력해주세요.");
         }
-        categoryService.createCategory(requestDto,userDetails);
-        return null;
+        return categoryService.createCategory(requestDto,userDetails);
     }
 
     @PutMapping("/api/category/{id}")
     public ResponseDto<?> updateCategory(@PathVariable Long id,
+                                         @RequestBody ThemeCategoryRequestDto requestDto,
                                          @AuthenticationPrincipal UserDetails userDetails) {
-        return null;
+        if (requestDto.getCountryName() == null) {
+            return ResponseDto.fail(404, "카테고리 정보를 입력해주세요.");
+        }
+        return categoryService.updateCategory(id, requestDto, userDetails);
     }
 }

@@ -1,5 +1,6 @@
 package com.project.raidho.domain.meetingPost;
 
+import com.project.raidho.domain.meetingPost.dto.ThemeCategoryRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,4 +25,8 @@ public class ThemeCategory {
 
     @OneToMany(mappedBy = "themeCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<MeetingPost> meetingPostList= new ArrayList<>();
+
+    public void updateCategory(ThemeCategoryRequestDto requestDto) {
+        this.countryName = requestDto.getCountryName();;
+    }
 }
