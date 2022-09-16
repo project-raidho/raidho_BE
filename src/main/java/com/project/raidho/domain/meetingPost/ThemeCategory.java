@@ -18,7 +18,8 @@ import java.util.List;
 public class ThemeCategory {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "THEME_CATEGORY_ID")
+    private Long themeCategoryId;
 
     @Column(name = "COUNTRY_NAME", nullable = false)
     private String countryName;

@@ -19,6 +19,7 @@ import java.util.List;
 public class MeetingPost extends Timestamped {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "MEETING_POST_ID")
     private Long id;
 
     @JoinColumn(name = "THEME_CATEGORY_ID", nullable = false)
