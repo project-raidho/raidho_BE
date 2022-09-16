@@ -39,6 +39,7 @@ public class PostService extends Timestamped {
     private final S3Service s3Service;
     private final LocationTagsRepository locationTagsRepository;
     private final JwtTokenProvider jwtTokenProvider;
+
     // Todo :: 게시물 업로드
     @Transactional
     public ResponseDto<?> createPost(PostRequestDto postRequestDto, HttpServletRequest request) throws IOException {

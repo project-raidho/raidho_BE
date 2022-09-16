@@ -1,4 +1,4 @@
-package com.project.raidho.domain.oauthMemberInfo;
+package com.project.raidho.domain.oauthMemberInfo.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

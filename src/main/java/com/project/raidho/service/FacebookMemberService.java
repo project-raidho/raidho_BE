@@ -6,7 +6,7 @@
 //import com.project.raidho.domain.member.Member;
 //import com.project.raidho.domain.member.MemberRole;
 //import com.project.raidho.domain.member.dto.OauthLoginResponseDto;
-//import com.project.raidho.domain.oauthMemberInfo.OauthMemberInfoImpl;
+//import com.project.raidho.domain.oauthMemberInfo.dto.OauthMemberInfoImpl;
 //import com.project.raidho.domain.token.dto.JwtTokenDto;
 //import com.project.raidho.jwt.JwtTokenProvider;
 //import com.project.raidho.repository.MemberRepository;
