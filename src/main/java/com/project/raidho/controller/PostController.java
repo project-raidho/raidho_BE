@@ -5,6 +5,7 @@ import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
