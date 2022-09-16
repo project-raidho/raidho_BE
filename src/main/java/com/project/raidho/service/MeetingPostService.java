@@ -90,7 +90,7 @@ public class MeetingPostService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllMeetingPost (int page, int size,  UserDetails userDetails) {
+    public ResponseDto<?> getAllMeetingPost (int page, int size, UserDetails userDetails) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
@@ -98,6 +98,16 @@ public class MeetingPostService {
 
         Page<MeetingPostResponseDto> meetingPostResponseDtos = convertToBasicResponseDto(meetingPostList, userDetails);
 
+        return ResponseDto.success(meetingPostResponseDtos);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getAllCategoryMeetingPost (int page, int size, UserDetails userDetails, String theme) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        ThemeCategory category = themeCategoryRepository.findByCountryName(theme)
+                .orElseThrow(() -> new IllegalArgumentException("해당 카테고리는 존재하지 않습니다."));
+        Page<MeetingPost> meetingPostList = meetingPostRepository.findAllByThemeCategory_IdOrderByCreatedAtDesc(category.getId(), pageRequest);
+        Page<MeetingPostResponseDto> meetingPostResponseDtos = convertToBasicResponseDto(meetingPostList, userDetails);
         return ResponseDto.success(meetingPostResponseDtos);
     }
 
