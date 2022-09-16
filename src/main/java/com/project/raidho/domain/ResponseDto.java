@@ -20,11 +20,11 @@ public class ResponseDto<T> {
     @Getter
     @AllArgsConstructor
     static class Error{
-        private String code;
+        private int code;
         private String message;
     }
 
-    public static <T> ResponseDto<T> fail(String code, String message) {
+    public static <T> ResponseDto<T> fail(int code, String message) {
         return new ResponseDto<>(false,null, new Error(code, message));
     }
 }
