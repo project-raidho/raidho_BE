@@ -5,6 +5,7 @@ import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +19,9 @@ import java.io.IOException;
 public class PostController {
     private final PostService postService;
     @PostMapping
-    public ResponseDto<?> createPost(@ModelAttribute PostRequestDto postRequestDto, HttpServletRequest request) throws IOException {
+    public ResponseEntity<?> createPost(@ModelAttribute PostRequestDto postRequestDto, HttpServletRequest request) throws IOException {
         postService.createPost(postRequestDto, request);
-        return ResponseDto.success("ok");
+        return ResponseEntity.ok().body(ResponseDto.success("ok"));
     }
     //전체조회
     @GetMapping("/latest")
