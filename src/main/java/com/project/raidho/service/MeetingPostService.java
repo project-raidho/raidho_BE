@@ -129,7 +129,7 @@ public class MeetingPostService {
             meetingPosts.add(
                     MeetingPostResponseDto.builder()
                             .id(meetingPost.getId())
-                            .themeCategory(meetingPost.getThemeCategory().toString())
+                            .themeCategory(meetingPost.getThemeCategory().getCountryName())
                             .title(meetingPost.getTitle())
                             .desc(meetingPost.getDesc())
                             .departLocation(meetingPost.getDepartLocation())
