@@ -5,6 +5,7 @@ import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
 import com.project.raidho.domain.post.dto.PostResponseDto;
 import com.project.raidho.domain.s3.MultipartFiles;
+import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.ImgRepository;
 import com.project.raidho.repository.PostHeartRepository;
 import com.project.raidho.repository.PostRepository;
@@ -19,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,7 @@ public class TagSearchService {
     private final TagRepository tagRepository;
     private final PostHeartRepository postHeartRepository;
     private final ImgRepository imgRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional(readOnly = true)
     public ResponseDto<?> searchTag(int page, int size, String tag, UserDetails userDetails) {
@@ -47,9 +50,9 @@ public class TagSearchService {
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
-
         Boolean isMine = false;
         Boolean isHeartMine = false;
+        Boolean isImages = false;
 
         List<PostResponseDto> posts = new ArrayList<>();
         for (Post post : postList) {
@@ -60,6 +63,7 @@ public class TagSearchService {
             }
 
             int heartCount = postHeartRepository.getCountOfPostHeart(post);
+
             if (member.getProviderId() != null) {
                 int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
                 if (isHeartMineCh >= 1) {
@@ -67,8 +71,10 @@ public class TagSearchService {
                 }
             }
 
-
             List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
+            if (multipartFile.size() > 1) {
+                isImages = true;
+            }
             List<String> multipartFiles = new ArrayList<>();
             for (MultipartFiles c : multipartFile) {
                 multipartFiles.add(c.getMultipartFiles());
@@ -84,14 +90,15 @@ public class TagSearchService {
                             .heartCount(heartCount)
                             .isMine(isMine)
                             .isHeartMine(isHeartMine)
+                            .isImages(isImages)
                             .createdAt(post.getCreatedAt().toLocalDate())
                             .modifiedAt(post.getModifiedAt().toLocalDate())
                             .build()
             );
             isMine = false;
             isHeartMine = false;
+            isImages = false;
         }
         return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
     }
-
 }

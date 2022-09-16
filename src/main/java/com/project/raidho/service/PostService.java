@@ -39,7 +39,6 @@ public class PostService extends Timestamped {
     private final S3Service s3Service;
     private final LocationTagsRepository locationTagsRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberRepository;
 
     // Todo :: 게시물 업로드
     @Transactional

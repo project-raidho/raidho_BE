@@ -27,7 +27,7 @@ public class PostController {
     //전체조회
     @GetMapping("/latest")
     public ResponseDto<?> getAllPost(@RequestParam (value = "page",defaultValue = "0")int page,
-                                     @RequestParam (value = "size",defaultValue = "20")int size,
+                                     @RequestParam (value = "size",defaultValue = "100")int size,
                                      @AuthenticationPrincipal UserDetails userDetails
                                         ) {
 
@@ -36,7 +36,7 @@ public class PostController {
 
     @GetMapping("/likelist")
     public ResponseDto<?> getAlllikePost(@RequestParam (value = "page",defaultValue = "0")int page,
-                                     @RequestParam (value = "size",defaultValue = "5")int size,
+                                     @RequestParam (value = "size",defaultValue = "100")int size,
                                      @AuthenticationPrincipal UserDetails userDetails
     ) {
         return postService.getAlllikePost(page,size,userDetails);
