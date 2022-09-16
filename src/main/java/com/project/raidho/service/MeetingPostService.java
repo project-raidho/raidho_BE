@@ -5,6 +5,7 @@ import com.project.raidho.domain.meetingPost.ThemeCategory;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostResponseDto;
 import com.project.raidho.domain.member.Member;
+import com.project.raidho.domain.post.Post;
 import com.project.raidho.domain.tags.MeetingTags;
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.jwt.JwtTokenProvider;
@@ -151,6 +152,23 @@ public class MeetingPostService {
         return new PageImpl<>(meetingPosts, meetingPostList.getPageable(), meetingPostList.getTotalElements());
     }
 
+    @Transactional
+    public ResponseDto<?> deleteMeetingPost (Long meetingId, UserDetails userDetails){
+        MeetingPost meetingPost = meetingPostRepository.findById(meetingId).orElse(null);
+        Member member = new Member();
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
+        if (meetingPost == null) {
+            throw new NullPointerException("존재하지 않는 게시글 입니다.");
+        }
+        if (!member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
+            throw new NullPointerException("게시글 주인이 아닙니다.");
+        } else {
+            meetingPostRepository.delete(meetingPost);
+            return ResponseDto.success("구인 구직 글 삭제 성공");
+        }
+    }
 
     @Transactional
     public Member validateMember(HttpServletRequest request) {

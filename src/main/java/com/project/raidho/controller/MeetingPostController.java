@@ -30,4 +30,9 @@ public class MeetingPostController {
 
         return ResponseEntity.ok().body(meetingPostService.getAllMeetingPost(page,size,userDetails));
     }
+
+    @DeleteMapping("/{meetingId}")
+    public ResponseDto<?> deleteMeetingPost(@PathVariable("meetingId") Long meetingId, @AuthenticationPrincipal UserDetails userDetails){
+        return meetingPostService.deleteMeetingPost(meetingId, userDetails);
+    }
 }
