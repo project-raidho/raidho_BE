@@ -11,7 +11,6 @@ import java.util.Optional;
 public interface MeetingPostRepository extends JpaRepository<MeetingPost, Long> {
 
     Page<MeetingPost> findAllByOrderByCreatedAtDesc (PageRequest pageRequest);
-
-    Optional<MeetingPost> findById(Long id);
     Page<MeetingPost> findAllByThemeCategory_IdOrderByCreatedAtDesc(Long id, PageRequest pageRequest);
+    Optional<MeetingPost> findById(Long id);
 }
