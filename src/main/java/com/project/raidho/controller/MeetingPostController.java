@@ -1,12 +1,9 @@
 package com.project.raidho.controller;
 
-import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
-import com.project.raidho.domain.post.dto.PostRequestDto;
 import com.project.raidho.service.MeetingPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;

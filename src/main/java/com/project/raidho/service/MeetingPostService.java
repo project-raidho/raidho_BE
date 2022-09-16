@@ -71,7 +71,9 @@ public class MeetingPostService {
         return ResponseDto.success(
                 MeetingPostResponseDto.builder()
                         .id(meetingPost.getId())
+                        .themeCategory(themeCategory.toString())
                         .title(meetingPost.getTitle())
+                        .desc(meetingPost.getDesc())
                         .departLocation(meetingPost.getDepartLocation())
                         .startDate(meetingPost.getStartDate())
                         .endDate(meetingPost.getEndDate())
