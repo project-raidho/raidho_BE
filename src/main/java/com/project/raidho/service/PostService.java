@@ -1,7 +1,6 @@
 package com.project.raidho.service;
 
 import com.project.raidho.domain.*;
-import com.project.raidho.domain.locationTags.LocationTags;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
 import com.project.raidho.domain.post.dto.MainPostResponseDto;
