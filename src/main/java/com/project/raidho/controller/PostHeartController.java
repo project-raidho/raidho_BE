@@ -1,8 +1,10 @@
 package com.project.raidho.controller;
 
 import com.project.raidho.domain.ResponseDto;
+import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.service.PostHeartService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,12 +17,12 @@ public class PostHeartController {
     private final PostHeartService postHeartService;
 
     @PostMapping("/{postId}")
-    public ResponseDto<?> postHeart(@PathVariable("postId") Long postId, HttpServletRequest request) {
+    public ResponseEntity<?> postHeart(@PathVariable("postId") Long postId, HttpServletRequest request) throws RaidhoException {
         return postHeartService.createPostHeart(postId, request);
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseDto<?> postHeartDelete(@PathVariable("postId") Long postId, HttpServletRequest request) {
+    public ResponseEntity<?> postHeartDelete(@PathVariable("postId") Long postId, HttpServletRequest request) throws RaidhoException {
         return postHeartService.deletePostHeart(postId, request);
     }
 }

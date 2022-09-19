@@ -38,11 +38,14 @@ public class SecurityConfig {
 
         configuration.setExposedHeaders(Arrays.asList("Authorization", "RefreshToken" , "Access_Control-Allow-Origin"));
 
+        // Todo :: Security Config -> 허용할 포트만 열어두기!!
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
+
+    // Todo :: filterChain (권한 제한 걸어주기)
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http

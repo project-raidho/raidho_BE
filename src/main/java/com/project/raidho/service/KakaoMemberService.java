@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.member.MemberRole;
-import com.project.raidho.domain.member.dto.OauthLoginResponseDto;
+import com.project.raidho.domain.member.dto.MemberDto;
 import com.project.raidho.domain.oauthMemberInfo.dto.OauthMemberInfoImpl;
 import com.project.raidho.domain.token.dto.JwtTokenDto;
 import com.project.raidho.jwt.JwtTokenProvider;
@@ -45,13 +45,13 @@ public class KakaoMemberService {
 
     // 카카오 로그인
     @Transactional
-    public OauthLoginResponseDto kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+    public MemberDto kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 1. auth code 로 (Kakao -> Resource Server 접속이 가능한 ) accessToken 요청
         String KakaoResourceToken = getResourceToken(code); // 받은 인가코드를 통해 토큰을 받아옴
         OauthMemberInfoImpl kakaoMemberInfo = getKakaoMemberInfo(KakaoResourceToken); // Resource Server 에서 유저 정보 가져옴
         Member kakaoMember = joinMemberShip(kakaoMemberInfo); // 회원가입
-        HttpHeaders httpHeaders =raidhoJwtTokenGenerate(kakaoMember, response);
-        return new OauthLoginResponseDto(httpHeaders, kakaoMember);
+        raidhoJwtTokenGenerate(kakaoMember, response);
+        return MemberDto.builder().member(kakaoMember).build();
     }
 
     private String getResourceToken(String code) throws JsonProcessingException {
@@ -147,26 +147,16 @@ public class KakaoMemberService {
         return kakaoMember;
     }
 
-    private HttpHeaders raidhoJwtTokenGenerate(Member kakaoMember, HttpServletResponse response) {
+    private void raidhoJwtTokenGenerate(Member kakaoMember, HttpServletResponse response) {
         UserDetails userDetails = new PrincipalDetails(kakaoMember);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         // SecurityContextHolder (Authentication (UserDetails))
         Member member = ((PrincipalDetails) authentication.getPrincipal()).getMember();
-
         JwtTokenDto jwtTokenDto = jwtTokenProvider.generateTokenDto(member);
         String accessToken = jwtTokenDto.getAuthorization();
         String refreshToken = jwtTokenDto.getRefreshToken();
-
         response.addHeader("Authorization", accessToken);
         response.addHeader("RefreshToken", refreshToken);
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", accessToken);
-        httpHeaders.add("RefreshToken", refreshToken);
-
-        return httpHeaders;
-
     }
 }

@@ -3,6 +3,7 @@ package com.project.raidho.controller;
 import com.project.raidho.domain.post.dto.PostRequestDto;
 import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
 import com.project.raidho.domain.ResponseDto;
+import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,49 +20,46 @@ import java.io.IOException;
 @RequestMapping("/api/post")
 public class PostController {
     private final PostService postService;
+
+    // 게시글 등록
     @PostMapping
-    public ResponseEntity<?> createPost(@ModelAttribute PostRequestDto postRequestDto, HttpServletRequest request) throws IOException {
-        postService.createPost(postRequestDto, request);
-        return ResponseEntity.ok().body(ResponseDto.success("ok"));
+    public ResponseEntity<?> createPost(@ModelAttribute PostRequestDto postRequestDto, HttpServletRequest request) throws RaidhoException, IOException {
+        return ResponseEntity.ok().body(ResponseDto.success(postService.createPost(postRequestDto, request)));
     }
     //전체조회
     @GetMapping("/latest")
-    public ResponseDto<?> getAllPost(@RequestParam (value = "page",defaultValue = "0")int page,
+    public ResponseEntity<?> getAllPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                      @RequestParam (value = "size",defaultValue = "5")int size,
-                                     @AuthenticationPrincipal UserDetails userDetails
-                                        ) {
-
-        return postService.getAllPost(page,size,userDetails);
+                                     @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok().body(postService.getAllPost(page,size,userDetails));
     }
 
     @GetMapping("/likelist")
-    public ResponseDto<?> getAlllikePost(@RequestParam (value = "page",defaultValue = "0")int page,
+    public ResponseEntity<?> getAlllikePost(@RequestParam (value = "page",defaultValue = "0")int page,
                                      @RequestParam (value = "size",defaultValue = "100")int size,
-                                     @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        return postService.getAlllikePost(page,size,userDetails);
+                                     @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok().body(postService.getAlllikePost(page,size,userDetails));
     }
+
     @GetMapping("/mypost")
-    public ResponseDto<?> getAllMyPost(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> getAllMyPost(@AuthenticationPrincipal UserDetails userDetails) {
         return postService.getAllMyPost(userDetails);
     }
 
     //단건조회
     @GetMapping("/{postId}")
-    public ResponseDto<?> getPostDetail(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails){
-     return postService.getPostDetail(userDetails, postId);
+    public ResponseEntity<?> getPostDetail(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
+     return ResponseEntity.ok().body(postService.getPostDetail(userDetails, postId));
     }
-    //삭제
 
+    //삭제
     @DeleteMapping("/{postId}")
-    public ResponseDto<?> deletePost(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails){
-        return postService.deletePost(postId, userDetails);
+    public ResponseEntity<?> deletePost(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
+        return ResponseEntity.ok().body(postService.deletePost(postId, userDetails));
     }
-    //TODO :: 수정
+
     @PutMapping("/{postId}")
-    public ResponseDto<?> updatePost(@PathVariable("postId") Long postId,
-                                     @AuthenticationPrincipal UserDetails userDetails,
-                                     UpdatePostRequestDto updatePostRequestDto) {
+    public ResponseEntity<?> updatePost(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails, UpdatePostRequestDto updatePostRequestDto) throws RaidhoException {
         return postService.updatePost(postId,userDetails,updatePostRequestDto);
     }
 

@@ -1,8 +1,6 @@
 package com.project.raidho.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.project.raidho.domain.member.dto.MembersResponseDto;
-import com.project.raidho.domain.member.dto.OauthLoginResponseDto;
 
 import com.project.raidho.service.KakaoMemberService;
 
@@ -29,16 +27,12 @@ public class OAuthLoginController {
     @GetMapping("/kakao")
     public ResponseEntity<?> kakaoLogin (@RequestParam String code, HttpServletResponse response) {
         try {
-            OauthLoginResponseDto oauthLoginResponseDto = kakaoMemberService.kakaoLogin(code, response);
-            MembersResponseDto membersResponseDto = new MembersResponseDto(oauthLoginResponseDto);
-            return ResponseEntity.ok().body(membersResponseDto);
-            //return new ResponseEntity<>("카카오 로그인 성공", HttpStatus.OK);
+            return ResponseEntity.ok().body(kakaoMemberService.kakaoLogin(code, response));
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("카카오 로그인 실패");
         }
     }
-
 //    @GetMapping("/naver")
 //    public ResponseEntity<?> naverLogin (@RequestParam String code, @RequestParam String state, HttpServletResponse response) {
 //        try {

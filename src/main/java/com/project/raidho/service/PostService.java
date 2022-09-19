@@ -4,12 +4,15 @@ import com.project.raidho.domain.*;
 import com.project.raidho.domain.locationTags.LocationTags;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
+import com.project.raidho.domain.post.dto.MainPostResponseDto;
 import com.project.raidho.domain.post.dto.PostRequestDto;
 import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
 import com.project.raidho.domain.post.dto.PostResponseDto;
 import com.project.raidho.domain.s3.MultipartFiles;
 import com.project.raidho.domain.tags.Tags;
 import com.project.raidho.domain.ResponseDto;
+import com.project.raidho.exception.ErrorCode;
+import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
@@ -18,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,27 +43,20 @@ public class PostService extends Timestamped {
     private final TagRepository tagRepository;
     private final PostHeartRepository postHeartRepository;
     private final S3Service s3Service;
-    private final LocationTagsRepository locationTagsRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    // Todo :: 게시물 업로드
     @Transactional
-    public ResponseDto<?> createPost(PostRequestDto postRequestDto, HttpServletRequest request) throws IOException {
-
-        // 회원정보 확인 로직
+    public ResponseDto<?> createPost(PostRequestDto postRequestDto, HttpServletRequest request) throws RaidhoException, IOException {
         Member member = validateMember(request);
-
         if (member == null) {
-            throw new NullPointerException("회원만 사용 가능합니다.");
+            throw new RaidhoException(ErrorCode.UNAUTHORIZATION_MEMBER);
         }
-
         Post post = postRepository.save(
                 Post.builder()
                         .member(member)
                         .content(postRequestDto.getContent())
                         .build()
         );
-
         List<MultipartFile> FilesList = postRequestDto.getImgUrl();
         if (FilesList != null) {
             for (MultipartFile file : FilesList) {
@@ -81,49 +79,21 @@ public class PostService extends Timestamped {
                                 .build()
                 );
         }
-
-        List<String> locationTag = postRequestDto.getLocationTags();
-        if (locationTag != null) {
-            for (String locationTags : locationTag)
-                locationTagsRepository.save(
-                        LocationTags.builder()
-                                .locationTags(locationTags)
-                                .post(post)
-                                .build()
-                );
-        }
-        return ResponseDto.success(
-                PostResponseDto.builder()
-                        .id(post.getId())
-                        .content(post.getContent())
-//                        .author(membersDto)
-                        .createdAt(post.getCreatedAt().toLocalDate())
-                        .modifiedAt(post.getModifiedAt().toLocalDate())
-                        .build()
-        );
+        return ResponseDto.success("새로운 게시글이 등록되었습니다.");
     }
 
     // Todo :: 게시글 수정
     @Transactional
-    public ResponseDto<?> updatePost(Long postId, UserDetails userDetails, UpdatePostRequestDto updatePostRequestDto) {
-
+    public ResponseEntity<?> updatePost(Long postId, UserDetails userDetails, UpdatePostRequestDto updatePostRequestDto) throws RaidhoException {
         Member member = new Member();
-        Post post = postRepository.findById(postId).orElse(null);
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_POST));
         tagRepository.deleteAllByPost_Id(post.getId());
-        locationTagsRepository.deleteAllByPost_Id(post.getId());
-        //LocationTags locationTag = locationTagsRepository.findById(postId).orElse(null);
-
-        if (post == null) {
-            throw new NullPointerException("존재하지 않는 게시글 입니다..");
-        }
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
-
         if (member.getProviderId() != null) {
             if (member.getProviderId().equals(post.getMember().getProviderId())) {
                 post.updatePost(updatePostRequestDto);
-
                 List<String> tags = updatePostRequestDto.getTags();
                 if (tags != null) {
                     for (String tag : tags)
@@ -134,233 +104,124 @@ public class PostService extends Timestamped {
                                         .build()
                         );
                 }
-                List<String> locationTags = updatePostRequestDto.getLocationTags();
-                if (locationTags != null) {
-                    for (String locationTag : locationTags)
-                        locationTagsRepository.save(
-                                LocationTags.builder()
-                                        .locationTags(locationTag)
-                                        .post(post)
-                                        .build()
-                        );
-                }
             }
         }
-        return ResponseDto.success("update success");
+        return ResponseEntity.ok().body("게시글이 정상적으로 수정되었습니다.");
     }
-        // Todo :: 게시글 최신순 전체 조회
-        @Transactional(readOnly = true)
-        public ResponseDto<?> getAllPost ( int page, int size, UserDetails userDetails){
 
-            PageRequest pageRequest = PageRequest.of(page, size);
+    // Todo :: 게시글 최신순 전체 조회
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getAllPost(int page, int size, UserDetails userDetails) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
+        Page<MainPostResponseDto> mainPostResponseDtos = convertToMainPostResponseDto(postList, userDetails);
+        return ResponseDto.success(mainPostResponseDtos);
+    }
 
-            Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
+    // Todo :: 게시글 좋아요 순 전체조회
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getAlllikePost(int page, int size, UserDetails userDetails) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Post> postList = postRepository.findAllByOrderByHeartCountDesc(pageRequest);
+        Page<MainPostResponseDto> postResponseDtos = convertToMainPostResponseDto(postList, userDetails);
+        return ResponseDto.success(postResponseDtos);
+    }
 
-            Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList, userDetails);
-
-            return ResponseDto.success(postResponseDtos);
-
+    // Todo :: 게시글 단건 조회
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getPostDetail(UserDetails userDetails, Long postId) throws RaidhoException {
+        Boolean isMine = false;
+        Boolean isHeartMine = false;
+        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_POST));
+        List<Tags> tag = tagRepository.findAllByPost_Id(post.getId());
+        List<String> tags = new ArrayList<>();
+        for (Tags t : tag) {
+            tags.add(t.getTag());
         }
-
-        // Todo :: 게시글 좋아요 순 전체조회
-        @Transactional(readOnly = true)
-        public ResponseDto<?> getAlllikePost ( int page, int size, UserDetails userDetails){
-
-            PageRequest pageRequest = PageRequest.of(page, size);
-
-            Page<Post> postList = postRepository.findAllByOrderByHeartCountDesc(pageRequest);
-
-            Page<PostResponseDto> postResponseDtos = convertToBasicResponseDto(postList, userDetails);
-
-            return ResponseDto.success(postResponseDtos);
-
+        List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
+        List<String> multipartFiles = new ArrayList<>();
+        for (MultipartFiles m : multipartFile) {
+            multipartFiles.add(m.getMultipartFiles());
         }
-
-        // Todo :: 게시글 단건 조회
-        @Transactional(readOnly = true)
-        public ResponseDto<?> getPostDetail (UserDetails userDetails, Long postId){
-            List<PostResponseDto> postResponseDtoList = new ArrayList<>();
-
-            Post post = postRepository.findById(postId).orElse(null);
-            if (post == null) {
-                throw new NullPointerException("존재하지 않는 게시글 입니다..");
-            }
-
-            List<LocationTags> locationTag = locationTagsRepository.findAllByPost_Id(post.getId());
-            List<String> locationTags = new ArrayList<>();
-            for (LocationTags a : locationTag) {
-                locationTags.add(a.getLocationTags());
-            }
-
-            List<Tags> tag = tagRepository.findAllByPost_Id(post.getId());
-            List<String> tags = new ArrayList<>();
-            for (Tags b : tag) {
-                tags.add(b.getTag());
-            }
-
-            List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
-            List<String> multipartFiles = new ArrayList<>();
-            for (MultipartFiles c : multipartFile) {
-                multipartFiles.add(c.getMultipartFiles());
-            }
-            Member member = new Member();
-
-            if (userDetails != null) {
-                member = ((PrincipalDetails) userDetails).getMember();
-            }
-
-            Boolean isMine = false;
-            Boolean isHeartMine = false;
-
-            if (member.getProviderId() != null) {
-                if (member.getProviderId().equals(post.getMember().getProviderId())) {
-                    isMine = true;
-                }
-            }
-
-            int heartCount = postHeartRepository.getCountOfPostHeart(post);
-            if (member.getProviderId() != null) {
-                int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
-                if (isHeartMineCh >= 1) {
-                    isHeartMine = true;
-                }
-            }
-
-            PostResponseDto postResponseDto = PostResponseDto.builder()
-                    .content(post.getContent())
-                    .id(post.getId())
-                    .memberName(post.getMember().getMemberName())
-                    .memberImage(post.getMember().getMemberImage())
-                    .locationTags(locationTags)
-                    .tags(tags)
-                    .heartCount(heartCount)
-                    .isMine(isMine)
-                    .isHeartMine(isHeartMine)
-                    .createdAt(post.getCreatedAt().toLocalDate())
-                    .modifiedAt(post.getModifiedAt().toLocalDate())
-                    .multipartFiles(multipartFiles)
-                    .build();
-            postResponseDtoList.add(postResponseDto);
-            return ResponseDto.success(postResponseDtoList);
-        }
-
-        // Todo :: 내가 쓴글 조회 하기
-        @Transactional(readOnly = true)
-        public ResponseDto<?> getAllMyPost (UserDetails userDetails) {
-
-            if (userDetails != null) {
-                Member member = ((PrincipalDetails) userDetails).getMember();
-                if (member != null) {
-                    List<Post> postList = postRepository.findAllByMember_IdOrderByCreatedAtDesc(member.getId());
-                    return ResponseDto.success(convertToBasicResponseDto2(postList, userDetails));
-                }
-            }
-            return ResponseDto.fail(404,"회원 정보가 없음");
-        }
-
-
-        // Todo :: 게시글 삭제
-        @Transactional
-        public ResponseDto<?> deletePost (Long postId, UserDetails userDetails){
-            Post post = postRepository.findById(postId).orElse(null);
-            Member member = new Member();
-            if (userDetails != null) {
-                member = ((PrincipalDetails) userDetails).getMember();
-            }
-            if (post == null) {
-                throw new NullPointerException("존재하지 않는 게시글 입니다.");
-            }
-            if (!member.getProviderId().equals(post.getMember().getProviderId())) {
-                throw new NullPointerException("게시글 주인이 아닙니다.");
-            } else {
-                postRepository.delete(post);
-                return ResponseDto.success("게시글 삭제 성공");
-            }
-        }
-        // Todo :: pagenation 처리
-        private Page<PostResponseDto> convertToBasicResponseDto (Page < Post > postList, UserDetails userDetails){
-
-            Member member = new Member();
-
-            if (userDetails != null) {
-                member = ((PrincipalDetails) userDetails).getMember();
-            }
-
-            Boolean isMine = false;
-            Boolean isHeartMine = false;
-            Boolean isImages = false;
-
-            List<PostResponseDto> posts = new ArrayList<>();
-            for (Post post : postList) {
-
-                if (member.getProviderId() != null) {
-                    if (member.getProviderId().equals(post.getMember().getProviderId())) {
-                        isMine = true;
-                    }
-                }
-
-                int heartCount = postHeartRepository.getCountOfPostHeart(post);
-                if (member.getProviderId() != null) {
-                    int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
-                    if (isHeartMineCh >= 1) {
-                        isHeartMine = true;
-                    }
-                }
-
-
-                List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
-                if (multipartFile.size() > 1) {
-                    isImages = true;
-                }
-                List<String> multipartFiles = new ArrayList<>();
-                for (MultipartFiles c : multipartFile) {
-                    multipartFiles.add(c.getMultipartFiles());
-                }
-
-
-                posts.add(
-                        PostResponseDto.builder()
-                                .id(post.getId())
-                                .memberName(post.getMember().getMemberName())
-                                .memberImage(post.getMember().getMemberImage())
-                                .content(post.getContent())
-                                .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
-                                .heartCount(heartCount)
-                                .isMine(isMine)
-                                .isHeartMine(isHeartMine)
-                                .isImages(isImages)
-                                .createdAt(post.getCreatedAt().toLocalDate())
-                                .modifiedAt(post.getModifiedAt().toLocalDate())
-                                .build()
-                );
-                isMine = false;
-                isHeartMine = false;
-                isImages = false;
-            }
-            return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
-        }
-        // Mypage test
-    private List<PostResponseDto> convertToBasicResponseDto2 (List <Post> postList, UserDetails userDetails){
-
         Member member = new Member();
-
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
+        if (member.getProviderId() != null) {
+            if (member.getProviderId().equals(post.getMember().getProviderId())) {
+                isMine = true;
+            }
+        }
+        int heartCount = postHeartRepository.getCountOfPostHeart(post);
+        if (member.getProviderId() != null) {
+            int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
+            if (isHeartMineCh >= 1) {
+                isHeartMine = true;
+            }
+        }
+        PostResponseDto postResponseDto = PostResponseDto.builder()
+                .content(post.getContent())
+                .id(post.getId())
+                .memberName(post.getMember().getMemberName())
+                .memberImage(post.getMember().getMemberImage())
+                .tags(tags)
+                .heartCount(heartCount)
+                .isMine(isMine)
+                .isHeartMine(isHeartMine)
+                .createdAt(post.getCreatedAt().toLocalDate())
+                .modifiedAt(post.getModifiedAt().toLocalDate())
+                .multipartFiles(multipartFiles)
+                .build();
+        postResponseDtoList.add(postResponseDto);
+        return ResponseDto.success(postResponseDtoList);
+    }
 
+    // Todo :: 내가 쓴글 조회 하기
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getAllMyPost(UserDetails userDetails) {
+        if (userDetails != null) {
+            Member member = ((PrincipalDetails) userDetails).getMember();
+            if (member != null) {
+                List<Post> postList = postRepository.findAllByMember_IdOrderByCreatedAtDesc(member.getId());
+                return ResponseEntity.ok().body(ResponseDto.success(convertToMyPageResponseDto(postList, userDetails)));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
+    }
+
+
+    // Todo :: 게시글 삭제
+    @Transactional
+    public ResponseDto<?> deletePost(Long postId, UserDetails userDetails) throws RaidhoException {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_POST));
+        Member member = new Member();
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
+        if (!member.getProviderId().equals(post.getMember().getProviderId())) {
+            throw new RaidhoException(ErrorCode.INVALID_AUTH_MEMBER_DELETE);
+        } else {
+            postRepository.delete(post);
+            return ResponseDto.success("게시글이 정상적으로 삭제되었습니다.");
+        }
+    }
+
+    private Page<MainPostResponseDto> convertToMainPostResponseDto(Page<Post> postList, UserDetails userDetails) {
         Boolean isMine = false;
         Boolean isHeartMine = false;
         Boolean isImages = false;
-
-        List<PostResponseDto> posts = new ArrayList<>();
+        Member member = new Member();
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
+        List<MainPostResponseDto> posts = new ArrayList<>();
         for (Post post : postList) {
-
             if (member.getProviderId() != null) {
                 if (member.getProviderId().equals(post.getMember().getProviderId())) {
                     isMine = true;
                 }
             }
-
             int heartCount = postHeartRepository.getCountOfPostHeart(post);
             if (member.getProviderId() != null) {
                 int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
@@ -368,8 +229,6 @@ public class PostService extends Timestamped {
                     isHeartMine = true;
                 }
             }
-
-
             List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
             if (multipartFile.size() > 1) {
                 isImages = true;
@@ -378,14 +237,62 @@ public class PostService extends Timestamped {
             for (MultipartFiles c : multipartFile) {
                 multipartFiles.add(c.getMultipartFiles());
             }
-
-
             posts.add(
-                    PostResponseDto.builder()
+                    MainPostResponseDto.builder()
                             .id(post.getId())
                             .memberName(post.getMember().getMemberName())
                             .memberImage(post.getMember().getMemberImage())
-                            .content(post.getContent())
+                            .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
+                            .heartCount(heartCount)
+                            .isMine(isMine)
+                            .isHeartMine(isHeartMine)
+                            .isImages(isImages)
+                            .createdAt(post.getCreatedAt().toLocalDate())
+                            .modifiedAt(post.getModifiedAt().toLocalDate())
+                            .build()
+            );
+            isMine = false;
+            isHeartMine = false;
+            isImages = false;
+        }
+        return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
+    }
+
+    private List<MainPostResponseDto> convertToMyPageResponseDto(List<Post> postList, UserDetails userDetails) {
+        Boolean isMine = false;
+        Boolean isHeartMine = false;
+        Boolean isImages = false;
+        Member member = new Member();
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
+        List<MainPostResponseDto> posts = new ArrayList<>();
+        for (Post post : postList) {
+            if (member.getProviderId() != null) {
+                if (member.getProviderId().equals(post.getMember().getProviderId())) {
+                    isMine = true;
+                }
+            }
+            int heartCount = postHeartRepository.getCountOfPostHeart(post);
+            if (member.getProviderId() != null) {
+                int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
+                if (isHeartMineCh >= 1) {
+                    isHeartMine = true;
+                }
+            }
+            List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
+            if (multipartFile.size() > 1) {
+                isImages = true;
+            }
+            List<String> multipartFiles = new ArrayList<>();
+            for (MultipartFiles c : multipartFile) {
+                multipartFiles.add(c.getMultipartFiles());
+            }
+            posts.add(
+                    MainPostResponseDto.builder()
+                            .id(post.getId())
+                            .memberName(post.getMember().getMemberName())
+                            .memberImage(post.getMember().getMemberImage())
                             .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
                             .heartCount(heartCount)
                             .isMine(isMine)
@@ -402,25 +309,25 @@ public class PostService extends Timestamped {
         return posts;
     }
 
-        // Todo :: accessToken validation
-        @Transactional
-        public Member validateMember (HttpServletRequest request){
-            String accessToken = resolveToken(request.getHeader("Authorization"));
+    // Todo :: accessToken validation
+    @Transactional
+    public Member validateMember(HttpServletRequest request) {
+        String accessToken = resolveToken(request.getHeader("Authorization"));
 
-            if (!jwtTokenProvider.validationToken(accessToken)) {
-                return null;
-            }
-            return jwtTokenProvider.getMemberFromAuthentication();
+        if (!jwtTokenProvider.validationToken(accessToken)) {
+            return null;
         }
-
-        // Todo :: Authorization 에서 받아온 accessToken bearer 제거
-        private String resolveToken (String accessToken){
-            if (accessToken.startsWith("Bearer ")) {
-                return accessToken.substring(7);
-            }
-            throw new RuntimeException("NOT VALID ACCESS TOKEN");
-        }
+        return jwtTokenProvider.getMemberFromAuthentication();
     }
+
+    // Todo :: Authorization 에서 받아온 accessToken bearer 제거
+    private String resolveToken(String accessToken) {
+        if (accessToken.startsWith("Bearer ")) {
+            return accessToken.substring(7);
+        }
+        throw new RuntimeException("NOT VALID ACCESS TOKEN");
+    }
+}
 
 
 
