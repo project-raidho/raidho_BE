@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -323,7 +324,7 @@ public class PostService extends Timestamped {
                                 .memberName(post.getMember().getMemberName())
                                 .memberImage(post.getMember().getMemberImage())
                                 .content(post.getContent())
-                                .multipartFiles(multipartFiles)
+                                .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
                                 .heartCount(heartCount)
                                 .isMine(isMine)
                                 .isHeartMine(isHeartMine)
@@ -385,7 +386,7 @@ public class PostService extends Timestamped {
                             .memberName(post.getMember().getMemberName())
                             .memberImage(post.getMember().getMemberImage())
                             .content(post.getContent())
-                            .multipartFiles(multipartFiles)
+                            .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
                             .heartCount(heartCount)
                             .isMine(isMine)
                             .isHeartMine(isHeartMine)
