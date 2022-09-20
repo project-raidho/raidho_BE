@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RoomMasterRequestDto  {
     private String roomName;
+    private Long meetingPostId;
 }

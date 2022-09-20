@@ -24,7 +24,7 @@ public class RoomMaster extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "meetingPostId", nullable = false)
+    @JoinColumn(name = "meetingPostId")
     @OneToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private MeetingPost meetingPost;
