@@ -19,6 +19,8 @@ public enum ErrorCode {
      */
     UNAUTHORIZATION_MEMBER(HttpStatus.UNAUTHORIZED, "회원만 사용가능합니다."),
     INVALID_AUTH_MEMBER_DELETE(HttpStatus.UNAUTHORIZED, "작성자 본인만 삭제가 가능합니다."),
+    INVALID_AUTH_MEMBER_UPDATE(HttpStatus.UNAUTHORIZED, "작성자 본인만 수정이 가능합니다."),
+
 
     /*
     404

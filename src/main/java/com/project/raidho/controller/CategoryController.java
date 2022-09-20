@@ -5,6 +5,8 @@ import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.domain.meetingPost.dto.ThemeCategoryRequestDto;
 import com.project.raidho.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -42,28 +44,28 @@ public class CategoryController {
     }
 
     @PostMapping("/api/category")
-    public ResponseDto<?> createCategory(@RequestBody ThemeCategoryRequestDto requestDto,
-                                         @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> createCategory(@RequestBody ThemeCategoryRequestDto requestDto,
+                                            @AuthenticationPrincipal UserDetails userDetails) {
         if (requestDto.getCountryName() == null) {
-            return ResponseDto.fail(404, "카테고리 정보를 입력해주세요.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.fail(404, "카테고리 정보를 입력해주세요."));
         }
-        return categoryService.createCategory(requestDto,userDetails);
+        return ResponseEntity.ok().body(categoryService.createCategory(requestDto,userDetails));
     }
 
     @PutMapping("/api/category/{id}")
-    public ResponseDto<?> updateCategory(@PathVariable Long id,
+    public ResponseEntity<?> updateCategory(@PathVariable Long id,
                                          @RequestBody ThemeCategoryRequestDto requestDto,
                                          @AuthenticationPrincipal UserDetails userDetails) {
         if (requestDto.getCountryName() == null) {
-            return ResponseDto.fail(404, "카테고리 정보를 입력해주세요.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.fail(404, "카테고리 정보를 입력해주세요."));
         }
-        return categoryService.updateCategory(id, requestDto, userDetails);
+        return ResponseEntity.ok().body(categoryService.updateCategory(id, requestDto, userDetails));
     }
 
     @DeleteMapping("/api/category/{id}")
-    public ResponseDto<?> deleteCategory(@PathVariable Long id,
+    public ResponseEntity<?> deleteCategory(@PathVariable Long id,
                                          @AuthenticationPrincipal UserDetails userDetails) {
 
-        return categoryService.deleteCategory(id, userDetails);
+        return ResponseEntity.ok().body(categoryService.deleteCategory(id, userDetails));
     }
 }

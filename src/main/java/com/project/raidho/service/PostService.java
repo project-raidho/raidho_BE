@@ -1,7 +1,6 @@
 package com.project.raidho.service;
 
 import com.project.raidho.domain.*;
-import com.project.raidho.domain.locationTags.LocationTags;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
 import com.project.raidho.domain.post.dto.MainPostResponseDto;
@@ -87,12 +86,12 @@ public class PostService extends Timestamped {
     public ResponseEntity<?> updatePost(Long postId, UserDetails userDetails, UpdatePostRequestDto updatePostRequestDto) throws RaidhoException {
         Member member = new Member();
         Post post = postRepository.findById(postId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_POST));
-        tagRepository.deleteAllByPost_Id(post.getId());
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
         if (member.getProviderId() != null) {
             if (member.getProviderId().equals(post.getMember().getProviderId())) {
+                tagRepository.deleteAllByPost_Id(post.getId());
                 post.updatePost(updatePostRequestDto);
                 List<String> tags = updatePostRequestDto.getTags();
                 if (tags != null) {
@@ -105,6 +104,8 @@ public class PostService extends Timestamped {
                         );
                 }
             }
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new RaidhoException(ErrorCode.INVALID_AUTH_MEMBER_UPDATE));
         }
         return ResponseEntity.ok().body("게시글이 정상적으로 수정되었습니다.");
     }
