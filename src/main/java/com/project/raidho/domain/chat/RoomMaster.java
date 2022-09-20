@@ -29,8 +29,6 @@ public class RoomMaster extends Timestamped {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private MeetingPost meetingPost;
 
-
-
     @Column
     private String roomName;
 
