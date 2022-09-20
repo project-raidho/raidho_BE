@@ -35,7 +35,7 @@ public class RoomService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
         MeetingPost meetingPost = meetingPostRepository.findById(requestDto.getMeetingPostId())
-                .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
+                .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_POST));
         RoomMaster roomMaster = RoomMaster.builder()
                 .meetingPost(meetingPost)
                 .roomName(requestDto.getRoomName())
