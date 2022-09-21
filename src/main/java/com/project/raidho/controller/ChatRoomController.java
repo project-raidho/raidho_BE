@@ -25,7 +25,7 @@ public class ChatRoomController {
 
     // 채팅방 입장
     @GetMapping("/chatting/{roomId}")
-    public ResponseEntity<?> roomDetail(@PathVariable String roomId, @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok().body("??????????????");
+    public ResponseEntity<?> roomDetail(@PathVariable Long roomId, @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
+        return ResponseEntity.ok().body(roomService.joinChatRoom(roomId, userDetails));
     }
 }
