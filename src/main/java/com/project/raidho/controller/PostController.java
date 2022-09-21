@@ -36,7 +36,7 @@ public class PostController {
 
     @GetMapping("/likelist")
     public ResponseEntity<?> getAlllikePost(@RequestParam (value = "page",defaultValue = "0")int page,
-                                     @RequestParam (value = "size",defaultValue = "100")int size,
+                                     @RequestParam (value = "size",defaultValue = "5")int size,
                                      @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok().body(postService.getAlllikePost(page,size,userDetails));
     }
