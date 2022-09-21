@@ -45,13 +45,21 @@ public class RoomService {
                 .roomDetails(new ArrayList<>())
                 .roomPic(RoomUtils.getRandomRoomPic())
                 .build();
+
+        System.out.println("123123123123123123123123123");
+
         RoomDetail roomDetail = RoomDetail.builder()
                 .member(member)
                 .roomMaster(roomMaster)
                 .build();
+
+        System.out.println("798798798798797987987987987");
         roomMaster.getRoomDetails().add(roomDetail);
+        System.out.println("가나다라마바사아자차카타ㅠㅏ하");
         roomMasterRepository.save(roomMaster);
+        System.out.println("vbvbvbvbvbvbvbvbvbvbvb");
         roomDetailRepository.save(roomDetail);
+        System.out.println("0000000000000000000000000");
         return RoomMasterResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
                 .roomName(roomMaster.getRoomName())
