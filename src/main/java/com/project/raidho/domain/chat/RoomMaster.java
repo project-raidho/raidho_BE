@@ -21,6 +21,10 @@ import java.util.List;
 public class RoomMaster extends Timestamped {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column
     private Long roomId;
 
     @JoinColumn(name = "meetingPostId")

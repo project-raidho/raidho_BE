@@ -12,6 +12,7 @@ import com.project.raidho.exception.ErrorCode;
 import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.repository.MeetingPostRepository;
 import com.project.raidho.repository.MemberRepository;
+import com.project.raidho.repository.RoomDetailRepository;
 import com.project.raidho.repository.RoomMasterRepository;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class RoomService {
     private final MemberRepository memberRepository;
     private final RoomMasterRepository roomMasterRepository;
     private final MeetingPostRepository meetingPostRepository;
+    private final RoomDetailRepository roomDetailRepository;
 
     @Transactional
     public RoomMasterResponseDto createRoom(UserDetails userDetails, RoomMasterRequestDto requestDto) throws RaidhoException {
@@ -47,6 +49,7 @@ public class RoomService {
                 .member(member)
                 .roomMaster(roomMaster)
                 .build();
+        roomDetailRepository.save(roomDetail);
         roomMaster.getRoomDetails().add(roomDetail);
         roomMasterRepository.save(roomMaster);
         return RoomMasterResponseDto.builder()
