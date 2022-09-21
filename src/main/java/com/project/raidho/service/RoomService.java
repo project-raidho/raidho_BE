@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -85,5 +86,25 @@ public class RoomService {
                 .roomName(roomMaster.getRoomName())
                 .people(0L) // Todo :: 수정 필요
                 .build();
+    }
+
+    // 내가 구독한 채팅방 리스트 가져오기
+    @Transactional(readOnly = true)
+    public List<RoomMasterResponseDto> myChatRooms(UserDetails userDetails) throws RaidhoException {
+        Long memberId = ((PrincipalDetails) userDetails).getMember().getId();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
+        return roomMasterRepository.findAllByRoomDetails_Member(member);
+//        List<RoomMasterResponseDto> roomMasterResponseDtoList = new ArrayList<>();
+//        for (RoomMaster rm : roomMasterList) {
+//            roomMasterResponseDtoList.add(
+//                    RoomMasterResponseDto.builder()
+//                            .roomMasterId(rm.getRoomId())
+//                            .roomName(rm.getRoomName())
+//                            .roomPic(rm.getRoomPic())
+//                            .build()
+//            );
+//        }
+//        return roomMasterResponseDtoList;
     }
 }

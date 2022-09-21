@@ -28,4 +28,10 @@ public class ChatRoomController {
     public ResponseEntity<?> roomDetail(@PathVariable Long roomId, @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
         return ResponseEntity.ok().body(roomService.joinChatRoom(roomId, userDetails));
     }
+
+    // 내 채팅방 가져오기
+    @GetMapping("/chatting")
+    public ResponseEntity<?> myChatRooms(@AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
+        return ResponseEntity.ok().body(roomService.myChatRooms(userDetails));
+    }
 }
