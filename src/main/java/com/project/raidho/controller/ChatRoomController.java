@@ -30,7 +30,7 @@ public class ChatRoomController {
     }
 
     // 내 채팅방 리스트 가져오기
-    @GetMapping("/api/chat/rooms")
+    @GetMapping("/chatList")
     public ResponseEntity<?> myChatRooms(@AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
         return ResponseEntity.ok().body(roomService.myChatRooms(userDetails));
     }
