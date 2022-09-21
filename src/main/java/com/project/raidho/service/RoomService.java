@@ -94,17 +94,17 @@ public class RoomService {
         Long memberId = ((PrincipalDetails) userDetails).getMember().getId();
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
-        return roomMasterRepository.findAllByRoomDetails_Member(member);
-//        List<RoomMasterResponseDto> roomMasterResponseDtoList = new ArrayList<>();
-//        for (RoomMaster rm : roomMasterList) {
-//            roomMasterResponseDtoList.add(
-//                    RoomMasterResponseDto.builder()
-//                            .roomMasterId(rm.getRoomId())
-//                            .roomName(rm.getRoomName())
-//                            .roomPic(rm.getRoomPic())
-//                            .build()
-//            );
-//        }
-//        return roomMasterResponseDtoList;
+        List<RoomMaster> roomMasterList = roomMasterRepository.findAllByRoomDetails_Member(member);
+        List<RoomMasterResponseDto> roomMasterResponseDtoList = new ArrayList<>();
+        for (RoomMaster rm : roomMasterList) {
+            roomMasterResponseDtoList.add(
+                    RoomMasterResponseDto.builder()
+                            .roomMasterId(rm.getRoomId())
+                            .roomName(rm.getRoomName())
+                            .roomPic(rm.getRoomPic())
+                            .build()
+            );
+        }
+        return roomMasterResponseDtoList;
     }
 }
