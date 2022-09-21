@@ -64,6 +64,15 @@ public class SecurityConfig {
                 // authorizeRequests 가 선언되어야만 antMatchers 옵션을 사용할 수 있다.
 
                 .antMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**","/login/**","/favicon.ico","/api/**").permitAll()
+                .antMatchers("/v2/**","/v2/api-docs", "/swagger-resources/**",
+                        "/swagger-ui.html/**","/swagger-ui/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/sub/**").permitAll()
+                .antMatchers("/pub/**").permitAll()
+                .antMatchers("/ws-stomp/**").permitAll()
+                .antMatchers("/wss-stomp/**").permitAll()
+                .antMatchers("/stomp/**").permitAll()
+                .antMatchers("/websocket/**").permitAll()
                 //.antMatchers("/api/v1/**").hasRole(Role.USER.name())
                 // .antMatchers -> 권한 관리 대상을 지정하는 옵션이다.
                 // URL, HTTP 메소드별로 관리가 가능하다.
