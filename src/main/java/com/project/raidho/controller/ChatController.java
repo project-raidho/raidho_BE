@@ -20,7 +20,7 @@ public class ChatController {
         if (ChatDto.Type.ENTER.equals(chatDto.getType())) {
             chatDto.setMessage(chatDto.getSender() + " 님이 입장하셨습니다.");
             System.out.println("kjvnkjnkjdsnksdjnfdskjfndskjfndskjfnsdkljf");
-            messageSendingOperations.convertAndSend("/sub/chat/mesaage/" + roomId, chatDto);
+            messageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, chatDto);
             System.out.println("sdkj whkfwkojf dihoiu dquid hqoiudaskljd asud hoakshd askjdh alksjdhaskljd ");
         }
     }
