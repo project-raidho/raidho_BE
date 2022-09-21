@@ -10,5 +10,5 @@ import java.util.Optional;
 
 public interface RoomMasterRepository extends JpaRepository<RoomMaster, Long> {
     Optional<RoomMaster> findByRoomId(Long roomId);
-    List<RoomMasterResponseDto> findAllByRoomDetails_Member(Member member);
+    List<RoomMaster> findAllByRoomDetails_Member(Member member);
 }
