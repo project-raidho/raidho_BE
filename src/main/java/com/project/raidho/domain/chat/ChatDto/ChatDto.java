@@ -20,4 +20,5 @@ public class ChatDto {
     private String message;
     private Long memberId;
     private String memberImage;
+
 }
