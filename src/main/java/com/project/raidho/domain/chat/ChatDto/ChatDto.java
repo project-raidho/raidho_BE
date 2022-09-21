@@ -18,4 +18,6 @@ public class ChatDto {
     private String roomId;
     private String sender;
     private String message;
+    private Long memberId;
+    private String memberImage;
 }

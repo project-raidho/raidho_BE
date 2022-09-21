@@ -15,6 +15,12 @@ public class ChatController {
 
     @MessageMapping("/chat/send/{roomId}")
     public void getRoomChats(@DestinationVariable Long roomId, ChatDto chatDto) {
-        messageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, chatDto);
+        System.out.println("12398723842398473290847309847230984");
+        if (ChatDto.Type.ENTER.equals(chatDto.getType())) {
+            chatDto.setMessage(chatDto.getSender() + " 님이 입장하셨습니다.");
+            System.out.println("kjvnkjnkjdsnksdjnfdskjfndskjfndskjfnsdkljf");
+            messageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, chatDto);
+            System.out.println("sdkj whkfwkojf dihoiu dquid hqoiudaskljd asud hoakshd askjdh alksjdhaskljd ");
+        }
     }
 }
