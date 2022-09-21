@@ -49,9 +49,9 @@ public class RoomService {
                 .member(member)
                 .roomMaster(roomMaster)
                 .build();
-        roomDetailRepository.save(roomDetail);
         roomMaster.getRoomDetails().add(roomDetail);
         roomMasterRepository.save(roomMaster);
+        roomDetailRepository.save(roomDetail);
         return RoomMasterResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
                 .roomName(roomMaster.getRoomName())
