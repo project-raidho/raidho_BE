@@ -37,6 +37,7 @@ public class RoomService {
         MeetingPost meetingPost = meetingPostRepository.findById(requestDto.getMeetingPostId())
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_POST));
         RoomMaster roomMaster = RoomMaster.builder()
+                .roomId(meetingPost.getId())
                 .meetingPost(meetingPost)
                 .roomName(requestDto.getRoomName())
                 .roomDetails(new ArrayList<>())
@@ -49,7 +50,7 @@ public class RoomService {
         roomMaster.getRoomDetails().add(roomDetail);
         roomMasterRepository.save(roomMaster);
         return RoomMasterResponseDto.builder()
-                .roomMasterId(roomMaster.getId())
+                .roomMasterId(roomMaster.getRoomId())
                 .roomName(roomMaster.getRoomName())
                 .roomPic(roomMaster.getRoomPic())
                 .recentChat(null)

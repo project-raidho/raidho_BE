@@ -17,8 +17,15 @@ public class ChatRoomController {
 
     public final RoomService roomService;
 
-    @PostMapping ("/roomcreate")
+    // 채팅방 만들기
+    @PostMapping ("/room/create")
     public ResponseEntity<?> createRoom(@RequestBody RoomMasterRequestDto requestDto, @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
         return ResponseEntity.ok().body(roomService.createRoom(userDetails,requestDto));
+    }
+
+    // 채팅방 입장
+    @GetMapping("/chatting/{roomId}")
+    public ResponseEntity<?> roomDetail(@PathVariable String roomId, @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok().body("??????????????");
     }
 }
