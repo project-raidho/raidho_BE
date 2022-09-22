@@ -6,13 +6,16 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.project.raidho.Util.CommonUtils;
+import com.project.raidho.domain.ResponseDto;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,6 +24,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -55,7 +59,7 @@ public class S3Service  {
 
     public String upload(MultipartFile file) throws IOException {
 
-        String fileName = CommonUtils.buildFileName(file.getOriginalFilename()); // 파일이름
+        String fileName = CommonUtils.buildFileName(file.getOriginalFilename()+"-"+UUID.randomUUID());// 파일이름
         long size = file.getSize(); // 파일 크기
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -69,4 +73,13 @@ public class S3Service  {
         return imageUrl;
         // URL 대입!, URL 변환시 한글깨짐
     }
+
+    public ResponseDto<?> editMyPage(String fileName) {
+
+        if (fileName !=null){
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket,fileName));
+        }
+        return ResponseDto.fail(404,"이미지가 없습니다.");
+    }
+
 }
