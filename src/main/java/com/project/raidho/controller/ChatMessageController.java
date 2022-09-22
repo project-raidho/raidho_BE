@@ -14,12 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatMessageController {
 
     private final SimpMessageSendingOperations messageSendingOperations;
-
+    private final ChatMessageService chatMessageService;
 
     @MessageMapping("/chat/send/{roomId}")
     public void getRoomChats(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto) {
-        messageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, chatMessageDto);
-
-
+        ChatMessageDto returnChatMessageDto = chatMessageService.saveChatMessage(roomId, chatMessageDto); // db 메시지 저장
+        messageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, returnChatMessageDto);
     }
 }

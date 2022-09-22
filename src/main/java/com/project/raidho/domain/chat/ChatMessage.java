@@ -12,15 +12,14 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
-public class ChatMessage extends Timestamped {
+public class ChatMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private String roomId;
+    private Long roomId;
 
     @Column
     private String message;
@@ -37,4 +36,10 @@ public class ChatMessage extends Timestamped {
 
     @Column
     private String sender;
+
+    @Column
+    private String memberImage;
+
+    @Column
+    private String createAt;
 }

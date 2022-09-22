@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface RoomDetailRepository extends JpaRepository<RoomDetail, Long> {
     RoomDetail findByRoomMasterAndMember(RoomMaster roomMaster, Member member);
+    RoomDetail findByRoomMaster_RoomIdAndMember_Id(Long roomId, Long memberId);
 }
