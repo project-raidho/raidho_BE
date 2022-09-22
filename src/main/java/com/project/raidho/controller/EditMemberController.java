@@ -21,7 +21,7 @@ import java.io.IOException;
 public class EditMemberController {
     private final EditMemberService editMemberService;
 
-    @PostMapping("/{memberId}")
+    @PutMapping("/{memberId}")
     public ResponseDto<?> editMyPage (@PathVariable("memberId") Long memberId, @ModelAttribute MemberUpdateDto memberDto) throws RaidhoException, IOException {
         editMemberService.editMyPage(memberId, memberDto);
         return ResponseDto.success("프로필 수정 성공!!!");
