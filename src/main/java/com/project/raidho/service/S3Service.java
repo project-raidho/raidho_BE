@@ -58,9 +58,9 @@ public class S3Service  {
     }
 
     public String upload(MultipartFile file) throws IOException {
-        System.out.println("file###############################################"+file);
+
         String fileName = CommonUtils.buildFileName(file.getOriginalFilename());// 파일이름
-        System.out.println("#######################################################"+fileName);
+
         long size = file.getSize(); // 파일 크기
 
         ObjectMetadata objectMetadata = new ObjectMetadata();

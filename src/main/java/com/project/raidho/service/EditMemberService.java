@@ -9,6 +9,7 @@ import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.repository.MemberRepository;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -25,17 +26,12 @@ public class EditMemberService {
     private final MemberRepository memberRepository;
     private final S3Service s3Service;
     @Transactional
-    public void editMyPage(Long memberId, MemberUpdateDto memberDto) throws RaidhoException, IOException {
+    public ResponseEntity<?> editMyPage(Long memberId, MemberUpdateDto memberDto) throws RaidhoException, IOException {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
-        System.out.println("memberDto.getMemberImage()####################################"+memberDto.getMemberImage());
-        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-        System.out.println("memberDto.getMemberIntro()######################################"+memberDto.getMemberIntro());
-        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-        System.out.println("memberDto.getMemberName()#########################################"+memberDto.getMemberName());
-        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         MultipartFile multipartFile = (MultipartFile) memberDto.getMemberImage();
-        System.out.println("multipartFile##############################################################"+multipartFile);
         String updateImage = s3Service.upload(multipartFile);
         member.update(memberDto, updateImage);
+
+        return ResponseEntity.ok("수정 완료");
     }
 }
