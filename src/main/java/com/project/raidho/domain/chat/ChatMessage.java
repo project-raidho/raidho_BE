@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ChatMessage {
+public class ChatMessage extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,5 +41,5 @@ public class ChatMessage {
     private String memberImage;
 
     @Column
-    private String createAt;
+    private String messageTime;
 }
