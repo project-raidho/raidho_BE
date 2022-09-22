@@ -1,5 +1,6 @@
 package com.project.raidho.domain.chat.ChatDto;
 
+import com.project.raidho.domain.chat.ChatMessage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,16 +10,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ChatDto {
+public class ChatMessageDto {
 
-    public enum Type {
-        ENTER, TALK, QUIT
-    }
-    private Type type;
+    private ChatMessage.Type type;
     private String roomId;
     private String sender;
     private String message;
     private Long memberId;
     private String memberImage;
+    private String createdAt;
 
 }
