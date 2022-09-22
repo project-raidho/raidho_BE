@@ -54,7 +54,7 @@ public class ChatMessageService {
         // int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() -1);
         List<ChatMessage> chatMessageList = chatMessageRepository.findByRoomId(roomId);
         int page = (chatMessageList.size()/10);
-        pageable = PageRequest.of(page, 10);
+        pageable = PageRequest.of(page-1, 10);
         //return chatMessageRepository.findByRoomId(roomId, pageable);
         Page<ChatMessage> chatMessagePage = chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId, pageable);
         List<ChatMessageDto> chatMessageDtoPage = new ArrayList<>();
