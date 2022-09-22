@@ -1,9 +1,14 @@
 package com.project.raidho.controller;
 
 import com.project.raidho.domain.chat.ChatDto.RoomMasterRequestDto;
+import com.project.raidho.domain.chat.ChatMessage;
 import com.project.raidho.exception.RaidhoException;
+import com.project.raidho.service.ChatMessageService;
 import com.project.raidho.service.RoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ChatRoomController {
 
-    public final RoomService roomService;
+    private final RoomService roomService;
+    private final ChatMessageService chatMessageService;
 
     // 채팅방 만들기
     @PostMapping ("/room/create")
@@ -34,4 +40,10 @@ public class ChatRoomController {
     public ResponseEntity<?> myChatRooms(@AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
         return ResponseEntity.ok().body(roomService.myChatRooms(userDetails));
     }
+
+    @GetMapping("/messages/{roomId}")
+    public Page<ChatMessage> getAllChatMessageList(@PathVariable Long roomId, @PageableDefault Pageable pageable) {
+        return chatMessageService.getAllChatMessageList(roomId, pageable);
+    }
+
 }

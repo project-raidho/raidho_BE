@@ -7,6 +7,9 @@ import com.project.raidho.domain.member.Member;
 import com.project.raidho.repository.ChatMessageRepository;
 import com.project.raidho.repository.RoomDetailRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,5 +43,12 @@ public class ChatMessageService {
                 .build();
         chatMessageRepository.save(chatMessage);
         return chatMessageDto;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ChatMessage> getAllChatMessageList(Long roomId, Pageable pageable) {
+        int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() -1);
+        pageable = PageRequest.of(page, 100);
+        return chatMessageRepository.findByRoomId(roomId, pageable);
     }
 }
