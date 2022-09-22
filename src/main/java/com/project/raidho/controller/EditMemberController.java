@@ -4,9 +4,7 @@ import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.service.S3Service;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -17,7 +15,7 @@ import java.io.IOException;
 public class EditMemberController {
     private final S3Service s3Service;
 
-    @PutMapping
+    @PostMapping
     public ResponseDto<?> editMyPage (MultipartFile multipartFile,String fileName) throws IOException {
 
         ResponseDto.success(s3Service.editMyPage(fileName));
