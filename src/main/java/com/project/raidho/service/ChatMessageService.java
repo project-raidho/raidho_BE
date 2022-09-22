@@ -25,7 +25,7 @@ public class ChatMessageService {
     public ChatMessageDto saveChatMessage(Long roomId, ChatMessageDto chatMessageDto) {
         RoomDetail roomDetail = roomDetailRepository.findByRoomMaster_RoomIdAndMember_Id(roomId, chatMessageDto.getMemberId());
         Member member = roomDetail.getMember();
-        SimpleDateFormat format = new SimpleDateFormat("HH시mm분");
+        SimpleDateFormat format = new SimpleDateFormat("a HH:mm");
         Date time = new Date();
         String stime = format.format(time);
         chatMessageDto.setCreatedAt(stime);
