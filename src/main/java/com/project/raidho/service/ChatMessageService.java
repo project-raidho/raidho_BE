@@ -1,5 +1,6 @@
 package com.project.raidho.service;
 
+import com.project.raidho.domain.Timestamped;
 import com.project.raidho.domain.chat.ChatDto.ChatMessageDto;
 import com.project.raidho.domain.chat.ChatMessage;
 import com.project.raidho.domain.chat.RoomDetail;
@@ -39,7 +40,7 @@ public class ChatMessageService {
                 .memberImage(chatMessageDto.getMemberImage())
                 .sender(chatMessageDto.getSender())
                 .type(chatMessageDto.getType())
-                .createAt(stime)
+                .messageTime(stime)
                 .build();
         chatMessageRepository.save(chatMessage);
         return chatMessageDto;

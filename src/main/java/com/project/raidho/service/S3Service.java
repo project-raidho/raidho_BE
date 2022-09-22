@@ -59,7 +59,7 @@ public class S3Service  {
 
     public String upload(MultipartFile file) throws IOException {
 
-        String fileName = CommonUtils.buildFileName(file.getOriginalFilename()+"-"+UUID.randomUUID());// 파일이름
+        String fileName = CommonUtils.buildFileName(file.getOriginalFilename());// 파일이름
         long size = file.getSize(); // 파일 크기
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
