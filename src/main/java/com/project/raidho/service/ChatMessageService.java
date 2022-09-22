@@ -8,10 +8,7 @@ import com.project.raidho.domain.member.Member;
 import com.project.raidho.repository.ChatMessageRepository;
 import com.project.raidho.repository.RoomDetailRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,10 +48,8 @@ public class ChatMessageService {
 
     @Transactional(readOnly = true)
     public Page<ChatMessageDto> getAllChatMessageList(Long roomId, Pageable pageable) {
-        // int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() -1);
-        List<ChatMessage> chatMessageList = chatMessageRepository.findByRoomId(roomId);
-        int page = (chatMessageList.size()/10);
-        pageable = PageRequest.of(page-1, 10);
+        int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() -1);
+        pageable = PageRequest.of(page, 10);
         //return chatMessageRepository.findByRoomId(roomId, pageable);
         Page<ChatMessage> chatMessagePage = chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId, pageable);
         List<ChatMessageDto> chatMessageDtoPage = new ArrayList<>();
