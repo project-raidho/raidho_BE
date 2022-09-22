@@ -1,5 +1,7 @@
 package com.project.raidho.domain.member;
 
+import com.project.raidho.domain.member.dto.MemberDto;
+import com.project.raidho.domain.member.dto.MemberUpdateDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,9 +49,9 @@ public class Member {
         this.role = role;
     }
 
-    public void update(String memberImage, String memberIntro, String memberName){
-        this.memberImage=memberImage;
-        this.memberIntro=memberIntro;
-        this.memberName=memberName;
+    public void update(MemberUpdateDto memberDto, String updateImage){
+        this.memberImage= updateImage;
+        this.memberIntro= memberDto.getMemberIntro();
+        this.memberName= memberDto.getMemberName();
     }
 }
