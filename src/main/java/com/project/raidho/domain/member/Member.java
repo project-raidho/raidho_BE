@@ -46,4 +46,9 @@ public class Member {
         this.providerId = providerId;
         this.role = role;
     }
+
+    public void update(String memberImage, String memberIntro){
+        this.memberImage=memberImage;
+        this.memberIntro=memberIntro;
+    }
 }
