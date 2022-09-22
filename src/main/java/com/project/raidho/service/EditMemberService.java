@@ -28,10 +28,14 @@ public class EditMemberService {
     @Transactional
     public ResponseEntity<?> editMyPage(Long memberId, MemberUpdateDto memberDto) throws RaidhoException, IOException {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
+        System.out.println(memberDto.getMemberIntro());
+        System.out.println(memberDto.getMemberName());
+        System.out.println(memberDto.getMemberImage());
         MultipartFile multipartFile = (MultipartFile) memberDto.getMemberImage();
+        System.out.println(multipartFile);
         String updateImage = s3Service.upload(multipartFile);
         member.update(memberDto, updateImage);
 
-        return ResponseEntity.ok("수정 완료");
+        return ResponseEntity.ok().body(updateImage);
     }
 }
