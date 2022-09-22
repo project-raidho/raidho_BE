@@ -1,5 +1,6 @@
 package com.project.raidho.controller;
 
+import com.project.raidho.domain.chat.ChatDto.ChatMessageDto;
 import com.project.raidho.domain.chat.ChatDto.RoomMasterRequestDto;
 import com.project.raidho.domain.chat.ChatMessage;
 import com.project.raidho.exception.RaidhoException;
@@ -42,8 +43,7 @@ public class ChatRoomController {
     }
 
     @GetMapping("/messages/{roomId}")
-    public Page<ChatMessage> getAllChatMessageList(@PathVariable Long roomId, @PageableDefault Pageable pageable) {
+    public Page<ChatMessageDto> getAllChatMessageList(@PathVariable Long roomId, @PageableDefault Pageable pageable) {
         return chatMessageService.getAllChatMessageList(roomId, pageable);
     }
-
 }

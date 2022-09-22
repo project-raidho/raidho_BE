@@ -9,6 +9,7 @@ import com.project.raidho.repository.ChatMessageRepository;
 import com.project.raidho.repository.RoomDetailRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,9 +50,25 @@ public class ChatMessageService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ChatMessage> getAllChatMessageList(Long roomId, Pageable pageable) {
+    public Page<ChatMessageDto> getAllChatMessageList(Long roomId, Pageable pageable) {
         int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() -1);
         pageable = PageRequest.of(page, 10);
-        return chatMessageRepository.findByRoomId(roomId, pageable);
+        //return chatMessageRepository.findByRoomId(roomId, pageable);
+        Page<ChatMessage> chatMessagePage = chatMessageRepository.findByRoomIdOrderByCreatedAtDesc(roomId, pageable);
+        List<ChatMessageDto> chatMessageDtoPage = new ArrayList<>();
+        for (ChatMessage chatMessage : chatMessagePage) {
+            chatMessageDtoPage.add(
+                    ChatMessageDto.builder()
+                            .type(chatMessage.getType())
+                            .roomId(chatMessage.getRoomId().toString())
+                            .sender(chatMessage.getSender())
+                            .message(chatMessage.getMessage())
+                            .memberId(chatMessage.getMember().getId())
+                            .memberImage(chatMessage.getMemberImage())
+                            .messageTime(chatMessage.getMessageTime())
+                            .build()
+            );
+        }
+        return new PageImpl<>(chatMessageDtoPage, chatMessagePage.getPageable(), chatMessagePage.getTotalElements());
     }
 }
