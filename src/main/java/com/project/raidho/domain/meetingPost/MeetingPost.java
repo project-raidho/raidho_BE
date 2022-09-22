@@ -50,6 +50,6 @@ public class MeetingPost extends Timestamped {
     private String departLocation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "memberId",nullable = false)
+    @JoinColumn(name = "member_Id",nullable = false)
     private Member member;
 }
