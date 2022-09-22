@@ -24,7 +24,7 @@ public class EditMemberService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_POST));
 
         member.update(
-                member.getMemberImage(), member.getMemberIntro()
+                member.getMemberImage(), member.getMemberIntro(), member.getMemberName()
         );
     }
 }

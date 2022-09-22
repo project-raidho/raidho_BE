@@ -47,8 +47,9 @@ public class Member {
         this.role = role;
     }
 
-    public void update(String memberImage, String memberIntro){
+    public void update(String memberImage, String memberIntro, String memberName){
         this.memberImage=memberImage;
         this.memberIntro=memberIntro;
+        this.memberName=memberName;
     }
 }
