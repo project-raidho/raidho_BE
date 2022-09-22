@@ -32,7 +32,7 @@ public class ChatMessageService {
         SimpleDateFormat format = new SimpleDateFormat("a HH:mm");
         Date time = new Date();
         String stime = format.format(time);
-        chatMessageDto.setCreatedAt(stime);
+        chatMessageDto.setMessageTime(stime);
         ChatMessage chatMessage = ChatMessage.builder()
                 .roomId(roomId)
                 .message(chatMessageDto.getMessage())

@@ -18,6 +18,6 @@ public class ChatMessageDto {
     private String message;
     private Long memberId;
     private String memberImage;
-    private String createdAt;
+    private String messageTime;
 
 }
