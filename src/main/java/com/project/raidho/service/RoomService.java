@@ -77,7 +77,7 @@ public class RoomService {
         System.out.println("###############################");
         System.out.println("memberCount = " + memberCount);
         if (memberCount >= roomMaster.getMemberCount()) {
-            return ResponseEntity.badRequest().body("FULL");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("FULL");
         }
         RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
         if (roomDetail == null) {
