@@ -33,8 +33,8 @@ public class RoomService {
     private final RoomMasterRepository roomMasterRepository;
     private final MeetingPostRepository meetingPostRepository;
     private final RoomDetailRepository roomDetailRepository;
-
     private final MeetingTagRepository meetingTagRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     // 채팅방 생성
     @Transactional
@@ -157,6 +157,14 @@ public class RoomService {
         Member member = ((PrincipalDetails) userDetails).getMember();
         RoomMaster roomMaster = roomMasterRepository.findByRoomId(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
-        roomDetailRepository.deleteByRoomMasterAndMember(roomMaster, member);
+        MeetingPost meetingPost = meetingPostRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 모집글입니다."));
+        if (meetingPost.getMember().getProviderId().equals(member.getProviderId())) {
+            chatMessageRepository.deleteAllByRoomId(roomId);
+            roomDetailRepository.deleteByRoomMaster_RoomId(roomId);
+            meetingPostRepository.delete(meetingPost);
+        } else {
+            roomDetailRepository.deleteByRoomMasterAndMember(roomMaster, member);
+        }
     }
 }
