@@ -23,7 +23,6 @@ public class RoomDetail extends Timestamped {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_master_id", nullable = false)
-    //@OnDelete(action = OnDeleteAction.CASCADE)
     private RoomMaster roomMaster;
 
     @ManyToOne(fetch = FetchType.LAZY)
