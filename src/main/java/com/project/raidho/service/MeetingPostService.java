@@ -148,10 +148,10 @@ public class MeetingPostService {
 
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
 
-            if (date.after(new Date()) || (meetingPost.getPeople() > memberCount )) {
+            if (date.after(new Date()) && (meetingPost.getPeople() > memberCount )) {
                 meetingStatus = 1;
             }
-            else if (memberCount >= meetingPost.getPeople()) {
+            else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
                 meetingStatus = 2;
             }
             else if (date.before(new Date())) {
