@@ -33,8 +33,8 @@ public class RoomService {
     private final RoomMasterRepository roomMasterRepository;
     private final MeetingPostRepository meetingPostRepository;
     private final RoomDetailRepository roomDetailRepository;
-
     private final MeetingTagRepository meetingTagRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     // 채팅방 생성
     @Transactional
@@ -118,8 +118,13 @@ public class RoomService {
     // 단체방 정보 단건 조회
     @Transactional(readOnly = true)
     public EachRoomInfoDto eachChatRoomInfo(UserDetails userDetails, Long roomId) {
+        Boolean isMine = false;
+        Member userDetailsMember = ((PrincipalDetails) userDetails).getMember();
         MeetingPost meetingPost = meetingPostRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("없어방")); // Todo :: 수정해야됨
+        if (meetingPost.getMember().getProviderId().equals(userDetailsMember.getProviderId())) {
+            isMine = true;
+        }
         List<MeetingTags> meetingTags = meetingTagRepository.findByMeetingPost(meetingPost);
         List<String> SmeetingTags = new ArrayList<>();
         for (MeetingTags m : meetingTags) {
@@ -147,6 +152,7 @@ public class RoomService {
                 .desc(meetingPost.getDesc())
                 .people(meetingPost.getPeople())
                 .memberCount(memberCount)
+                .isMine(isMine)
                 .build();
     }
 
@@ -157,6 +163,14 @@ public class RoomService {
         Member member = ((PrincipalDetails) userDetails).getMember();
         RoomMaster roomMaster = roomMasterRepository.findByRoomId(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
-        roomDetailRepository.deleteByRoomMasterAndMember(roomMaster, member);
+        MeetingPost meetingPost = meetingPostRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 모집글입니다."));
+        if (meetingPost.getMember().getProviderId().equals(member.getProviderId())) {
+            chatMessageRepository.deleteAllByRoomId(roomId);
+            roomDetailRepository.deleteByRoomMaster_RoomId(roomId);
+            meetingPostRepository.delete(meetingPost);
+        } else {
+            roomDetailRepository.deleteByRoomMasterAndMember(roomMaster, member);
+        }
     }
 }

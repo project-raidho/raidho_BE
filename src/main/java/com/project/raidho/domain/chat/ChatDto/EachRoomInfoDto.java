@@ -21,4 +21,5 @@ public class EachRoomInfoDto {
     private int memberCount; // 채팅방에 들어온 인원 수
     private String roomCloseDate;
     private String departLocation;
+    private Boolean isMine;
 }
