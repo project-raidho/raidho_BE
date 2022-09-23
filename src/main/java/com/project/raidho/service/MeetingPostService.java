@@ -59,8 +59,8 @@ public class MeetingPostService {
                         .roomCloseDate(meetingPostRequestDto.getRoomCloseDate())
                         .departLocation(meetingPostRequestDto.getDepartLocation())
                         .member(member)
+                        .people(meetingPostRequestDto.getPeople())
                         .build()
-
         );
 
         List<String> meetingTag = meetingPostRequestDto.getMeetingTags();
