@@ -136,6 +136,7 @@ public class RoomService {
                 .endDate(meetingPost.getEndDate())
                 .roomCloseDate(meetingPost.getRoomCloseDate())
                 .departLocation(meetingPost.getDepartLocation())
+                .desc(meetingPost.getDesc())
                 .people(meetingPost.getPeople())
                 .memberCount(memberCount)
                 .build();
