@@ -118,8 +118,13 @@ public class RoomService {
     // 단체방 정보 단건 조회
     @Transactional(readOnly = true)
     public EachRoomInfoDto eachChatRoomInfo(UserDetails userDetails, Long roomId) {
+        Boolean isMine = false;
+        Member userDetailsMember = ((PrincipalDetails) userDetails).getMember();
         MeetingPost meetingPost = meetingPostRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("없어방")); // Todo :: 수정해야됨
+        if (meetingPost.getMember().getProviderId().equals(userDetailsMember.getProviderId())) {
+            isMine = true;
+        }
         List<MeetingTags> meetingTags = meetingTagRepository.findByMeetingPost(meetingPost);
         List<String> SmeetingTags = new ArrayList<>();
         for (MeetingTags m : meetingTags) {
@@ -147,6 +152,7 @@ public class RoomService {
                 .desc(meetingPost.getDesc())
                 .people(meetingPost.getPeople())
                 .memberCount(memberCount)
+                .isMine(isMine)
                 .build();
     }
 
