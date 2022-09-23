@@ -19,6 +19,7 @@ public class MeetingPostResponseDto {
     private String startDate;
     private String endDate;
     private int people;
+    private int memberCount;
     private String roomCloseDate;
     private String departLocation;
     private Boolean isMine;

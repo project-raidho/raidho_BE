@@ -1,5 +1,7 @@
 package com.project.raidho.service;
 
+import com.amazonaws.services.kms.model.NotFoundException;
+import com.project.raidho.domain.chat.RoomMaster;
 import com.project.raidho.domain.meetingPost.MeetingPost;
 import com.project.raidho.domain.meetingPost.ThemeCategory;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
@@ -8,6 +10,8 @@ import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
 import com.project.raidho.domain.tags.MeetingTags;
 import com.project.raidho.domain.ResponseDto;
+import com.project.raidho.exception.ErrorCode;
+import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
@@ -34,6 +38,8 @@ public class MeetingPostService {
     private final MeetingTagRepository meetingTagRepository;
     private final ThemeCategoryRepository themeCategoryRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RoomMasterRepository roomMasterRepository;
+    private final RoomDetailRepository roomDetailRepository;
 
 
     @Transactional
@@ -131,6 +137,10 @@ public class MeetingPostService {
                 }
             }
 
+            RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
+                    .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
+            int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
+
             List<MeetingTags> meetingTags = meetingTagRepository.findByMeetingPost(meetingPost);
             List<String> stringTagList = new ArrayList<>();
             for (MeetingTags mt : meetingTags) {
@@ -146,12 +156,13 @@ public class MeetingPostService {
                             .departLocation(meetingPost.getDepartLocation())
                             .startDate(meetingPost.getStartDate())
                             .endDate(meetingPost.getEndDate())
-                            .people(2)
+                            .people(meetingPost.getPeople())
+                            .memberCount(memberCount)
                             .roomCloseDate(meetingPost.getRoomCloseDate())
                             .isMine(isMine)
                             .meetingTags(stringTagList)
                             .meetingParticipant(1)
-                            .meetingStatus(1)
+                            .meetingStatus(1) // Todo ;; 모집중인지 아닌지..
                             .memberName(meetingPost.getMember().getMemberName())
                             .memberImage(meetingPost.getMember().getMemberImage())
                             .build()
