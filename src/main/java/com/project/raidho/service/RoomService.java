@@ -17,6 +17,8 @@ import com.project.raidho.repository.RoomDetailRepository;
 import com.project.raidho.repository.RoomMasterRepository;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +49,7 @@ public class RoomService {
                 .roomName(requestDto.getRoomName())
                 .roomDetails(new ArrayList<>())
                 .roomPic(RoomUtils.getRandomRoomPic())
-                .memberCount(requestDto.getPeople())
+                .memberCount(meetingPost.getPeople())
                 .build();
         RoomDetail roomDetail = RoomDetail.builder()
                 .member(member)
