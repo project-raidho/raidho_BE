@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.text.ParseException;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,7 +27,7 @@ public class MeetingPostController {
     @GetMapping
     public ResponseEntity<?> getAllMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                                @RequestParam (value = "size",defaultValue = "20")int size,
-                                               @AuthenticationPrincipal UserDetails userDetails) {
+                                               @AuthenticationPrincipal UserDetails userDetails) throws ParseException {
 
         return ResponseEntity.ok().body(meetingPostService.getAllMeetingPost(page,size,userDetails));
     }
@@ -35,7 +36,7 @@ public class MeetingPostController {
     public ResponseEntity<?> getCategoryMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                                     @RequestParam (value = "size",defaultValue = "20")int size,
                                                     @AuthenticationPrincipal UserDetails userDetails,
-                                                    @PathVariable String themeName) {
+                                                    @PathVariable String themeName) throws ParseException {
 
 
         return ResponseEntity.ok().body(meetingPostService.getAllCategoryMeetingPost(page,size,userDetails,themeName));
