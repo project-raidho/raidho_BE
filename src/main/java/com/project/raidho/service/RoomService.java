@@ -2,6 +2,7 @@ package com.project.raidho.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.project.raidho.Util.RoomUtils;
+import com.project.raidho.domain.chat.ChatDto.EachRoomInfoDto;
 import com.project.raidho.domain.chat.ChatDto.RoomMasterRequestDto;
 import com.project.raidho.domain.chat.ChatDto.RoomMasterResponseDto;
 import com.project.raidho.domain.chat.RoomDetail;
@@ -9,12 +10,10 @@ import com.project.raidho.domain.chat.RoomMaster;
 import com.project.raidho.domain.meetingPost.MeetingPost;
 import com.project.raidho.domain.chat.ChatDto.RoomDetailResponseDto;
 import com.project.raidho.domain.member.Member;
+import com.project.raidho.domain.tags.MeetingTags;
 import com.project.raidho.exception.ErrorCode;
 import com.project.raidho.exception.RaidhoException;
-import com.project.raidho.repository.MeetingPostRepository;
-import com.project.raidho.repository.MemberRepository;
-import com.project.raidho.repository.RoomDetailRepository;
-import com.project.raidho.repository.RoomMasterRepository;
+import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,6 +33,8 @@ public class RoomService {
     private final RoomMasterRepository roomMasterRepository;
     private final MeetingPostRepository meetingPostRepository;
     private final RoomDetailRepository roomDetailRepository;
+
+    private final MeetingTagRepository meetingTagRepository;
 
     // 채팅방 생성
     @Transactional
@@ -74,8 +75,6 @@ public class RoomService {
         RoomMaster roomMaster = roomMasterRepository.findByRoomId(roomId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
         int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
-        System.out.println("###############################");
-        System.out.println("memberCount = " + memberCount);
         if (memberCount >= roomMaster.getMemberCount()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("FULL"); // Todo :: 추후 error 처리 고쳐야함
         }
@@ -114,5 +113,31 @@ public class RoomService {
             );
         }
         return roomMasterResponseDtoList;
+    }
+
+    // 단체방 정보 단건 조회
+    @Transactional(readOnly = true)
+    public EachRoomInfoDto eachChatRoomInfo(UserDetails userDetails, Long roomId) {
+        MeetingPost meetingPost = meetingPostRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("없어방")); // Todo :: 수정해야됨
+        List<MeetingTags> meetingTags = meetingTagRepository.findByMeetingPost(meetingPost);
+        List<String> SmeetingTags = new ArrayList<>();
+        for (MeetingTags m : meetingTags) {
+            SmeetingTags.add(m.getMeetingTag());
+        }
+        RoomMaster roomMaster = roomMasterRepository.findByRoomId(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
+        int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
+        return EachRoomInfoDto.builder()
+                .themeCategory(meetingPost.getThemeCategory().getCountryName())
+                .title(meetingPost.getTitle())
+                .meetingTags(SmeetingTags)
+                .startDate(meetingPost.getStartDate())
+                .endDate(meetingPost.getEndDate())
+                .roomCloseDate(meetingPost.getRoomCloseDate())
+                .departLocation(meetingPost.getDepartLocation())
+                .people(meetingPost.getPeople())
+                .memberCount(memberCount)
+                .build();
     }
 }
