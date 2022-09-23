@@ -11,6 +11,8 @@ public enum ErrorCode {
      */
     DIDNT_CHECK_LIKE(HttpStatus.BAD_REQUEST, "해당 게시글에 좋아요를 체크한 적이 없습니다."),
     ALREADY_JOIN_CHAT_ROOM(HttpStatus.BAD_REQUEST, "이미 참여한 대화방입니다."),
+
+    THIS_ROOM_IS_FULL(HttpStatus.BAD_REQUEST, "해당 채팅방에 참여할 수 있는 자리가 없습니다."),
     /*
     401
      */

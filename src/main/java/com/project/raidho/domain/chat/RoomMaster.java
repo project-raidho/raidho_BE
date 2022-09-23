@@ -41,6 +41,9 @@ public class RoomMaster extends Timestamped {
     @Column
     private String roomPic;
 
+    @Column
+    private int member;
+
     @OneToMany(mappedBy = "roomMaster",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<RoomDetail> roomDetails = new ArrayList<>();
 

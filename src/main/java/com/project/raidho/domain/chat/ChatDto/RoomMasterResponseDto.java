@@ -13,5 +13,5 @@ public class RoomMasterResponseDto {
     private String roomPic;
     private String recentChat;
     private Long unReadCount;
-    private Long people;
+    private int people;
 }

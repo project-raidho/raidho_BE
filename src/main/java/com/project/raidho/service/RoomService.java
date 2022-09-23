@@ -47,6 +47,7 @@ public class RoomService {
                 .roomName(requestDto.getRoomName())
                 .roomDetails(new ArrayList<>())
                 .roomPic(RoomUtils.getRandomRoomPic())
+                .member(1)
                 .build();
         RoomDetail roomDetail = RoomDetail.builder()
                 .member(member)
@@ -61,7 +62,7 @@ public class RoomService {
                 .roomPic(roomMaster.getRoomPic())
                 .recentChat(null)
                 .unReadCount(0L)
-                .people(0L)
+                .people(1)
                 .build();
     }
 
@@ -73,6 +74,12 @@ public class RoomService {
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
         RoomMaster roomMaster = roomMasterRepository.findByRoomId(roomId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
+        int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
+        System.out.println("###############################");
+        System.out.println("memberCount = " + memberCount );
+        if (memberCount > roomMaster.getMember()) {
+            throw new RaidhoException(ErrorCode.THIS_ROOM_IS_FULL);
+        }
         RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
         if (roomDetail == null) {
             RoomDetail newRoomDetail = new RoomDetail(roomMaster, member);
@@ -84,7 +91,7 @@ public class RoomService {
         return RoomDetailResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
                 .roomName(roomMaster.getRoomName())
-                .people(0L) // Todo :: 수정 필요
+                .people(memberCount + 1) // Todo :: 수정 필요
                 .build();
     }
 
