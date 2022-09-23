@@ -47,7 +47,7 @@ public class RoomService {
                 .roomName(requestDto.getRoomName())
                 .roomDetails(new ArrayList<>())
                 .roomPic(RoomUtils.getRandomRoomPic())
-                .member(1)
+                .memberCount(1)
                 .build();
         RoomDetail roomDetail = RoomDetail.builder()
                 .member(member)
@@ -77,7 +77,7 @@ public class RoomService {
         int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
         System.out.println("###############################");
         System.out.println("memberCount = " + memberCount );
-        if (memberCount > roomMaster.getMember()) {
+        if (memberCount > roomMaster.getMemberCount()) {
             throw new RaidhoException(ErrorCode.THIS_ROOM_IS_FULL);
         }
         RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
