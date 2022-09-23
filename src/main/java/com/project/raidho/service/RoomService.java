@@ -149,4 +149,14 @@ public class RoomService {
                 .memberCount(memberCount)
                 .build();
     }
+
+
+    // 채팅방 나가기
+    @Transactional
+    public void exitChatRoom(UserDetails userDetails, Long roomId) {
+        Member member = ((PrincipalDetails) userDetails).getMember();
+        RoomMaster roomMaster = roomMasterRepository.findByRoomId(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
+        roomDetailRepository.deleteByRoomMasterAndMember(roomMaster, member);
+    }
 }
