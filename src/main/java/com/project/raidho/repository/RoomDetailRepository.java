@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RoomDetailRepository extends JpaRepository<RoomDetail, Long> {
@@ -17,4 +18,9 @@ public interface RoomDetailRepository extends JpaRepository<RoomDetail, Long> {
 
     @Query("SELECT COUNT(d) FROM RoomDetail d WHERE d.roomMaster = :roomMaster")
     int getCountJoinRoomMember(@Param(value = "roomMaster") RoomMaster roomMaster);
+
+    List<Long> findAllByRoomMaster(RoomMaster roomMaster);
+
+    @Query("SELECT d.member.id FROM RoomDetail d WHERE d.roomMaster = :roomMaster")
+    List<Long> getAllMemberId(@Param(value = "roomMaster") RoomMaster roomMaster);
 }
