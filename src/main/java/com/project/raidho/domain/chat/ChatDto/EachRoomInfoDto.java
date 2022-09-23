@@ -12,6 +12,7 @@ import java.util.List;
 public class EachRoomInfoDto {
     private String themeCategory;
     private List<String> meetingTags;
+    private List<String> memberNames;
     private String title;
     private String desc;
     private String startDate;

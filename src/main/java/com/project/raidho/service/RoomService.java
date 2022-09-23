@@ -128,14 +128,23 @@ public class RoomService {
         RoomMaster roomMaster = roomMasterRepository.findByRoomId(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
         int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
+        List<Long> memberId = roomDetailRepository.getAllMemberId(roomMaster);
+        List<String> memberName = new ArrayList<>();
+        for (Long i : memberId) {
+            Member member = memberRepository.findById(i)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다.")); // Todo :: 추후 수정
+            memberName.add(member.getMemberName());
+        }
         return EachRoomInfoDto.builder()
                 .themeCategory(meetingPost.getThemeCategory().getCountryName())
                 .title(meetingPost.getTitle())
                 .meetingTags(SmeetingTags)
+                .memberNames(memberName)
                 .startDate(meetingPost.getStartDate())
                 .endDate(meetingPost.getEndDate())
                 .roomCloseDate(meetingPost.getRoomCloseDate())
                 .departLocation(meetingPost.getDepartLocation())
+                .desc(meetingPost.getDesc())
                 .people(meetingPost.getPeople())
                 .memberCount(memberCount)
                 .build();
