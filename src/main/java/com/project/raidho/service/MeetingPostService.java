@@ -26,7 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,7 +99,7 @@ public class MeetingPostService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllMeetingPost (int page, int size, UserDetails userDetails) {
+    public ResponseDto<?> getAllMeetingPost (int page, int size, UserDetails userDetails) throws ParseException {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
@@ -108,7 +111,7 @@ public class MeetingPostService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllCategoryMeetingPost (int page, int size, UserDetails userDetails, String theme) {
+    public ResponseDto<?> getAllCategoryMeetingPost (int page, int size, UserDetails userDetails, String theme) throws ParseException {
         PageRequest pageRequest = PageRequest.of(page, size);
         ThemeCategory category = themeCategoryRepository.findByCountryName(theme)
                 .orElseThrow(() -> new IllegalArgumentException("해당 카테고리는 존재하지 않습니다."));
@@ -117,8 +120,9 @@ public class MeetingPostService {
         return ResponseDto.success(meetingPostResponseDtos);
     }
 
-    private Page<MeetingPostResponseDto> convertToBasicResponseDto (Page<MeetingPost> meetingPostList,  UserDetails userDetails){
+    private Page<MeetingPostResponseDto> convertToBasicResponseDto (Page<MeetingPost> meetingPostList,  UserDetails userDetails) throws ParseException {
 
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Member member = new Member();
 
         if (userDetails != null) {
@@ -126,6 +130,7 @@ public class MeetingPostService {
         }
 
         Boolean isMine = false;
+        int meetingStatus = 0;
 
         List<MeetingPostResponseDto> meetingPosts = new ArrayList<>();
 
@@ -140,6 +145,23 @@ public class MeetingPostService {
             RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
                     .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
             int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
+
+            Date date = formatter.parse(meetingPost.getRoomCloseDate());
+            System.out.println("384209387593204832473029847498470938274");
+            System.out.println(date);
+            Date dateNow = formatter.parse(new Date().toString());
+            System.out.println(dateNow);
+            System.out.println("sdjfhsjbhcnpschnapsoufhcdspoufhdpsoufchmsdpofhpsdmoc");
+
+            if (date.before(dateNow) || (meetingPost.getPeople() > memberCount )) {
+                meetingStatus = 1;
+            }
+            else if (memberCount >= meetingPost.getPeople()) {
+                meetingStatus = 2;
+            }
+            else if (date.after(dateNow)) {
+                meetingStatus = 3;
+            }
 
             List<MeetingTags> meetingTags = meetingTagRepository.findByMeetingPost(meetingPost);
             List<String> stringTagList = new ArrayList<>();
@@ -162,7 +184,7 @@ public class MeetingPostService {
                             .isMine(isMine)
                             .meetingTags(stringTagList)
                             .meetingParticipant(1)
-                            .meetingStatus(1) // Todo ;; 모집중인지 아닌지..
+                            .meetingStatus(meetingStatus) // Todo ;; 모집중인지 아닌지..
                             .memberName(meetingPost.getMember().getMemberName())
                             .memberImage(meetingPost.getMember().getMemberImage())
                             .build()
