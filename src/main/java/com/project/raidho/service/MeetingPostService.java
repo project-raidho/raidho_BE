@@ -204,13 +204,9 @@ public class MeetingPostService {
         if (!member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
             throw new NullPointerException("게시글 주인이 아닙니다.");
         } else {
-            System.out.println("##############################98987987987987987987987");
             chatMessageRepository.deleteAllByRoomId(meetingId);
-            System.out.println("32842308ncupweiucepwrucn02389muew0urw8wmurum23c");
             roomDetailRepository.deleteByRoomMaster_RoomId(meetingId);
-            System.out.println("=============================================24c32c4234c4");
             meetingPostRepository.delete(meetingPost);
-            System.out.println("oiqwnuex018yex10892exym12-08xue-102uxe1-209x,eu-1209x,ue-1209,xeu1=209ex,u1-2");
             return ResponseDto.success("구인 구직 글 삭제 성공");
         }
     }
