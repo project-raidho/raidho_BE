@@ -74,7 +74,7 @@ public class RoomService {
         int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
         System.out.println("###############################");
         System.out.println("memberCount = " + memberCount );
-        if (memberCount > roomMaster.getMemberCount()) {
+        if (memberCount >= roomMaster.getMemberCount()) {
             throw new RaidhoException(ErrorCode.THIS_ROOM_IS_FULL);
         }
         RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
