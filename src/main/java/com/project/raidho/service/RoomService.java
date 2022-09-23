@@ -47,7 +47,7 @@ public class RoomService {
                 .roomName(requestDto.getRoomName())
                 .roomDetails(new ArrayList<>())
                 .roomPic(RoomUtils.getRandomRoomPic())
-                .memberCount(meetingPost.getPeople())
+                .memberCount(requestDto.getPeople())
                 .build();
         RoomDetail roomDetail = RoomDetail.builder()
                 .member(member)
