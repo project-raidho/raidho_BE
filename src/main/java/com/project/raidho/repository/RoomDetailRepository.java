@@ -13,6 +13,8 @@ public interface RoomDetailRepository extends JpaRepository<RoomDetail, Long> {
     RoomDetail findByRoomMasterAndMember(RoomMaster roomMaster, Member member);
     RoomDetail findByRoomMaster_RoomIdAndMember_Id(Long roomId, Long memberId);
 
+    void deleteByRoomMaster_RoomId(Long roomId);
+
     @Query("SELECT COUNT(d) FROM RoomDetail d WHERE d.roomMaster = :roomMaster")
     int getCountJoinRoomMember(@Param(value = "roomMaster") RoomMaster roomMaster);
 }
