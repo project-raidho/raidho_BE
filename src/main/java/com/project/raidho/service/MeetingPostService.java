@@ -147,19 +147,14 @@ public class MeetingPostService {
             int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
 
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
-            System.out.println("384209387593204832473029847498470938274");
-            System.out.println(date);
-            Date dateNow = formatter.parse(new Date().toString());
-            System.out.println(dateNow);
-            System.out.println("sdjfhsjbhcnpschnapsoufhcdspoufhdpsoufchmsdpofhpsdmoc");
 
-            if (date.before(dateNow) || (meetingPost.getPeople() > memberCount )) {
+            if (date.after(new Date()) || (meetingPost.getPeople() > memberCount )) {
                 meetingStatus = 1;
             }
             else if (memberCount >= meetingPost.getPeople()) {
                 meetingStatus = 2;
             }
-            else if (date.after(dateNow)) {
+            else if (date.before(new Date())) {
                 meetingStatus = 3;
             }
 
