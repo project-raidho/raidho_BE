@@ -67,7 +67,7 @@ public class RoomService {
 
     // 채팅방 입장
     @Transactional
-    public RoomDetailResponseDto joinChatRoom(Long roomId, UserDetails userDetails) throws RaidhoException {
+    public ResponseEntity<?> joinChatRoom(Long roomId, UserDetails userDetails) throws RaidhoException {
         Long memberId = ((PrincipalDetails) userDetails).getMember().getId();
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
@@ -75,9 +75,9 @@ public class RoomService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
         int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
         System.out.println("###############################");
-        System.out.println("memberCount = " + memberCount );
+        System.out.println("memberCount = " + memberCount);
         if (memberCount >= roomMaster.getMemberCount()) {
-            throw new RaidhoException(ErrorCode.THIS_ROOM_IS_FULL);
+            return ResponseEntity.badRequest().body("FULL");
         }
         RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
         if (roomDetail == null) {
@@ -87,11 +87,13 @@ public class RoomService {
         } else {
             throw new RaidhoException(ErrorCode.ALREADY_JOIN_CHAT_ROOM);
         }
-        return RoomDetailResponseDto.builder()
+
+        RoomDetailResponseDto responseDto = RoomDetailResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
                 .roomName(roomMaster.getRoomName())
-                .people(memberCount + 1) // Todo :: 수정 필요
                 .build();
+
+        return ResponseEntity.ok().body(responseDto);
     }
 
     // 내가 구독한 채팅방 리스트 가져오기
