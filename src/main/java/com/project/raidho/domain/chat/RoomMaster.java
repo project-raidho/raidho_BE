@@ -42,7 +42,7 @@ public class RoomMaster extends Timestamped {
     private String roomPic;
 
     @Column
-    private int member;
+    private int memberCount;
 
     @OneToMany(mappedBy = "roomMaster",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<RoomDetail> roomDetails = new ArrayList<>();
