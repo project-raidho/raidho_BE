@@ -46,4 +46,9 @@ public class ChatRoomController {
     public Page<ChatMessageDto> getAllChatMessageList(@PathVariable Long roomId, @PageableDefault Pageable pageable) {
         return chatMessageService.getAllChatMessageList(roomId, pageable);
     }
+
+    @GetMapping("/rooms/{roomId}")
+    public ResponseEntity<?> eachChatRoomInfo(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long roomId) {
+        return ResponseEntity.ok().body(roomService.eachChatRoomInfo(userDetails,roomId));
+    }
 }
