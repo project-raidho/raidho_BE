@@ -43,6 +43,7 @@ public class MeetingPostService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RoomMasterRepository roomMasterRepository;
     private final RoomDetailRepository roomDetailRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
 
     @Transactional
@@ -203,6 +204,7 @@ public class MeetingPostService {
         if (!member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
             throw new NullPointerException("게시글 주인이 아닙니다.");
         } else {
+            chatMessageRepository.deleteByRoomId(meetingId);
             meetingPostRepository.delete(meetingPost);
             return ResponseDto.success("구인 구직 글 삭제 성공");
         }
