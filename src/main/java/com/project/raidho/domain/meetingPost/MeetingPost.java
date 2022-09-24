@@ -1,6 +1,8 @@
 package com.project.raidho.domain.meetingPost;
 
 import com.project.raidho.domain.Timestamped;
+import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
+import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
 import com.project.raidho.domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,4 +54,14 @@ public class MeetingPost extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberId",nullable = false)
     private Member member;
+
+    public void updateMeetingPost(UpdateMeetingPost updateMeetingPost){
+        this.title= updateMeetingPost.getTitle();
+        this.desc= updateMeetingPost.getDesc();
+        this.startDate= updateMeetingPost.getStartDate();
+        this.endDate= updateMeetingPost.getEndDate();
+        this.people= updateMeetingPost.getPeople();
+        this.roomCloseDate= updateMeetingPost.getRoomCloseDate();
+        this.departLocation= updateMeetingPost.getDepartLocation();
+    }
 }

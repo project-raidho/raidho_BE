@@ -2,7 +2,9 @@ package com.project.raidho.controller;
 
 import com.project.raidho.domain.chat.ChatDto.ChatMessageDto;
 import com.project.raidho.domain.chat.ChatDto.RoomMasterRequestDto;
-import com.project.raidho.domain.chat.ChatMessage;
+import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
+import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
+import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
 import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.service.ChatMessageService;
 import com.project.raidho.service.RoomService;
@@ -12,9 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/chat")
@@ -58,4 +58,11 @@ public class ChatRoomController {
         roomService.exitChatRoom(userDetails, roomId);
         return ResponseEntity.ok().body("채팅방에서 탈퇴하셨습니다.");
     }
+    @PutMapping("/{roomId}")
+    public ResponseEntity<?> updateMeetingPost(@PathVariable("roomId") Long roomId,
+                                               @AuthenticationPrincipal UserDetails userDetails,
+                                               UpdateMeetingPost updateMeetingPost) {
+        return roomService.updateMeetingPost(roomId,userDetails,updateMeetingPost);
+    }
+
 }

@@ -15,7 +15,7 @@ import java.util.List;
 public interface MeetingTagRepository extends JpaRepository<MeetingTags,Long> {
 //    List<MeetingTags> findAllByMeetingPost_Id(Long id);
 //
-//    void deleteAllByPost_Id(Long id);
+    void deleteAllByMeetingPost_Id(Long id);
 //
 //    @Query("SELECT DISTINCT t.meetingPost FROM MeetingTags t WHERE t.meetingTag like %:tag%")
 //    Page<MeetingPost> SearchTag(@Param(value = "tag") String tag, PageRequest pageRequest);

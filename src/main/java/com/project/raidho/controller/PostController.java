@@ -6,7 +6,6 @@ import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +25,7 @@ public class PostController {
     public ResponseEntity<?> createPost(@ModelAttribute PostRequestDto postRequestDto, HttpServletRequest request) throws RaidhoException, IOException {
         return ResponseEntity.ok().body(ResponseDto.success(postService.createPost(postRequestDto, request)));
     }
+
     //전체조회
     @GetMapping("/latest")
     public ResponseEntity<?> getAllPost(@RequestParam (value = "page",defaultValue = "0")int page,

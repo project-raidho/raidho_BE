@@ -9,6 +9,8 @@ import com.project.raidho.domain.chat.RoomDetail;
 import com.project.raidho.domain.chat.RoomMaster;
 import com.project.raidho.domain.meetingPost.MeetingPost;
 import com.project.raidho.domain.chat.ChatDto.RoomDetailResponseDto;
+import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
+import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.tags.MeetingTags;
 import com.project.raidho.exception.ErrorCode;
@@ -64,6 +66,23 @@ public class RoomService {
                 .roomName(roomMaster.getRoomName())
                 .roomPic(roomMaster.getRoomPic())
                 .build();
+    }
+
+    @Transactional
+    public ResponseEntity<?> updateMeetingPost(Long roomId, UserDetails userDetails, UpdateMeetingPost updateMeetingPost) {
+        Member member = new Member();
+        MeetingPost meetingPost = meetingPostRepository.findById(roomId).orElseThrow(() -> new RuntimeException(String.valueOf(ErrorCode.INVALID_AUTH_MEMBER_UPDATE)));
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
+        if (member.getProviderId() != null) {
+            if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
+                meetingTagRepository.deleteAllByMeetingPost_Id(meetingPost.getId());
+                meetingPost.updateMeetingPost(updateMeetingPost);
+            }
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new RaidhoException(ErrorCode.INVALID_AUTH_MEMBER_UPDATE));
+        }
+        return ResponseEntity.ok().body("정상적으로 수정되었습니다.");
     }
 
     // 채팅방 입장
