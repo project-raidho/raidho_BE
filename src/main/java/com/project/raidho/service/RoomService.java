@@ -125,7 +125,7 @@ public class RoomService {
         if (meetingPost.getMember().getProviderId().equals(userDetailsMember.getProviderId())) {
             isMine = true;
         }
-        List<MeetingTags> meetingTags = meetingTagRepository.findByMeetingPost(meetingPost);
+        List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
         List<String> SmeetingTags = new ArrayList<>();
         for (MeetingTags m : meetingTags) {
             SmeetingTags.add(m.getMeetingTag());

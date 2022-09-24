@@ -125,7 +125,7 @@ public class TagSearchService {
 
 
                 int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
-                List<MeetingTags> meetingTags = meetingTagRepository.findByMeetingPost(meetingPost);
+                List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
                 List<String> stringMeetingTagList = new ArrayList<>();
                 for (MeetingTags mt : meetingTags) {
                     stringMeetingTagList.add(mt.getMeetingTag());

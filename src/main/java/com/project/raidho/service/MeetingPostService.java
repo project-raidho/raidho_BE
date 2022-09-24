@@ -159,7 +159,7 @@ public class MeetingPostService {
                 meetingStatus = 3;
             }
 
-            List<MeetingTags> meetingTags = meetingTagRepository.findByMeetingPost(meetingPost);
+            List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
             List<String> stringTagList = new ArrayList<>();
             for (MeetingTags mt : meetingTags) {
                 stringTagList.add(mt.getMeetingTag());
