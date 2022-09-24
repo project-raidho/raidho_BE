@@ -170,6 +170,7 @@ public class TagSearchService {
                                 .memberImage(meetingPost.getMember().getMemberImage())
                                 .createdAt(meetingPost.getCreatedAt().toLocalDate())
                                 .modifiedAt(meetingPost.getModifiedAt().toLocalDate())
+                                .id(meetingPost.getId())
                                 .build()
                 );
                 isMine = false;
