@@ -27,8 +27,8 @@ public class TagSearchController {
         return ResponseEntity.ok().body(tagSearchService.searchTag(page, size, tag, userDetails));
     }
     // 구인글 태그 검색
-    @GetMapping("/meeting/{meetingtag}")
-    public ResponseEntity<?> MeetingTagSeatch(@PathVariable(value = "meetingtag") String meetingTag,
+    @GetMapping("/meeting/{meetingTag}")
+    public ResponseEntity<?> MeetingTagSeatch(@PathVariable(value = "meetingTag") String meetingTag,
                                               @RequestParam (value = "page",defaultValue = "0")int page,
                                               @RequestParam (value = "size",defaultValue = "5")int size,
                                               @AuthenticationPrincipal UserDetails userDetails) throws ParseException {
