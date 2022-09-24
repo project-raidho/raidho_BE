@@ -9,6 +9,8 @@ import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostResponseDto;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
+import com.project.raidho.domain.post.dto.MainPostResponseDto;
+import com.project.raidho.domain.s3.MultipartFiles;
 import com.project.raidho.domain.tags.MeetingTags;
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.exception.ErrorCode;
@@ -21,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Builder
@@ -99,6 +100,96 @@ public class MeetingPostService {
                         .build()
         );
     }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getAllMyMeetingPost(UserDetails userDetails) throws ParseException {
+        if (userDetails != null) {
+            Member member = ((PrincipalDetails) userDetails).getMember();
+            if (member != null) {
+                List<MeetingPost> meetingPostList = meetingPostRepository.findAllByMember_IdOrderByCreatedAtDesc(member.getId());
+                return ResponseEntity.ok().body(ResponseDto.success(convertToMyPageResponseDto(meetingPostList, userDetails)));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
+    }
+
+    private List<MeetingPostResponseDto> convertToMyPageResponseDto(List<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException {
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Member member = new Member();
+
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
+
+        Boolean isMine = false;
+        Boolean isAlreadyJoin = false;
+        int meetingStatus = 0;
+
+        List<MeetingPostResponseDto> meetingPosts = new ArrayList<>();
+
+        for (MeetingPost meetingPost : meetingPostList) {
+
+            RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
+                    .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
+            int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
+
+            if (member.getProviderId() != null) {
+                if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
+                    isMine = true;
+                }
+                RoomDetail roomDetails = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
+                if (roomDetails != null) {
+                    isAlreadyJoin = true;
+                }
+            }
+
+            Date date = formatter.parse(meetingPost.getRoomCloseDate());
+
+            if (date.after(new Date()) && (meetingPost.getPeople() > memberCount )) {
+                meetingStatus = 1;
+            }
+            else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
+                meetingStatus = 2;
+            }
+            else if (date.before(new Date())) {
+                meetingStatus = 3;
+            }
+
+            List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
+            List<String> stringTagList = new ArrayList<>();
+            for (MeetingTags mt : meetingTags) {
+                stringTagList.add(mt.getMeetingTag());
+            }
+
+            meetingPosts.add(
+                    MeetingPostResponseDto.builder()
+                            .id(meetingPost.getId())
+                            .themeCategory(meetingPost.getThemeCategory().getCountryName())
+                            .title(meetingPost.getTitle())
+                            .desc(meetingPost.getDesc())
+                            .departLocation(meetingPost.getDepartLocation())
+                            .startDate(meetingPost.getStartDate())
+                            .endDate(meetingPost.getEndDate())
+                            .people(meetingPost.getPeople())
+                            .memberCount(memberCount)
+                            .roomCloseDate(meetingPost.getRoomCloseDate())
+                            .isMine(isMine)
+                            .isAlreadyJoin(isAlreadyJoin)
+                            .meetingTags(stringTagList)
+                            .meetingParticipant(1)
+                            .meetingStatus(meetingStatus) // Todo ;; 모집중인지 아닌지..
+                            .memberName(meetingPost.getMember().getMemberName())
+                            .memberImage(meetingPost.getMember().getMemberImage())
+                            .build()
+            );
+
+            isMine = false;
+            isAlreadyJoin = false;
+        }
+        return meetingPosts;
+    }
+
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllMeetingPost (int page, int size, UserDetails userDetails) throws ParseException {

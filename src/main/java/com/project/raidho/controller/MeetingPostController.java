@@ -42,6 +42,11 @@ public class MeetingPostController {
         return ResponseEntity.ok().body(meetingPostService.getAllCategoryMeetingPost(page,size,userDetails,themeName));
     }
 
+    @GetMapping("/myMeetingPost")
+    public ResponseEntity<?> getAllMyMeetingPost(@AuthenticationPrincipal UserDetails userDetails) throws ParseException {
+        return meetingPostService.getAllMyMeetingPost(userDetails);
+    }
+
     @PutMapping("/{meetingId}")
     public ResponseEntity<?> updateMeetingPost (@PathVariable(value = "meetingId") Long meetingId, @AuthenticationPrincipal UserDetails userDetails) {
         return null;
