@@ -7,6 +7,7 @@ import com.project.raidho.domain.meetingPost.MeetingPost;
 import com.project.raidho.domain.meetingPost.ThemeCategory;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostResponseDto;
+import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
 import com.project.raidho.domain.post.dto.MainPostResponseDto;
@@ -99,6 +100,23 @@ public class MeetingPostService {
                         .meetingTags(meetingTag)
                         .build()
         );
+    }
+
+    @Transactional
+    public ResponseEntity<?> updateMeetingPost(Long meetingId, UserDetails userDetails, UpdateMeetingPost updateMeetingPost) {
+        Member member = new Member();
+        MeetingPost meetingPost = meetingPostRepository.findById(meetingId).orElseThrow(() -> new RuntimeException(String.valueOf(ErrorCode.INVALID_AUTH_MEMBER_UPDATE)));
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
+        if (member.getProviderId() != null) {
+            if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
+                meetingTagRepository.deleteAllByMeetingPost_Id(meetingPost.getId());
+                meetingPost.updateMeetingPost(updateMeetingPost);
+            }
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new RaidhoException(ErrorCode.INVALID_AUTH_MEMBER_UPDATE));
+        }
+        return ResponseEntity.ok().body("정상적으로 수정되었습니다.");
     }
 
     @Transactional(readOnly = true)

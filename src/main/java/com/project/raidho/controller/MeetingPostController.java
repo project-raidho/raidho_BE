@@ -2,6 +2,7 @@ package com.project.raidho.controller;
 
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
+import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
 import com.project.raidho.service.MeetingPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -47,13 +48,14 @@ public class MeetingPostController {
         return meetingPostService.getAllMyMeetingPost(userDetails);
     }
 
-    @PutMapping("/{meetingId}")
-    public ResponseEntity<?> updateMeetingPost (@PathVariable(value = "meetingId") Long meetingId, @AuthenticationPrincipal UserDetails userDetails) {
-        return null;
-    }
-
     @DeleteMapping("/{meetingId}")
     public ResponseDto<?> deleteMeetingPost(@PathVariable("meetingId") Long meetingId, @AuthenticationPrincipal UserDetails userDetails){
         return meetingPostService.deleteMeetingPost(meetingId, userDetails);
+    }
+    @PutMapping("/{meetingId}")
+    public ResponseEntity<?> updateMeetingPost(@PathVariable("meetingId") Long roomId,
+                                               @AuthenticationPrincipal UserDetails userDetails,
+                                               UpdateMeetingPost updateMeetingPost) {
+        return meetingPostService.updateMeetingPost(roomId,userDetails,updateMeetingPost);
     }
 }

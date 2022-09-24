@@ -68,22 +68,6 @@ public class RoomService {
                 .build();
     }
 
-    @Transactional
-    public ResponseEntity<?> updateMeetingPost(Long roomId, UserDetails userDetails, UpdateMeetingPost updateMeetingPost) {
-        Member member = new Member();
-        MeetingPost meetingPost = meetingPostRepository.findById(roomId).orElseThrow(() -> new RuntimeException(String.valueOf(ErrorCode.INVALID_AUTH_MEMBER_UPDATE)));
-        if (userDetails != null) {
-            member = ((PrincipalDetails) userDetails).getMember();
-        }
-        if (member.getProviderId() != null) {
-            if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
-                meetingTagRepository.deleteAllByMeetingPost_Id(meetingPost.getId());
-                meetingPost.updateMeetingPost(updateMeetingPost);
-            }
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new RaidhoException(ErrorCode.INVALID_AUTH_MEMBER_UPDATE));
-        }
-        return ResponseEntity.ok().body("정상적으로 수정되었습니다.");
-    }
 
     // 채팅방 입장
     @Transactional
