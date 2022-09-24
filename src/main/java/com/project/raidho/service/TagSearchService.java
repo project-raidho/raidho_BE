@@ -2,6 +2,7 @@ package com.project.raidho.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.project.raidho.domain.ResponseDto;
+import com.project.raidho.domain.chat.RoomDetail;
 import com.project.raidho.domain.chat.RoomMaster;
 import com.project.raidho.domain.meetingPost.MeetingPost;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostResponseDto;
@@ -100,7 +101,7 @@ public class TagSearchService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> meetingTagSeatch(int page, int size, String meetingTag, UserDetails userDetails) throws ParseException {
+    public ResponseDto<?> meetingTagSearch(int page, int size, String meetingTag, UserDetails userDetails) throws ParseException {
 
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<MeetingPost> meetingPostList = meetingTagRepository.SearchMeetingTag(meetingTag, pageRequest);
@@ -112,6 +113,7 @@ public class TagSearchService {
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Boolean isMine = false;
+        Boolean isAlreadyJoin = false;
         Member member = new Member();
         int meetingStatus = 0;
         if (userDetails != null) {
@@ -123,12 +125,16 @@ public class TagSearchService {
                 RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
                         .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
 
-
                 int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
                 List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
                 List<String> stringMeetingTagList = new ArrayList<>();
                 for (MeetingTags mt : meetingTags) {
                     stringMeetingTagList.add(mt.getMeetingTag());
+                }
+
+                RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
+                if (roomDetail != null) {
+                    isAlreadyJoin = true;
                 }
 
                 Date date = formatter.parse(meetingPost.getRoomCloseDate());
@@ -140,9 +146,6 @@ public class TagSearchService {
                 } else if (date.before(new Date())) {
                     meetingStatus = 3;
                 }
-
-
-
 
                 if (member.getProviderId() != null) {
                     if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
@@ -162,14 +165,16 @@ public class TagSearchService {
                                 .roomCloseDate(meetingPost.getRoomCloseDate())
                                 .departLocation(meetingPost.getDepartLocation())
                                 .isMine(isMine)
+                                .isAlreadyJoin(isAlreadyJoin)
                                 .meetingStatus(meetingStatus)
-                                .memberName(member.getMemberName())
-                                .memberImage(member.getMemberImage())
+                                .memberName(meetingPost.getMember().getMemberName())
+                                .memberImage(meetingPost.getMember().getMemberImage())
                                 .createdAt(meetingPost.getCreatedAt().toLocalDate())
                                 .modifiedAt(meetingPost.getModifiedAt().toLocalDate())
                                 .build()
                 );
                 isMine = false;
+                isAlreadyJoin = false;
             }
         return new PageImpl<>(meetingPosts, meetingPostList.getPageable(), meetingPostList.getTotalElements());
     }

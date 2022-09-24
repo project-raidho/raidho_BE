@@ -83,9 +83,10 @@ public class RoomService {
             RoomDetail newRoomDetail = new RoomDetail(roomMaster, member);
             roomMaster.getRoomDetails().add(newRoomDetail);
             roomDetailRepository.save(newRoomDetail);
-        } else {
-            throw new RaidhoException(ErrorCode.ALREADY_JOIN_CHAT_ROOM);
         }
+//        else {
+//            throw new RaidhoException(ErrorCode.ALREADY_JOIN_CHAT_ROOM);
+//        }
 
         RoomDetailResponseDto responseDto = RoomDetailResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())

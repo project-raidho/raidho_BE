@@ -23,6 +23,7 @@ public class MeetingPostResponseDto {
     private String roomCloseDate;
     private String departLocation;
     private Boolean isMine;
+    private Boolean isAlreadyJoin;
     private int meetingStatus;
     private int meetingParticipant;
     private String memberName;

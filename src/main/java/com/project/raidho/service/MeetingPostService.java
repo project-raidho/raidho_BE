@@ -1,6 +1,7 @@
 package com.project.raidho.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import com.project.raidho.domain.chat.RoomDetail;
 import com.project.raidho.domain.chat.RoomMaster;
 import com.project.raidho.domain.meetingPost.MeetingPost;
 import com.project.raidho.domain.meetingPost.ThemeCategory;
@@ -131,6 +132,7 @@ public class MeetingPostService {
         }
 
         Boolean isMine = false;
+        Boolean isAlreadyJoin = false;
         int meetingStatus = 0;
 
         List<MeetingPostResponseDto> meetingPosts = new ArrayList<>();
@@ -146,6 +148,11 @@ public class MeetingPostService {
             RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
                     .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
             int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
+
+            RoomDetail roomDetails = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
+            if (roomDetails != null) {
+                isAlreadyJoin = true;
+            }
 
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
 
@@ -178,6 +185,7 @@ public class MeetingPostService {
                             .memberCount(memberCount)
                             .roomCloseDate(meetingPost.getRoomCloseDate())
                             .isMine(isMine)
+                            .isAlreadyJoin(isAlreadyJoin)
                             .meetingTags(stringTagList)
                             .meetingParticipant(1)
                             .meetingStatus(meetingStatus) // Todo ;; 모집중인지 아닌지..
@@ -187,6 +195,7 @@ public class MeetingPostService {
             );
 
             isMine = false;
+            isAlreadyJoin = false;
         }
         return new PageImpl<>(meetingPosts, meetingPostList.getPageable(), meetingPostList.getTotalElements());
     }
