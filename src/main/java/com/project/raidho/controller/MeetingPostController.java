@@ -42,6 +42,11 @@ public class MeetingPostController {
         return ResponseEntity.ok().body(meetingPostService.getAllCategoryMeetingPost(page,size,userDetails,themeName));
     }
 
+    @PutMapping("/{meetingId}")
+    public ResponseEntity<?> updateMeetingPost (@PathVariable(value = "meetingId") Long meetingId, @AuthenticationPrincipal UserDetails userDetails) {
+        return null;
+    }
+
     @DeleteMapping("/{meetingId}")
     public ResponseDto<?> deleteMeetingPost(@PathVariable("meetingId") Long meetingId, @AuthenticationPrincipal UserDetails userDetails){
         return meetingPostService.deleteMeetingPost(meetingId, userDetails);

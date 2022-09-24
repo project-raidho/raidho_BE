@@ -132,11 +132,6 @@ public class TagSearchService {
                     stringMeetingTagList.add(mt.getMeetingTag());
                 }
 
-                RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
-                if (roomDetail != null) {
-                    isAlreadyJoin = true;
-                }
-
                 Date date = formatter.parse(meetingPost.getRoomCloseDate());
 
                 if (date.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
@@ -150,6 +145,10 @@ public class TagSearchService {
                 if (member.getProviderId() != null) {
                     if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
                         isMine = true;
+                    }
+                    RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
+                    if (roomDetail != null) {
+                        isAlreadyJoin = true;
                     }
                 }
                 meetingPosts.add(

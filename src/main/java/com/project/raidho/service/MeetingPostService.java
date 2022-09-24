@@ -139,19 +139,18 @@ public class MeetingPostService {
 
         for (MeetingPost meetingPost : meetingPostList) {
 
-            if (member.getProviderId() != null) {
-                if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
-                    isMine = true;
-                }
-            }
-
             RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
                     .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
             int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
 
-            RoomDetail roomDetails = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
-            if (roomDetails != null) {
-                isAlreadyJoin = true;
+            if (member.getProviderId() != null) {
+                if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
+                    isMine = true;
+                }
+                RoomDetail roomDetails = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
+                if (roomDetails != null) {
+                    isAlreadyJoin = true;
+                }
             }
 
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
