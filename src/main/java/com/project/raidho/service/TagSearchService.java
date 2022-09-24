@@ -100,10 +100,10 @@ public class TagSearchService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> meetingTagSeatch(int page, int size, String tag, UserDetails userDetails) throws ParseException {
+    public ResponseDto<?> meetingTagSeatch(int page, int size, String meetingTag, UserDetails userDetails) throws ParseException {
 
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<MeetingPost> meetingPostList = meetingTagRepository.SearchMeetingTag(tag, pageRequest);
+        Page<MeetingPost> meetingPostList = meetingTagRepository.SearchMeetingTag(meetingTag, pageRequest);
         Page<MeetingPostResponseDto> mainPostResponseDto = convertToMainMeetingPostResponseDto(meetingPostList, userDetails);
         return ResponseDto.success(mainPostResponseDto);
     }
