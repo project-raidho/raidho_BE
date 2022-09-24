@@ -49,7 +49,7 @@ public class ChatMessageService {
     @Transactional(readOnly = true)
     public Page<ChatMessageDto> getAllChatMessageList(Long roomId, Pageable pageable) {
         int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() -1);
-        pageable = PageRequest.of(page, 10);
+        pageable = PageRequest.of(page, 1000);
         //return chatMessageRepository.findByRoomId(roomId, pageable);
         Page<ChatMessage> chatMessagePage = chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId, pageable);
         List<ChatMessageDto> chatMessageDtoPage = new ArrayList<>();
