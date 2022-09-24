@@ -55,6 +55,10 @@ dependencies {
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.4'
     //Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
+    testImplementation 'it.ozimov:embedded-redis:0.7.2'
+
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
 }
 
 tasks.named('test') {
