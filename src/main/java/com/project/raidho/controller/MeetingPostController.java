@@ -53,9 +53,9 @@ public class MeetingPostController {
         return meetingPostService.deleteMeetingPost(meetingId, userDetails);
     }
     @PutMapping("/{meetingId}")
-    public ResponseEntity<?> updateMeetingPost(@PathVariable("meetingId") Long roomId,
+    public ResponseEntity<?> updateMeetingPost(@PathVariable("meetingId") Long meetingId,
                                                @AuthenticationPrincipal UserDetails userDetails,
                                                UpdateMeetingPost updateMeetingPost) {
-        return meetingPostService.updateMeetingPost(roomId,userDetails,updateMeetingPost);
+        return meetingPostService.updateMeetingPost(meetingId,userDetails,updateMeetingPost);
     }
 }
