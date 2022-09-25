@@ -81,9 +81,9 @@ public class SecurityConfig {
                 // "/" 등 지정된 URL 들은 permitAll() 옵션을 통해 전체 열람 권한을 주었습니다.
                 // POST 메소드이면서 "/api/v1/**" 주소를 가진 API 는 USER 권한을 가진 사람만 가능하도록 했다.
 
-                .antMatchers("/api/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/post").hasAnyRole("USER")
-                .antMatchers(HttpMethod.GET, "/api/post/**").hasAnyRole("USER")
+//                .antMatchers("/api/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/post").hasAnyAuthority("USER")
+//                .antMatchers(HttpMethod.GET, "/api/post/**").hasAnyAuthority("USER")
 
                 .anyRequest().authenticated(); // 설정된 값들 이외 나머지 URL 들을 나타낸다. (인증된 사용자들만)
 
