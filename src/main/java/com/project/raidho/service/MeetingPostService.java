@@ -14,6 +14,7 @@ import com.project.raidho.domain.post.dto.MainPostResponseDto;
 import com.project.raidho.domain.s3.MultipartFiles;
 import com.project.raidho.domain.tags.MeetingTags;
 import com.project.raidho.domain.ResponseDto;
+import com.project.raidho.domain.tags.Tags;
 import com.project.raidho.exception.ErrorCode;
 import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.jwt.JwtTokenProvider;
@@ -72,7 +73,6 @@ public class MeetingPostService {
                         .roomCloseDate(meetingPostRequestDto.getRoomCloseDate())
                         .departLocation(meetingPostRequestDto.getDepartLocation())
                         .member(member)
-                        .people(meetingPostRequestDto.getPeople())
                         .build()
         );
 
