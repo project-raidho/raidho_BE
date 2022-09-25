@@ -11,12 +11,15 @@ import com.project.raidho.domain.s3.MultipartFiles;
 import com.project.raidho.domain.tags.Tags;
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.exception.ErrorCode;
+import com.project.raidho.exception.ErrorResponse;
 import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.jwt.JwtTokenProvider;
+import com.project.raidho.logging.Logging;
 import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,9 +36,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Service
+
+@Slf4j
 @Builder
 @RequiredArgsConstructor
+@Service
 public class PostService extends Timestamped {
     private final PostRepository postRepository;
     private final ImgRepository imgRepository;
@@ -44,44 +49,34 @@ public class PostService extends Timestamped {
     private final S3Service s3Service;
     private final JwtTokenProvider jwtTokenProvider;
 
+    // 자랑글 등록
     @Transactional
     public ResponseDto<?> createPost(PostRequestDto postRequestDto, HttpServletRequest request) throws RaidhoException, IOException {
         Member member = validateMember(request);
         if (member == null) {
+            log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
             throw new RaidhoException(ErrorCode.UNAUTHORIZATION_MEMBER);
         }
         Post post = postRepository.save(
-                Post.builder()
-                        .member(member)
-                        .content(postRequestDto.getContent())
-                        .build()
+                Post.builder().member(member).content(postRequestDto.getContent()).build()
         );
         List<MultipartFile> FilesList = postRequestDto.getImgUrl();
         if (FilesList != null) {
             for (MultipartFile file : FilesList) {
                 String url = s3Service.upload(file);
-                imgRepository.save(
-                        MultipartFiles.builder()
-                                .multipartFiles(url)
-                                .post(post)
-                                .build()
-                );
+                imgRepository.save(MultipartFiles.builder().multipartFiles(url).post(post).build());
             }
         }
         List<String> tags = postRequestDto.getTags();
         if (tags != null) {
             for (String tag : tags)
-                tagRepository.save(
-                        Tags.builder()
-                                .tag(tag)
-                                .post(post)
-                                .build()
+                tagRepository.save(Tags.builder().tag(tag).post(post).build()
                 );
         }
         return ResponseDto.success(post.getId());
     }
 
-    // Todo :: 게시글 수정
+    // 자랑글 수정
     @Transactional
     public ResponseEntity<?> updatePost(Long postId, UserDetails userDetails, UpdatePostRequestDto updatePostRequestDto) throws RaidhoException {
         Member member = new Member();

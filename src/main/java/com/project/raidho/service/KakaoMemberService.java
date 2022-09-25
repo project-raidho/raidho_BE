@@ -12,6 +12,7 @@ import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.MemberRepository;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class KakaoMemberService {
@@ -142,6 +144,7 @@ public class KakaoMemberService {
                     .build();
 
             memberRepository.save(member);
+            log.info("{} 님이 회원가입 되었습니다.", member.getMemberName() + " / " + member.getProviderId());
             return member;
         }
         return kakaoMember;
