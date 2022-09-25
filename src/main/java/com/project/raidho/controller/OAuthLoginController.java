@@ -2,6 +2,7 @@ package com.project.raidho.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import com.project.raidho.logging.Logging;
 import com.project.raidho.service.KakaoMemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,8 @@ public class OAuthLoginController {
         try {
             return ResponseEntity.ok().body(kakaoMemberService.kakaoLogin(code, response));
         } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
+            String error = Logging.getPrintStackTrace(e);
+            log.error(error);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("카카오 로그인 실패");
         }
     }

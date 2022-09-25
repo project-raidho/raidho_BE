@@ -1,11 +1,10 @@
 server:
-  port: 8080
-  servlet:
-    context-path: /
-    encoding:
-      charset: UTF-8
+  error:
+    include-exception: false
+    include-message: always
+    include-stacktrace: on_param
+    whitelabel:
       enabled: true
-      force: true
 
 spring:
 
@@ -15,15 +14,6 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
-  #  h2:
-#    console:
-#      enabled: true
-#  datasource:
-#    url: jdbc:h2:mem:testsecurity
-#    driver-class-name: org.h2.Driver
-#    username: sa
-#    password:
 
   jpa:
     hibernate:
