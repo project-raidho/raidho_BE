@@ -11,10 +11,8 @@ import com.project.raidho.domain.s3.MultipartFiles;
 import com.project.raidho.domain.tags.Tags;
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.exception.ErrorCode;
-import com.project.raidho.exception.ErrorResponse;
 import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.jwt.JwtTokenProvider;
-import com.project.raidho.logging.Logging;
 import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.Builder;
@@ -92,20 +90,19 @@ public class PostService extends Timestamped {
                 if (tags != null) {
                     for (String tag : tags)
                         tagRepository.save(
-                                Tags.builder()
-                                        .tag(tag)
-                                        .post(post)
-                                        .build()
+                                Tags.builder().tag(tag).post(post).build()
                         );
                 }
+                log.info("{} 님의 게시글이 정삭적으로 수정되었습니다.", member.getMemberName());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new RaidhoException(ErrorCode.INVALID_AUTH_MEMBER_UPDATE));
+            log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new RaidhoException(ErrorCode.INVALID_AUTH_MEMBER_DELETE));
         }
         return ResponseEntity.ok().body("게시글이 정상적으로 수정되었습니다.");
     }
 
-    // Todo :: 게시글 최신순 전체 조회
+    // 게시글 최신순 전체 조회
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllPost(int page, int size, UserDetails userDetails) {
         PageRequest pageRequest = PageRequest.of(page, size);
@@ -114,7 +111,7 @@ public class PostService extends Timestamped {
         return ResponseDto.success(mainPostResponseDtos);
     }
 
-    // Todo :: 게시글 좋아요 순 전체조회
+    // 게시글 좋아요 순 전체조회
     @Transactional(readOnly = true)
     public ResponseDto<?> getAlllikePost(int page, int size, UserDetails userDetails) {
         PageRequest pageRequest = PageRequest.of(page, size);

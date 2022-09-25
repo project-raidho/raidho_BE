@@ -41,6 +41,7 @@ public class PostController {
         return ResponseEntity.ok().body(postService.getAlllikePost(page,size,userDetails));
     }
 
+    // Todo :: Security 권한 설정할 때 URL 을 변경할 필요가 있음
     @GetMapping("/mypost")
     public ResponseEntity<?> getAllMyPost(@AuthenticationPrincipal UserDetails userDetails) {
         return postService.getAllMyPost(userDetails);
