@@ -114,6 +114,7 @@ public class MeetingPostService {
                 meetingTagRepository.deleteAllByMeetingPost_Id(meetingPost.getId());
                 meetingPost.updateMeetingPost(updateMeetingPost);
             }
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new RaidhoException(ErrorCode.INVALID_AUTH_MEMBER_UPDATE));
         }
         return ResponseEntity.ok().body("정상적으로 수정되었습니다.");
@@ -164,13 +165,11 @@ public class MeetingPostService {
 
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
 
-            if (date.after(new Date()) && (meetingPost.getPeople() > memberCount )) {
+            if (date.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
                 meetingStatus = 1;
-            }
-            else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
+            } else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
                 meetingStatus = 2;
-            }
-            else if (date.before(new Date())) {
+            } else if (date.before(new Date())) {
                 meetingStatus = 3;
             }
 
@@ -210,7 +209,7 @@ public class MeetingPostService {
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllMeetingPost (int page, int size, UserDetails userDetails) throws ParseException {
+    public ResponseDto<?> getAllMeetingPost(int page, int size, UserDetails userDetails) throws ParseException {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
@@ -222,7 +221,7 @@ public class MeetingPostService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllCategoryMeetingPost (int page, int size, UserDetails userDetails, String theme) throws ParseException {
+    public ResponseDto<?> getAllCategoryMeetingPost(int page, int size, UserDetails userDetails, String theme) throws ParseException {
         PageRequest pageRequest = PageRequest.of(page, size);
         ThemeCategory category = themeCategoryRepository.findByCountryName(theme)
                 .orElseThrow(() -> new IllegalArgumentException("해당 카테고리는 존재하지 않습니다."));
@@ -231,7 +230,7 @@ public class MeetingPostService {
         return ResponseDto.success(meetingPostResponseDtos);
     }
 
-    private Page<MeetingPostResponseDto> convertToBasicResponseDto (Page<MeetingPost> meetingPostList,  UserDetails userDetails) throws ParseException {
+    private Page<MeetingPostResponseDto> convertToBasicResponseDto(Page<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException {
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Member member = new Member();
@@ -264,13 +263,11 @@ public class MeetingPostService {
 
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
 
-            if (date.after(new Date()) && (meetingPost.getPeople() > memberCount )) {
+            if (date.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
                 meetingStatus = 1;
-            }
-            else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
+            } else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
                 meetingStatus = 2;
-            }
-            else if (date.before(new Date())) {
+            } else if (date.before(new Date())) {
                 meetingStatus = 3;
             }
 
@@ -309,7 +306,7 @@ public class MeetingPostService {
     }
 
     @Transactional
-    public ResponseDto<?> deleteMeetingPost (Long meetingId, UserDetails userDetails){
+    public ResponseDto<?> deleteMeetingPost(Long meetingId, UserDetails userDetails) {
         MeetingPost meetingPost = meetingPostRepository.findById(meetingId).orElse(null);
         Member member = new Member();
         if (userDetails != null) {
@@ -337,7 +334,8 @@ public class MeetingPostService {
         }
         return jwtTokenProvider.getMemberFromAuthentication();
     }
-    private String resolveToken (String accessToken){
+
+    private String resolveToken(String accessToken) {
         if (accessToken.startsWith("Bearer ")) {
             return accessToken.substring(7);
         }
