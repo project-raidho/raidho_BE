@@ -55,7 +55,8 @@ public class MeetingPostController {
     @PutMapping("/{meetingId}")
     public ResponseEntity<?> updateMeetingPost(@PathVariable("meetingId") Long meetingId,
                                                @AuthenticationPrincipal UserDetails userDetails,
-                                               @ModelAttribute UpdateMeetingPost updateMeetingPost) {
+                                               @RequestBody UpdateMeetingPost updateMeetingPost) {
+        System.out.println("123123123123123123123123");
         return meetingPostService.updateMeetingPost(meetingId,userDetails,updateMeetingPost);
     }
 }
