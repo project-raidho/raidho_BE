@@ -2,6 +2,7 @@ package com.project.raidho.domain.chat;
 
 import com.project.raidho.domain.Timestamped;
 import com.project.raidho.domain.meetingPost.MeetingPost;
+import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,5 +47,10 @@ public class RoomMaster extends Timestamped {
 
     @OneToMany(mappedBy = "roomMaster",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<RoomDetail> roomDetails = new ArrayList<>();
+
+    public void updateRoomMaster(UpdateMeetingPost updateMeetingPost) {
+        this.roomName = updateMeetingPost.getTitle();
+        this.memberCount = updateMeetingPost.getPeople();
+    }
 
 }
