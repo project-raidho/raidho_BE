@@ -105,13 +105,23 @@ public class MeetingPostService {
     @Transactional
     public ResponseEntity<?> updateMeetingPost(Long meetingId, UserDetails userDetails, UpdateMeetingPost updateMeetingPost) {
         Member member = new Member();
+
+
+        System.out.println(updateMeetingPost.getTitle());
+        System.out.println(updateMeetingPost.getDesc());
+        System.out.println(updateMeetingPost.getPeople());
+        System.out.println(updateMeetingPost.getDepartLocation());
+        System.out.println(updateMeetingPost.getStartDate());
+        System.out.println(updateMeetingPost.getEndDate());
+        System.out.println(updateMeetingPost.getRoomCloseDate());
+
+
         MeetingPost meetingPost = meetingPostRepository.findById(meetingId).orElseThrow(() -> new RuntimeException(String.valueOf(ErrorCode.INVALID_AUTH_MEMBER_UPDATE)));
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
         if (member.getProviderId() != null) {
             if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
-                meetingTagRepository.deleteAllByMeetingPost_Id(meetingPost.getId());
                 meetingPost.updateMeetingPost(updateMeetingPost);
             }
         } else {
