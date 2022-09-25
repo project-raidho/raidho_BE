@@ -105,17 +105,6 @@ public class MeetingPostService {
     @Transactional
     public ResponseEntity<?> updateMeetingPost(Long meetingId, UserDetails userDetails, UpdateMeetingPost updateMeetingPost) {
         Member member = new Member();
-
-
-        System.out.println(updateMeetingPost.getTitle());
-        System.out.println(updateMeetingPost.getDesc());
-        System.out.println(updateMeetingPost.getPeople());
-        System.out.println(updateMeetingPost.getDepartLocation());
-        System.out.println(updateMeetingPost.getStartDate());
-        System.out.println(updateMeetingPost.getEndDate());
-        System.out.println(updateMeetingPost.getRoomCloseDate());
-
-
         MeetingPost meetingPost = meetingPostRepository.findById(meetingId).orElseThrow(() -> new RuntimeException(String.valueOf(ErrorCode.INVALID_AUTH_MEMBER_UPDATE)));
         RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingId).orElseThrow(() -> new IllegalArgumentException("test"));
         if (userDetails != null) {
@@ -123,9 +112,7 @@ public class MeetingPostService {
         }
         if (member.getProviderId() != null) {
             if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
-                System.out.println("8uoniewurc0eunrpewoiucrpwe80muepwimpw");
                 meetingPost.updateMeetingPost(updateMeetingPost);
-                System.out.println("###################=================");
                 roomMaster.updateRoomMaster(updateMeetingPost);
             }
         } else {

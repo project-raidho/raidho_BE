@@ -56,7 +56,6 @@ public class MeetingPostController {
     public ResponseEntity<?> updateMeetingPost(@PathVariable("meetingId") Long meetingId,
                                                @AuthenticationPrincipal UserDetails userDetails,
                                                @RequestBody UpdateMeetingPost updateMeetingPost) {
-        System.out.println("123123123123123123123123");
         return meetingPostService.updateMeetingPost(meetingId,userDetails,updateMeetingPost);
     }
 }
