@@ -78,7 +78,7 @@ public class PostService extends Timestamped {
                                 .build()
                 );
         }
-        return ResponseDto.success("새로운 게시글이 등록되었습니다.");
+        return ResponseDto.success(post.getId());
     }
 
     // Todo :: 게시글 수정
