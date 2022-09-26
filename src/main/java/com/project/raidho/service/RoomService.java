@@ -47,7 +47,7 @@ public class RoomService {
 
     private final ChatMessageRepository chatMessageRepository;
 
-    private Map<String, ChannelTopic> topics;
+    private final Map<String, ChannelTopic> topics;
 
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
@@ -192,12 +192,9 @@ public class RoomService {
     }
 
     public void enterChatRoom(String roomId) {
-        ChannelTopic topic = topics.get(roomId);
-        if (topic == null) {
-            topic = new ChannelTopic(roomId);
-            redisMessageListener.addMessageListener(redisSubscriber, topic);
-            topics.put(roomId, topic);
-        }
+        ChannelTopic topic = new ChannelTopic(roomId);
+        redisMessageListener.addMessageListener(redisSubscriber, topic);
+        topics.put(roomId, topic);
     }
 
     public ChannelTopic getTopic(String roomId) {

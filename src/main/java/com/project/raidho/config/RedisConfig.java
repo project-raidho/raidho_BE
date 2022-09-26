@@ -16,17 +16,17 @@ public class RedisConfig {
     /**
      * redis pub / sub 메세지를 처리하는 listener 설정
      */
-    @Bean
-    public RedisMessageListenerContainer redisMessageListener(
-            RedisConnectionFactory connectionFactory,
-            MessageListenerAdapter listenerAdapter,
-            ChannelTopic channelTopic)
-    {
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(listenerAdapter, channelTopic);
-        return container;
-    }
+//    @Bean
+//    public RedisMessageListenerContainer redisMessageListener(
+//            RedisConnectionFactory connectionFactory,
+//            MessageListenerAdapter listenerAdapter,
+//            ChannelTopic channelTopic)
+//    {
+//        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+//        container.setConnectionFactory(connectionFactory);
+//        container.addMessageListener(listenerAdapter, channelTopic);
+//        return container;
+//    }
 
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(
