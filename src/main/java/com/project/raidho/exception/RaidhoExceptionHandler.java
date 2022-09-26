@@ -15,4 +15,5 @@ public class RaidhoExceptionHandler extends ResponseEntityExceptionHandler { // 
         log.error("RaidhoException throw CustomException : {}", e.getErrorCode());
         return ErrorResponse.toResponseEntity(e.getErrorCode());
     }
+
 }

@@ -29,4 +29,5 @@ public class ThemeCategory {
     public void updateCategory(ThemeCategoryRequestDto requestDto) {
         this.countryName = requestDto.getCountryName();;
     }
+
 }

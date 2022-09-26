@@ -10,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EachRoomInfoDto {
+
     private String themeCategory;
     private List<String> meetingTags;
     private List<String> memberNames;
@@ -22,4 +23,5 @@ public class EachRoomInfoDto {
     private String roomCloseDate;
     private String departLocation;
     private Boolean isMine;
+
 }

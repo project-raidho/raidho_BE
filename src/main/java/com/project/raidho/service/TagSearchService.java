@@ -33,10 +33,15 @@ import java.util.List;
 public class TagSearchService {
 
     private final TagRepository tagRepository;
+
     private final PostHeartRepository postHeartRepository;
+
     private final ImgRepository imgRepository;
+
     private final MeetingTagRepository meetingTagRepository;
+
     private final RoomMasterRepository roomMasterRepository;
+
     private final RoomDetailRepository roomDetailRepository;
 
     @Transactional(readOnly = true)
@@ -178,4 +183,5 @@ public class TagSearchService {
             }
         return new PageImpl<>(meetingPosts, meetingPostList.getPageable(), meetingPostList.getTotalElements());
     }
+
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -19,4 +20,5 @@ public class MeetingPostRequestDto {
     private int people;
     private String roomCloseDate;
     private String departLocation;
+
 }

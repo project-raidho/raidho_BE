@@ -3,7 +3,6 @@ package com.project.raidho.domain.post.dto;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -11,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostResponseDto {
+
     private Long id;
     private Boolean isMine;
     private Boolean isHeartMine;

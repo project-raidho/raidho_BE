@@ -9,8 +9,11 @@ import lombok.Getter;
 @Data
 @Builder
 public class ResponseDto<T> {
+
     private boolean success;
+
     private T data;
+
     private Error error;
 
     public static <T> ResponseDto<T> success(T date) {
@@ -27,4 +30,5 @@ public class ResponseDto<T> {
     public static <T> ResponseDto<T> fail(int code, String message) {
         return new ResponseDto<>(false,null, new Error(code, message));
     }
+
 }

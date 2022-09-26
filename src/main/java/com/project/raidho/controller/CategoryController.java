@@ -1,6 +1,5 @@
 package com.project.raidho.controller;
 
-import com.amazonaws.Response;
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.domain.meetingPost.dto.ThemeCategoryRequestDto;
 import com.project.raidho.service.CategoryService;

@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 @Builder
 @Getter
 public class ErrorResponse {
+
     private String error;
+
     private final String errorMessage;
 
     public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorCode errorCode) {
@@ -18,4 +20,5 @@ public class ErrorResponse {
                         .errorMessage(errorCode.getErrorMessage())
                         .build());
     }
+
 }

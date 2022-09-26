@@ -1,6 +1,5 @@
 package com.project.raidho.domain.meetingPost.dto;
 
-import com.project.raidho.domain.member.Member;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -11,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MeetingPostResponseDto {
+
     private Long id;
     private String themeCategory;
     private List<String> meetingTags;
@@ -30,4 +30,5 @@ public class MeetingPostResponseDto {
     private String memberImage;
     private LocalDate createdAt;
     private LocalDate modifiedAt;
+
 }

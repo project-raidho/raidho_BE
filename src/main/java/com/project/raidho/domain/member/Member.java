@@ -1,6 +1,5 @@
 package com.project.raidho.domain.member;
 
-import com.project.raidho.domain.member.dto.MemberDto;
 import com.project.raidho.domain.member.dto.MemberUpdateDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,4 +53,5 @@ public class Member {
         this.memberIntro= memberDto.getMemberIntro();
         this.memberName= memberDto.getMemberName();
     }
+
 }

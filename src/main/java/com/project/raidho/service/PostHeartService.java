@@ -25,7 +25,9 @@ import java.util.Optional;
 public class PostHeartService {
 
     private final PostRepository postRepository;
+
     private final PostHeartRepository postHeartRepository;
+
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
@@ -85,4 +87,5 @@ public class PostHeartService {
         }
         throw new RuntimeException("NOT VALID ACCESS TOKEN");
     }
+
 }

@@ -1,6 +1,5 @@
 package com.project.raidho.service;
 
-import com.project.raidho.domain.Timestamped;
 import com.project.raidho.domain.chat.ChatDto.ChatMessageDto;
 import com.project.raidho.domain.chat.ChatMessage;
 import com.project.raidho.domain.chat.RoomDetail;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +21,7 @@ import java.util.List;
 public class ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
+
     private final RoomDetailRepository roomDetailRepository;
 
     @Transactional
@@ -68,4 +67,5 @@ public class ChatMessageService {
         }
         return new PageImpl<>(chatMessageDtoPage, chatMessagePage.getPageable(), chatMessagePage.getTotalElements());
     }
+
 }

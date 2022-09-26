@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class RoomDetailResponseDto {
+
     private Long roomMasterId;
     private String roomName;
     private int people;
+
 }

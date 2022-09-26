@@ -6,5 +6,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class ThemeCategoryRequestDto {
+
     private String countryName;
+
 }
