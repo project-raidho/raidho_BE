@@ -29,7 +29,8 @@ public class ChatMessageService {
 
     @Transactional
     public ChatMessageDto saveChatMessage(Long roomId, ChatMessageDto chatMessageDto) {
-        RoomDetail roomDetail = roomDetailRepository.findByRoomMaster_RoomIdAndMember_Id(roomId, chatMessageDto.getMemberId());
+        RoomDetail roomDetail = roomDetailRepository.findByRoomMaster_RoomIdAndMember_Id(roomId, chatMessageDto.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("채팅방에 속해 있지 않은 회원입니다."));
         Member member = roomDetail.getMember();
         SimpleDateFormat format = new SimpleDateFormat("a HH:mm");
         Date time = new Date();

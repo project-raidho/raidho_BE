@@ -8,12 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RoomDetailRepository extends JpaRepository<RoomDetail, Long> {
 
     RoomDetail findByRoomMasterAndMember(RoomMaster roomMaster, Member member);
 
-    RoomDetail findByRoomMaster_RoomIdAndMember_Id(Long roomId, Long memberId);
+    Optional<RoomDetail> findByRoomMaster_RoomIdAndMember_Id(Long roomId, Long memberId);
 
     void deleteByRoomMaster_RoomId(Long roomId);
 

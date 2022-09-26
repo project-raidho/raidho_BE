@@ -5,6 +5,7 @@ import com.project.raidho.Util.RoomUtils;
 import com.project.raidho.domain.chat.ChatDto.EachRoomInfoDto;
 import com.project.raidho.domain.chat.ChatDto.RoomMasterRequestDto;
 import com.project.raidho.domain.chat.ChatDto.RoomMasterResponseDto;
+import com.project.raidho.domain.chat.ChatMessage;
 import com.project.raidho.domain.chat.RoomDetail;
 import com.project.raidho.domain.chat.RoomMaster;
 import com.project.raidho.domain.meetingPost.MeetingPost;
@@ -120,11 +121,19 @@ public class RoomService {
         List<RoomMaster> roomMasterList = roomMasterRepository.findAllByRoomDetails_Member(member);
         List<RoomMasterResponseDto> roomMasterResponseDtoList = new ArrayList<>();
         for (RoomMaster rm : roomMasterList) {
+
+            Long unReadCount = 0L;
+            RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(rm, member);
+            if (roomDetail.getChatId() != null) {
+                unReadCount = chatMessageRepository.countFromLastReadChat(roomDetail.getChatId());
+            }
+
             roomMasterResponseDtoList.add(
                     RoomMasterResponseDto.builder()
                             .roomMasterId(rm.getRoomId())
                             .roomName(rm.getRoomName())
                             .roomPic(rm.getRoomPic())
+                            .unReadCount(unReadCount)
                             .build()
             );
         }
@@ -189,6 +198,15 @@ public class RoomService {
             roomDetailRepository.deleteByRoomMasterAndMember(roomMaster, member);
             log.info("{} 채팅방에서 탈퇴하셨습니다.", meetingPost.getTitle());
         }
+    }
+
+    @Transactional
+    public void updateLastReadChat(Long roomId, Long memberId) {
+        RoomDetail roomDetail = roomDetailRepository.findByRoomMaster_RoomIdAndMember_Id(roomId,memberId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방에 속해있지 않는 회원입니다."));
+        ChatMessage chatMessage = chatMessageRepository.findFirstByRoomIdOrderByCreatedAtDesc(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅 내역이 존재하지 않습니다."));
+        roomDetail.updateChatId(chatMessage.getId());
     }
 
     public void enterChatRoom(String roomId) {
