@@ -39,18 +39,18 @@ public class StompHandler implements ChannelInterceptor {
         return message;
     }
 
-    @Override
-    public void postSend(Message message, MessageChannel channel, boolean sent) {
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        if (StompCommand.UNSUBSCRIBE == accessor.getCommand()) {
-            List<String> disconnectedMemberId = accessor.getNativeHeader("memberId");
-            List<String> disconnectedRoomId = accessor.getNativeHeader("roomId");
-            // 채팅방 unsubscribe 상태 감지
-            if (disconnectedMemberId != null && disconnectedRoomId != null) {
-                Long memberId = Long.parseLong(disconnectedMemberId.get(0));
-                Long roomId = Long.parseLong(disconnectedRoomId.get(0));
-                roomService.updateLastReadChat(roomId, memberId);
-            }
-        }
-    }
+//    @Override
+//    public void postSend(Message message, MessageChannel channel, boolean sent) {
+//        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+//        if (StompCommand.UNSUBSCRIBE == accessor.getCommand()) {
+//            List<String> disconnectedMemberId = accessor.getNativeHeader("memberId");
+//            List<String> disconnectedRoomId = accessor.getNativeHeader("roomId");
+//            // 채팅방 unsubscribe 상태 감지
+//            if (disconnectedMemberId != null && disconnectedRoomId != null) {
+//                Long memberId = Long.parseLong(disconnectedMemberId.get(0));
+//                Long roomId = Long.parseLong(disconnectedRoomId.get(0));
+//                roomService.updateLastReadChat(roomId, memberId);
+//            }
+//        }
+//    }
 }

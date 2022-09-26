@@ -122,18 +122,18 @@ public class RoomService {
         List<RoomMasterResponseDto> roomMasterResponseDtoList = new ArrayList<>();
         for (RoomMaster rm : roomMasterList) {
 
-            Long unReadCount = 0L;
-            RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(rm, member);
-            if (roomDetail.getChatId() != null) {
-                unReadCount = chatMessageRepository.countFromLastReadChat(roomDetail.getChatId());
-            }
+//            Long unReadCount = 0L;
+//            RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(rm, member);
+//            if (roomDetail.getChatId() != null) {
+//                unReadCount = chatMessageRepository.countFromLastReadChat(roomDetail.getChatId());
+//            }
 
             roomMasterResponseDtoList.add(
                     RoomMasterResponseDto.builder()
                             .roomMasterId(rm.getRoomId())
                             .roomName(rm.getRoomName())
                             .roomPic(rm.getRoomPic())
-                            .unReadCount(unReadCount)
+                         //   .unReadCount(unReadCount)
                             .build()
             );
         }
