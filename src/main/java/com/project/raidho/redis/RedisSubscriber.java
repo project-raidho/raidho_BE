@@ -23,9 +23,6 @@ public class RedisSubscriber implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {
-            System.out.println(message);
-            System.out.println(message.getBody());
-            System.out.println("ONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONON");
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
             ChatMessageDto chatMessageDto = objectMapper.readValue(publishMessage, ChatMessageDto.class);
             messageSendingOperations.convertAndSend("/sub/chat/message/" + chatMessageDto.getRoomId(), chatMessageDto);
