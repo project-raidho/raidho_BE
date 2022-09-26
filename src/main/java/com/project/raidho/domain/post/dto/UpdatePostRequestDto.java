@@ -9,7 +9,9 @@ import java.util.List;
 @AllArgsConstructor
 
 public class UpdatePostRequestDto {
+
     private String content;
     private List<String> tags;
     private List<String> locationTags;
+
 }

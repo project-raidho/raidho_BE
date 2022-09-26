@@ -2,7 +2,6 @@ package com.project.raidho.controller;
 
 import com.project.raidho.domain.chat.ChatDto.ChatMessageDto;
 import com.project.raidho.domain.chat.ChatDto.RoomMasterRequestDto;
-import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
 import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.service.ChatMessageService;
 import com.project.raidho.service.RoomService;

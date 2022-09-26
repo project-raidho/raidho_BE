@@ -9,8 +9,6 @@ import com.project.raidho.domain.chat.RoomDetail;
 import com.project.raidho.domain.chat.RoomMaster;
 import com.project.raidho.domain.meetingPost.MeetingPost;
 import com.project.raidho.domain.chat.ChatDto.RoomDetailResponseDto;
-import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
-import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.tags.MeetingTags;
 import com.project.raidho.exception.ErrorCode;
@@ -32,10 +30,15 @@ import java.util.List;
 public class RoomService {
 
     private final MemberRepository memberRepository;
+
     private final RoomMasterRepository roomMasterRepository;
+
     private final MeetingPostRepository meetingPostRepository;
+
     private final RoomDetailRepository roomDetailRepository;
+
     private final MeetingTagRepository meetingTagRepository;
+
     private final ChatMessageRepository chatMessageRepository;
 
     // 채팅방 생성
@@ -87,10 +90,6 @@ public class RoomService {
             roomMaster.getRoomDetails().add(newRoomDetail);
             roomDetailRepository.save(newRoomDetail);
         }
-//        else {
-//            throw new RaidhoException(ErrorCode.ALREADY_JOIN_CHAT_ROOM);
-//        }
-
         RoomDetailResponseDto responseDto = RoomDetailResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
                 .roomName(roomMaster.getRoomName())
@@ -160,7 +159,6 @@ public class RoomService {
                 .build();
     }
 
-
     // 채팅방 나가기
     @Transactional
     public void exitChatRoom(UserDetails userDetails, Long roomId) {
@@ -177,4 +175,5 @@ public class RoomService {
             roomDetailRepository.deleteByRoomMasterAndMember(roomMaster, member);
         }
     }
+
 }

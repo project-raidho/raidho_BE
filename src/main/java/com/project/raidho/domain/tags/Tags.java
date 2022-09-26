@@ -1,7 +1,6 @@
 package com.project.raidho.domain.tags;
 
 import com.project.raidho.domain.post.Post;
-import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,9 +28,5 @@ public class Tags {
     @JoinColumn(name = "postId",nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Post post;
-
-    public void updateTags(UpdatePostRequestDto requestDto) {
-
-    }
 
 }

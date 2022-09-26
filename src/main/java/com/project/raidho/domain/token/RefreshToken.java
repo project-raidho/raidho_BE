@@ -26,4 +26,5 @@ public class RefreshToken {
     public void updateTokenValue(String refreshToken) {
         this.refreshToken = refreshToken;
     }
+
 }

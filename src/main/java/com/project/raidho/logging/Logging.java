@@ -10,4 +10,5 @@ public class Logging {
         e.printStackTrace(new PrintWriter(error)); // 형식화된 표현을 텍스트 출력 스트림에 출력한다.
         return error.toString();
     }
+
 }

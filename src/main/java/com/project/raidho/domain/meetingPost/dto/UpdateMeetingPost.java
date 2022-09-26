@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateMeetingPost {
+
     private String title;
     private String desc;
     private String startDate;
@@ -17,4 +18,5 @@ public class UpdateMeetingPost {
     private int people;
     private String roomCloseDate;
     private String departLocation;
+
 }

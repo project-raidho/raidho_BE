@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class JwtTokenDto {
+
     private String authorization; // accessToken
     private String refreshToken; // refreshToken
+
 }

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ImgRepository extends JpaRepository<MultipartFiles, Long> {
     List<MultipartFiles> findAllByPost_Id(Long id);
+
 }

@@ -1,6 +1,5 @@
 package com.project.raidho.controller;
 
-import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.service.PostHeartService;
 import lombok.RequiredArgsConstructor;

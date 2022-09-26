@@ -1,7 +1,6 @@
 package com.project.raidho.domain.chat;
 
 import com.project.raidho.domain.Timestamped;
-import com.project.raidho.domain.chat.ChatDto.ChatMessageDto;
 import com.project.raidho.domain.member.Member;
 import lombok.*;
 
@@ -31,6 +30,7 @@ public class ChatMessage extends Timestamped {
     public enum Type {
         ENTER, TALK, QUIT
     }
+
     @Column
     private Type type;
 
@@ -42,4 +42,5 @@ public class ChatMessage extends Timestamped {
 
     @Column
     private String messageTime;
+
 }

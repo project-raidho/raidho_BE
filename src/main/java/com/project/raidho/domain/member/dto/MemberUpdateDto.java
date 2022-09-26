@@ -11,7 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class MemberUpdateDto {
+
     private String memberName;
     private MultipartFile memberImage;
     private String memberIntro;
+
 }

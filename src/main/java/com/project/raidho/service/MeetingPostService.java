@@ -9,12 +9,8 @@ import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostResponseDto;
 import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
 import com.project.raidho.domain.member.Member;
-import com.project.raidho.domain.post.Post;
-import com.project.raidho.domain.post.dto.MainPostResponseDto;
-import com.project.raidho.domain.s3.MultipartFiles;
 import com.project.raidho.domain.tags.MeetingTags;
 import com.project.raidho.domain.ResponseDto;
-import com.project.raidho.domain.tags.Tags;
 import com.project.raidho.exception.ErrorCode;
 import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.jwt.JwtTokenProvider;
@@ -41,14 +37,20 @@ import java.util.*;
 @Builder
 @RequiredArgsConstructor
 public class MeetingPostService {
-    private final MeetingPostRepository meetingPostRepository;
-    private final MeetingTagRepository meetingTagRepository;
-    private final ThemeCategoryRepository themeCategoryRepository;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final RoomMasterRepository roomMasterRepository;
-    private final RoomDetailRepository roomDetailRepository;
-    private final ChatMessageRepository chatMessageRepository;
 
+    private final MeetingPostRepository meetingPostRepository;
+
+    private final MeetingTagRepository meetingTagRepository;
+
+    private final ThemeCategoryRepository themeCategoryRepository;
+
+    private final JwtTokenProvider jwtTokenProvider;
+
+    private final RoomMasterRepository roomMasterRepository;
+
+    private final RoomDetailRepository roomDetailRepository;
+
+    private final ChatMessageRepository chatMessageRepository;
 
     @Transactional
     public ResponseDto<?> createMeetingPost(MeetingPostRequestDto meetingPostRequestDto, HttpServletRequest request) throws IOException {
@@ -208,7 +210,6 @@ public class MeetingPostService {
         return meetingPosts;
     }
 
-
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllMeetingPost(int page, int size, UserDetails userDetails) throws ParseException {
 
@@ -348,4 +349,5 @@ public class MeetingPostService {
         Optional<ThemeCategory> themeCategory = themeCategoryRepository.findByCountryName(requestDto.getThemeCategory());
         return themeCategory.orElseThrow(() -> new IllegalArgumentException("등록되지 않은 카테고리입니다."));
     }
+
 }

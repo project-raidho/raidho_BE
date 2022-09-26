@@ -34,17 +34,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 @Slf4j
 @Builder
 @RequiredArgsConstructor
 @Service
 public class PostService extends Timestamped {
+
     private final PostRepository postRepository;
+
     private final ImgRepository imgRepository;
+
     private final TagRepository tagRepository;
+
     private final PostHeartRepository postHeartRepository;
+
     private final S3Service s3Service;
+
     private final JwtTokenProvider jwtTokenProvider;
 
     // 자랑글 등록
@@ -183,7 +188,6 @@ public class PostService extends Timestamped {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
     }
 
-
     // Todo :: 게시글 삭제
     @Transactional
     public ResponseDto<?> deletePost(Long postId, UserDetails userDetails) throws RaidhoException {
@@ -320,6 +324,7 @@ public class PostService extends Timestamped {
         }
         throw new RuntimeException("NOT VALID ACCESS TOKEN");
     }
+
 }
 
 

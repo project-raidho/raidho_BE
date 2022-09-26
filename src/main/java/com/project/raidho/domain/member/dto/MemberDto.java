@@ -12,8 +12,11 @@ import lombok.NoArgsConstructor;
 public class MemberDto {
 
     private Long id;
+
     private String memberName;
+
     private String memberImage;
+
     private String memberIntro;
 
     @Builder
@@ -23,4 +26,5 @@ public class MemberDto {
         this.memberImage = member.getMemberImage();
         this.memberIntro = member.getMemberIntro();
     }
+
 }

@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MainPostResponseDto {
+
     private Long id;
     private Boolean isMine;
     private Boolean isHeartMine;

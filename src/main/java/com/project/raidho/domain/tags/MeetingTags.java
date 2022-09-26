@@ -30,8 +30,4 @@ public class MeetingTags {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private MeetingPost meetingPost;
 
-    public void updateMeetingTags(UpdatePostRequestDto requestDto) {
-
-    }
-
 }
