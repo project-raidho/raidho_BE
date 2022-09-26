@@ -34,7 +34,7 @@ public class PostHeartService {
     public ResponseEntity<?> createPostHeart(Long postId, HttpServletRequest request) throws RaidhoException {
         Member member = validateMember(request);
         if (member == null) {
-            log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
+            log.error(ErrorCode.DOESNT_EXIST_MEMBER.getErrorMessage());
             throw new RaidhoException(ErrorCode.UNAUTHORIZATION_MEMBER);
         }
         Post post = postRepository.findById(postId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_POST));
@@ -46,6 +46,7 @@ public class PostHeartService {
                     .post(post)
                     .build();
             postHeartRepository.save(postHeart);
+            log.info("{} 번 자랑글에 {} 님께서 좋아요 하셨습니다.", post.getId(), member.getMemberName());
             List<PostHeart> postHearts = postHeartRepository.findByPost(post);
             post.update(postHearts);
             return ResponseEntity.ok().body(ResponseDto.success("좋아요!!!"));
@@ -58,14 +59,17 @@ public class PostHeartService {
     public ResponseEntity<?> deletePostHeart(Long postId, HttpServletRequest request) throws RaidhoException {
         Member member = validateMember(request);
         if (member == null) {
+            log.error(ErrorCode.DOESNT_EXIST_MEMBER.getErrorMessage());
             throw new RaidhoException(ErrorCode.UNAUTHORIZATION_MEMBER);
         }
         Post post = postRepository.findById(postId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_POST));
         Optional<PostHeart> postHeartOptional = postHeartRepository.findByPostAndMember(post, member);
         if (!postHeartOptional.isPresent()) {
+            log.error(ErrorCode.DIDNT_CHECK_LIKE.getErrorMessage());
             throw new RaidhoException(ErrorCode.DIDNT_CHECK_LIKE);
         }
         postHeartRepository.delete(postHeartOptional.get());
+        log.info("{} 번 자랑글에 {} 님께서 좋아요를 취소하셨습니다.", post.getId(), member.getMemberName());
         List<PostHeart> postHearts = postHeartRepository.findByPost(post);
         post.update(postHearts);
         return ResponseEntity.ok().body(ResponseDto.success("좋아요를 취소하셨습니다."));

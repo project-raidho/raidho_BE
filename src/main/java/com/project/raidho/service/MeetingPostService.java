@@ -18,6 +18,7 @@ import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,37 +34,28 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@Slf4j
 @Service
 @Builder
 @RequiredArgsConstructor
 public class MeetingPostService {
 
     private final MeetingPostRepository meetingPostRepository;
-
     private final MeetingTagRepository meetingTagRepository;
-
     private final ThemeCategoryRepository themeCategoryRepository;
-
     private final JwtTokenProvider jwtTokenProvider;
-
     private final RoomMasterRepository roomMasterRepository;
-
     private final RoomDetailRepository roomDetailRepository;
-
     private final ChatMessageRepository chatMessageRepository;
 
     @Transactional
-    public ResponseDto<?> createMeetingPost(MeetingPostRequestDto meetingPostRequestDto, HttpServletRequest request) throws IOException {
-
-        // 회원정보 확인 로직
+    public ResponseDto<?> createMeetingPost(MeetingPostRequestDto meetingPostRequestDto, HttpServletRequest request) {
         Member member = validateMember(request);
-
         if (member == null) {
+            log.error(ErrorCode.DOESNT_EXIST_MEMBER.getErrorMessage());
             throw new NullPointerException("회원만 사용 가능합니다.");
         }
-
         ThemeCategory themeCategory = isPresentThemeCatogory(meetingPostRequestDto);
-
         MeetingPost meetingPost = meetingPostRepository.save(
                 MeetingPost.builder()
                         .themeCategory(themeCategory)
@@ -77,7 +69,6 @@ public class MeetingPostService {
                         .member(member)
                         .build()
         );
-
         List<String> meetingTag = meetingPostRequestDto.getMeetingTags();
         if (meetingTag != null) {
             for (String meetingTags : meetingTag)
@@ -88,6 +79,7 @@ public class MeetingPostService {
                                 .build()
                 );
         }
+        log.info("{} 게시글이 등록되었습니다.", meetingPost.getTitle());
         return ResponseDto.success(
                 MeetingPostResponseDto.builder()
                         .id(meetingPost.getId())
@@ -105,10 +97,10 @@ public class MeetingPostService {
     }
 
     @Transactional
-    public ResponseEntity<?> updateMeetingPost(Long meetingId, UserDetails userDetails, UpdateMeetingPost updateMeetingPost) {
+    public ResponseEntity<?> updateMeetingPost(Long meetingId, UserDetails userDetails, UpdateMeetingPost updateMeetingPost) throws RaidhoException {
         Member member = new Member();
-        MeetingPost meetingPost = meetingPostRepository.findById(meetingId).orElseThrow(() -> new RuntimeException(String.valueOf(ErrorCode.INVALID_AUTH_MEMBER_UPDATE)));
-        RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingId).orElseThrow(() -> new IllegalArgumentException("test"));
+        MeetingPost meetingPost = meetingPostRepository.findById(meetingId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEETING_POST));
+        RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CHATTING_ROOM));
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
@@ -116,9 +108,10 @@ public class MeetingPostService {
             if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
                 meetingPost.updateMeetingPost(updateMeetingPost);
                 roomMaster.updateRoomMaster(updateMeetingPost);
+                log.info("{} 모집글 수정이 완료되었습니다.", meetingPost.getTitle());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new RaidhoException(ErrorCode.INVALID_AUTH_MEMBER_UPDATE));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new RaidhoException(ErrorCode.INVALID_AUTH_MEMBER_UPDATE));
         }
         return ResponseEntity.ok().body("정상적으로 수정되었습니다.");
     }
@@ -136,26 +129,19 @@ public class MeetingPostService {
     }
 
     private List<MeetingPostResponseDto> convertToMyPageResponseDto(List<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException {
-
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Member member = new Member();
-
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
-
         Boolean isMine = false;
         Boolean isAlreadyJoin = false;
         int meetingStatus = 0;
-
         List<MeetingPostResponseDto> meetingPosts = new ArrayList<>();
-
         for (MeetingPost meetingPost : meetingPostList) {
-
             RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
                     .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
             int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
-
             if (member.getProviderId() != null) {
                 if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
                     isMine = true;
@@ -165,9 +151,7 @@ public class MeetingPostService {
                     isAlreadyJoin = true;
                 }
             }
-
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
-
             if (date.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
                 meetingStatus = 1;
             } else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
@@ -175,13 +159,11 @@ public class MeetingPostService {
             } else if (date.before(new Date())) {
                 meetingStatus = 3;
             }
-
             List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
             List<String> stringTagList = new ArrayList<>();
             for (MeetingTags mt : meetingTags) {
                 stringTagList.add(mt.getMeetingTag());
             }
-
             meetingPosts.add(
                     MeetingPostResponseDto.builder()
                             .id(meetingPost.getId())
@@ -197,8 +179,7 @@ public class MeetingPostService {
                             .isMine(isMine)
                             .isAlreadyJoin(isAlreadyJoin)
                             .meetingTags(stringTagList)
-                            .meetingParticipant(1)
-                            .meetingStatus(meetingStatus) // Todo ;; 모집중인지 아닌지..
+                            .meetingStatus(meetingStatus)
                             .memberName(meetingPost.getMember().getMemberName())
                             .memberImage(meetingPost.getMember().getMemberImage())
                             .build()
@@ -212,21 +193,17 @@ public class MeetingPostService {
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllMeetingPost(int page, int size, UserDetails userDetails) throws ParseException {
-
         PageRequest pageRequest = PageRequest.of(page, size);
-
         Page<MeetingPost> meetingPostList = meetingPostRepository.findAllByOrderByCreatedAtDesc(pageRequest);
-
         Page<MeetingPostResponseDto> meetingPostResponseDtos = convertToBasicResponseDto(meetingPostList, userDetails);
-
         return ResponseDto.success(meetingPostResponseDtos);
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllCategoryMeetingPost(int page, int size, UserDetails userDetails, String theme) throws ParseException {
+    public ResponseDto<?> getAllCategoryMeetingPost(int page, int size, UserDetails userDetails, String theme) throws ParseException, RaidhoException {
         PageRequest pageRequest = PageRequest.of(page, size);
         ThemeCategory category = themeCategoryRepository.findByCountryName(theme)
-                .orElseThrow(() -> new IllegalArgumentException("해당 카테고리는 존재하지 않습니다."));
+                .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CATEGORY));
         Page<MeetingPost> meetingPostList = meetingPostRepository.findAllByThemeCategory_IdOrderByCreatedAtDesc(category.getId(), pageRequest);
         Page<MeetingPostResponseDto> meetingPostResponseDtos = convertToBasicResponseDto(meetingPostList, userDetails);
         return ResponseDto.success(meetingPostResponseDtos);
@@ -236,23 +213,17 @@ public class MeetingPostService {
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Member member = new Member();
-
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
-
         Boolean isMine = false;
         Boolean isAlreadyJoin = false;
         int meetingStatus = 0;
-
         List<MeetingPostResponseDto> meetingPosts = new ArrayList<>();
-
         for (MeetingPost meetingPost : meetingPostList) {
-
             RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
                     .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
             int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
-
             if (member.getProviderId() != null) {
                 if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
                     isMine = true;
@@ -262,9 +233,7 @@ public class MeetingPostService {
                     isAlreadyJoin = true;
                 }
             }
-
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
-
             if (date.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
                 meetingStatus = 1;
             } else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
@@ -272,13 +241,11 @@ public class MeetingPostService {
             } else if (date.before(new Date())) {
                 meetingStatus = 3;
             }
-
             List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
             List<String> stringTagList = new ArrayList<>();
             for (MeetingTags mt : meetingTags) {
                 stringTagList.add(mt.getMeetingTag());
             }
-
             meetingPosts.add(
                     MeetingPostResponseDto.builder()
                             .id(meetingPost.getId())
@@ -294,13 +261,11 @@ public class MeetingPostService {
                             .isMine(isMine)
                             .isAlreadyJoin(isAlreadyJoin)
                             .meetingTags(stringTagList)
-                            .meetingParticipant(1)
-                            .meetingStatus(meetingStatus) // Todo ;; 모집중인지 아닌지..
+                            .meetingStatus(meetingStatus)
                             .memberName(meetingPost.getMember().getMemberName())
                             .memberImage(meetingPost.getMember().getMemberImage())
                             .build()
             );
-
             isMine = false;
             isAlreadyJoin = false;
         }
@@ -308,22 +273,25 @@ public class MeetingPostService {
     }
 
     @Transactional
-    public ResponseDto<?> deleteMeetingPost(Long meetingId, UserDetails userDetails) {
+    public ResponseDto<?> deleteMeetingPost(Long meetingId, UserDetails userDetails) throws RaidhoException {
         MeetingPost meetingPost = meetingPostRepository.findById(meetingId).orElse(null);
         Member member = new Member();
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
         if (meetingPost == null) {
-            throw new NullPointerException("존재하지 않는 게시글 입니다.");
+            log.error(ErrorCode.DOESNT_EXIST_MEETING_POST.getErrorMessage());
+            throw new RaidhoException(ErrorCode.DOESNT_EXIST_MEETING_POST);
         }
         if (!member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
-            throw new NullPointerException("게시글 주인이 아닙니다.");
+            log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
+            throw new RaidhoException(ErrorCode.UNAUTHORIZATION_MEMBER);
         } else {
             chatMessageRepository.deleteAllByRoomId(meetingId);
             roomDetailRepository.deleteByRoomMaster_RoomId(meetingId);
             meetingPostRepository.delete(meetingPost);
-            return ResponseDto.success("구인 구직 글 삭제 성공");
+            log.info("{} 모집글이 정삭적으로 삭제되었습니다.", meetingPost.getTitle());
+            return ResponseDto.success("모집글이 정상적으로 삭제되었습니다.");
         }
     }
 

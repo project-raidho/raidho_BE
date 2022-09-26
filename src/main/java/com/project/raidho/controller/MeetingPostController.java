@@ -3,6 +3,7 @@ package com.project.raidho.controller;
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
 import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
+import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.service.MeetingPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class MeetingPostController {
     public ResponseEntity<?> getCategoryMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                                     @RequestParam (value = "size",defaultValue = "20")int size,
                                                     @AuthenticationPrincipal UserDetails userDetails,
-                                                    @PathVariable String themeName) throws ParseException {
+                                                    @PathVariable String themeName) throws ParseException, RaidhoException {
 
 
         return ResponseEntity.ok().body(meetingPostService.getAllCategoryMeetingPost(page,size,userDetails,themeName));
@@ -55,7 +56,7 @@ public class MeetingPostController {
     @PutMapping("/{meetingId}")
     public ResponseEntity<?> updateMeetingPost(@PathVariable("meetingId") Long meetingId,
                                                @AuthenticationPrincipal UserDetails userDetails,
-                                               @RequestBody UpdateMeetingPost updateMeetingPost) {
+                                               @RequestBody UpdateMeetingPost updateMeetingPost) throws RaidhoException {
         return meetingPostService.updateMeetingPost(meetingId,userDetails,updateMeetingPost);
     }
 }

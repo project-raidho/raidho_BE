@@ -16,6 +16,7 @@ import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RoomService {
@@ -64,6 +66,7 @@ public class RoomService {
         roomMaster.getRoomDetails().add(roomDetail);
         roomMasterRepository.save(roomMaster);
         roomDetailRepository.save(roomDetail);
+        log.info("{} 채팅방이 정상적으로 생성되었습니다.", meetingPost.getTitle());
         return RoomMasterResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
                 .roomName(roomMaster.getRoomName())
@@ -79,22 +82,22 @@ public class RoomService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
         RoomMaster roomMaster = roomMasterRepository.findByRoomId(roomId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
+                .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CHATTING_ROOM));
         int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
         if (memberCount >= roomMaster.getMemberCount()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("FULL"); // Todo :: 추후 error 처리 고쳐야함
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RaidhoException(ErrorCode.CHATTING_ROOM_ALREADY_FULL));
         }
         RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
         if (roomDetail == null) {
             RoomDetail newRoomDetail = new RoomDetail(roomMaster, member);
             roomMaster.getRoomDetails().add(newRoomDetail);
             roomDetailRepository.save(newRoomDetail);
+            log.info("{} 님께서 {} 채팅방에 참여하셨습니다.", member.getMemberName(), roomMaster.getMeetingPost().getTitle());
         }
         RoomDetailResponseDto responseDto = RoomDetailResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
                 .roomName(roomMaster.getRoomName())
                 .build();
-
         return ResponseEntity.ok().body(responseDto);
     }
 
@@ -120,11 +123,11 @@ public class RoomService {
 
     // 단체방 정보 단건 조회
     @Transactional(readOnly = true)
-    public EachRoomInfoDto eachChatRoomInfo(UserDetails userDetails, Long roomId) {
+    public EachRoomInfoDto eachChatRoomInfo(UserDetails userDetails, Long roomId) throws RaidhoException {
         Boolean isMine = false;
         Member userDetailsMember = ((PrincipalDetails) userDetails).getMember();
         MeetingPost meetingPost = meetingPostRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("없어방")); // Todo :: 수정해야됨
+                .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEETING_POST));
         if (meetingPost.getMember().getProviderId().equals(userDetailsMember.getProviderId())) {
             isMine = true;
         }
@@ -134,13 +137,13 @@ public class RoomService {
             SmeetingTags.add(m.getMeetingTag());
         }
         RoomMaster roomMaster = roomMasterRepository.findByRoomId(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
+                .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CHATTING_ROOM));
         int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
         List<Long> memberId = roomDetailRepository.getAllMemberId(roomMaster);
         List<String> memberName = new ArrayList<>();
         for (Long i : memberId) {
             Member member = memberRepository.findById(i)
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다.")); // Todo :: 추후 수정
+                    .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
             memberName.add(member.getMemberName());
         }
         return EachRoomInfoDto.builder()
@@ -171,8 +174,10 @@ public class RoomService {
             chatMessageRepository.deleteAllByRoomId(roomId);
             roomDetailRepository.deleteByRoomMaster_RoomId(roomId);
             meetingPostRepository.delete(meetingPost);
+            log.info("{} 모집글이 삭제되었습니다.", meetingPost.getTitle());
         } else {
             roomDetailRepository.deleteByRoomMasterAndMember(roomMaster, member);
+            log.info("{} 채팅방에서 탈퇴하셨습니다.", meetingPost.getTitle());
         }
     }
 

@@ -46,7 +46,7 @@ public class ChatRoomController {
     }
 
     @GetMapping("/rooms/{roomId}")
-    public ResponseEntity<?> eachChatRoomInfo(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long roomId) {
+    public ResponseEntity<?> eachChatRoomInfo(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long roomId) throws RaidhoException {
         return ResponseEntity.ok().body(roomService.eachChatRoomInfo(userDetails,roomId));
     }
 
