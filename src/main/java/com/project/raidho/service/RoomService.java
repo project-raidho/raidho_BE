@@ -13,10 +13,13 @@ import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.tags.MeetingTags;
 import com.project.raidho.exception.ErrorCode;
 import com.project.raidho.exception.RaidhoException;
+import com.project.raidho.redis.RedisSubscriber;
 import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -42,6 +46,11 @@ public class RoomService {
     private final MeetingTagRepository meetingTagRepository;
 
     private final ChatMessageRepository chatMessageRepository;
+
+    private Map<String, ChannelTopic> topics;
+
+    private final RedisMessageListenerContainer redisMessageListener;
+    private final RedisSubscriber redisSubscriber;
 
     // 채팅방 생성
     @Transactional
@@ -78,6 +87,7 @@ public class RoomService {
     // 채팅방 입장
     @Transactional
     public ResponseEntity<?> joinChatRoom(Long roomId, UserDetails userDetails) throws RaidhoException {
+        enterChatRoom(String.valueOf(roomId));
         Long memberId = ((PrincipalDetails) userDetails).getMember().getId();
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
@@ -179,6 +189,19 @@ public class RoomService {
             roomDetailRepository.deleteByRoomMasterAndMember(roomMaster, member);
             log.info("{} 채팅방에서 탈퇴하셨습니다.", meetingPost.getTitle());
         }
+    }
+
+    public void enterChatRoom(String roomId) {
+        ChannelTopic topic = topics.get(roomId);
+        if (topic == null) {
+            topic = new ChannelTopic(roomId);
+            redisMessageListener.addMessageListener(redisSubscriber, topic);
+            topics.put(roomId, topic);
+        }
+    }
+
+    public ChannelTopic getTopic(String roomId) {
+        return topics.get(roomId);
     }
 
 }
