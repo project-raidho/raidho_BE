@@ -85,7 +85,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/api/post").hasAnyAuthority("USER")
                 .antMatchers(HttpMethod.PUT, "api/post/**").hasAnyAuthority("USER")
                 .antMatchers(HttpMethod.DELETE, "api/post/**").hasAnyAuthority("USER")
-
+                .antMatchers("api/postheart/**").hasAnyAuthority("USER")
                 .anyRequest().authenticated(); // 설정된 값들 이외 나머지 URL 들을 나타낸다. (인증된 사용자들만)
 
         // 리소스 서버 (즉, 소셜 서비스들) 에서 사용자 정보를 가져온 상태에서 추가로 진행하고자 하는 기능을 명시할 수 있습니다.

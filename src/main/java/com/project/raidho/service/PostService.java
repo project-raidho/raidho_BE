@@ -120,7 +120,7 @@ public class PostService extends Timestamped {
         return ResponseDto.success(postResponseDtos);
     }
 
-    // Todo :: 게시글 단건 조회
+    // 게시글 단건 조회
     @Transactional(readOnly = true)
     public ResponseDto<?> getPostDetail(UserDetails userDetails, Long postId) throws RaidhoException {
         Boolean isMine = false;
@@ -170,7 +170,7 @@ public class PostService extends Timestamped {
         return ResponseDto.success(postResponseDtoList);
     }
 
-    // Todo :: 내가 쓴글 조회 하기
+    // 내가 쓴글 조회 하기
     @Transactional(readOnly = true)
     public ResponseEntity<?> getAllMyPost(UserDetails userDetails) {
         if (userDetails != null) {
@@ -180,11 +180,12 @@ public class PostService extends Timestamped {
                 return ResponseEntity.ok().body(ResponseDto.success(convertToMyPageResponseDto(postList, userDetails)));
             }
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
+        log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
     }
 
 
-    // Todo :: 게시글 삭제
+    // 게시글 삭제
     @Transactional
     public ResponseDto<?> deletePost(Long postId, UserDetails userDetails) throws RaidhoException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_POST));
@@ -193,9 +194,11 @@ public class PostService extends Timestamped {
             member = ((PrincipalDetails) userDetails).getMember();
         }
         if (!member.getProviderId().equals(post.getMember().getProviderId())) {
+            log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
             throw new RaidhoException(ErrorCode.INVALID_AUTH_MEMBER_DELETE);
         } else {
             postRepository.delete(post);
+            log.info("{} 님의 게시글이 정상적으로 삭제되었습니다.", member.getMemberName());
             return ResponseDto.success("게시글이 정상적으로 삭제되었습니다.");
         }
     }
@@ -302,7 +305,7 @@ public class PostService extends Timestamped {
         return posts;
     }
 
-    // Todo :: accessToken validation
+    // accessToken validation
     @Transactional
     public Member validateMember(HttpServletRequest request) {
         String accessToken = resolveToken(request.getHeader("Authorization"));
@@ -313,7 +316,7 @@ public class PostService extends Timestamped {
         return jwtTokenProvider.getMemberFromAuthentication();
     }
 
-    // Todo :: Authorization 에서 받아온 accessToken bearer 제거
+    // Authorization 에서 받아온 accessToken bearer 제거
     private String resolveToken(String accessToken) {
         if (accessToken.startsWith("Bearer ")) {
             return accessToken.substring(7);

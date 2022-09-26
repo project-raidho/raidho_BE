@@ -10,6 +10,7 @@ import com.project.raidho.jwt.JwtTokenProvider;
 import com.project.raidho.repository.PostHeartRepository;
 import com.project.raidho.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostHeartService {
@@ -31,6 +32,7 @@ public class PostHeartService {
     public ResponseEntity<?> createPostHeart(Long postId, HttpServletRequest request) throws RaidhoException {
         Member member = validateMember(request);
         if (member == null) {
+            log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
             throw new RaidhoException(ErrorCode.UNAUTHORIZATION_MEMBER);
         }
         Post post = postRepository.findById(postId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_POST));
