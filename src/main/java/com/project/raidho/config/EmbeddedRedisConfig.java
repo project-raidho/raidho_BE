@@ -12,7 +12,7 @@ import javax.annotation.PreDestroy;
     채팅 서버 실행 시 Embedded Redis 서버도 동시에 실행되도록 설정해야한다.
     local 환경에서만 실행되도록 @Profile 선언
  */
-@Profile("local")
+@Profile("127.0.0.1")
 @Configuration
 public class EmbeddedRedisConfig {
     @Value("6379")

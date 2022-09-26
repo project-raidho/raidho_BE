@@ -50,7 +50,7 @@ public class MeetingPostController {
     }
 
     @DeleteMapping("/{meetingId}")
-    public ResponseDto<?> deleteMeetingPost(@PathVariable("meetingId") Long meetingId, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseDto<?> deleteMeetingPost(@PathVariable("meetingId") Long meetingId, @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
         return meetingPostService.deleteMeetingPost(meetingId, userDetails);
     }
     @PutMapping("/{meetingId}")

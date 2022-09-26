@@ -3,9 +3,11 @@ package com.project.raidho.service;
 import com.project.raidho.domain.chat.ChatDto.ChatMessageDto;
 import com.project.raidho.domain.chat.ChatMessage;
 import com.project.raidho.domain.chat.RoomDetail;
+import com.project.raidho.domain.chat.RoomMaster;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.repository.ChatMessageRepository;
 import com.project.raidho.repository.RoomDetailRepository;
+import com.project.raidho.repository.RoomMasterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
 
     private final RoomDetailRepository roomDetailRepository;
+    private final RoomMasterRepository roomMasterRepository;
 
     @Transactional
     public ChatMessageDto saveChatMessage(Long roomId, ChatMessageDto chatMessageDto) {
