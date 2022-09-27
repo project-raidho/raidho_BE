@@ -34,7 +34,6 @@ public class CommentController {
 
     @PutMapping("/{commentId}")
     public ResponseEntity<?> updateComment(@PathVariable("commentId") Long commentId, @AuthenticationPrincipal UserDetails userDetails, @RequestBody UserDetailsCommentDto userDetailsCommentDto){
-        System.out.println(userDetailsCommentDto.getContent());
         return commentService.updateComment(commentId,userDetails,userDetailsCommentDto);
     }
 
