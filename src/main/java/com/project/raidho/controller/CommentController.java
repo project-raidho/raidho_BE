@@ -24,7 +24,7 @@ public class CommentController {
         return ResponseEntity.ok().body(commentService.createComment(postId,userDetails,commentRequestDto));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{postId}")
     public ResponseEntity<?> getAllCommentsByPost(@PathVariable Long postId,
                                                   @RequestParam (value = "page",defaultValue = "0")int page,
                                                   @RequestParam (value = "size",defaultValue = "15")int size,
