@@ -77,7 +77,7 @@ public class CommentService {
             return ResponseDto.fail(404,"해단 게시글을 찾을 수 없습니다.");
         }
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Comment> commentsList = commentRepository.findAllByOrderByCreatedAtDesc(pageRequest);
+        Page<Comment> commentsList = commentRepository.findByPostIdOrderByCreatedAtDesc(postId, pageRequest);
         Page<CommentResponseDto> commentResponseDtos = convertToCommentResponseDto(commentsList, userDetails);
         return ResponseDto.success(commentResponseDtos);
     }
