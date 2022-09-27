@@ -1,6 +1,7 @@
 package com.project.raidho.controller;
 
 import com.project.raidho.domain.ResponseDto;
+import com.project.raidho.domain.meetingPost.dto.DateRequestDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
 import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
 import com.project.raidho.exception.RaidhoException;
@@ -59,6 +60,14 @@ public class MeetingPostController {
             return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoomAndCategory(page, size, userDetails, category));
         }
         return ResponseEntity.badRequest().body("Bad Request");
+    }
+
+    @GetMapping("/filter/date")
+    public ResponseEntity<?> getOpenMeetingPostByDate(@RequestParam (value = "page",defaultValue = "0")int page,
+                                                      @RequestParam (value = "size",defaultValue = "20")int size,
+                                                      @RequestBody DateRequestDto dateRequestDto,
+                                                      @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoomWhereStartDate(page, size, userDetails, dateRequestDto));
     }
 
     @GetMapping("/filter/{num}")

@@ -5,6 +5,7 @@ import com.project.raidho.domain.chat.RoomDetail;
 import com.project.raidho.domain.chat.RoomMaster;
 import com.project.raidho.domain.meetingPost.MeetingPost;
 import com.project.raidho.domain.meetingPost.ThemeCategory;
+import com.project.raidho.domain.meetingPost.dto.DateRequestDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostResponseDto;
 import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
@@ -227,6 +228,15 @@ public class MeetingPostService {
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CATEGORY));
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoomAndCategory(date, category.getId(), pageRequest);
+        Page<MeetingPostResponseDto> meetingPostResponseDtoPage = convertToOpenMeetingRoom(meetingPosts, userDetails);
+        return ResponseDto.success(meetingPostResponseDtoPage);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getOpenMeetingRoomWhereStartDate(int page, int size, UserDetails userDetails, DateRequestDto dateRequestDto) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoomWhereStartDate(dateRequestDto.getStart(), dateRequestDto.getEnd(), date, pageRequest);
         Page<MeetingPostResponseDto> meetingPostResponseDtoPage = convertToOpenMeetingRoom(meetingPosts, userDetails);
         return ResponseDto.success(meetingPostResponseDtoPage);
     }
