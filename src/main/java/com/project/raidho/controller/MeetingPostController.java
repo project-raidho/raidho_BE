@@ -62,13 +62,13 @@ public class MeetingPostController {
         return ResponseEntity.badRequest().body("Bad Request");
     }
 
-    @GetMapping("/filter/date/{start}/{end}")
+    @GetMapping("/filter/date")
     public ResponseEntity<?> getOpenMeetingPostByDate(@RequestParam (value = "page",defaultValue = "0")int page,
                                                       @RequestParam (value = "size",defaultValue = "20")int size,
-                                                      @RequestParam (value = "start") String start,
-                                                      @RequestParam (value = "end") String end,
+                                                      //@RequestParam (value = "start") String start,
+                                                      //@RequestParam (value = "end") String end,
                                                       @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoomWhereStartDate(page, size, userDetails, start, end));
+        return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoomWhereStartDate(page, size, userDetails));
     }
 
     @GetMapping("/filter/{num}")
