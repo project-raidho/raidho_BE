@@ -311,20 +311,18 @@ public class MeetingPostService {
                 }
             }
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
-            Date dt = new Date();
-            Date tomorrow = new Date(dt.getTime() + (1000 * 60 * 60 * 24));
-            Date tttt = formatter.parse(meetingPost.getRoomCloseDate() + (1000 * 60 * 60 * 24));
+
+            Date tomorrow = new Date(date.getTime() + (1000 * 60 * 60 * 24));
+
             System.out.println("948320948230948302498304982309583-05823-50823-05823");
-            System.out.println(meetingPost.getId());
-            System.out.println(meetingPost.getTitle());
             System.out.println(date);
             System.out.println(tomorrow);
             System.out.println("elcjclk a;e rlknre;nre ckfa;kcf ;rofcjhae;lckfsdfsdfewfwefwef");
-            if (date.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
+            if (date.after(tomorrow) && (meetingPost.getPeople() > memberCount)) {
                 meetingStatus = 1;
-            } else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
+            } else if (date.after(tomorrow) && memberCount >= meetingPost.getPeople()) {
                 meetingStatus = 2;
-            } else if (date.before(tttt)) {
+            } else if (date.before(tomorrow)) {
                 meetingStatus = 3;
             }
             List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
