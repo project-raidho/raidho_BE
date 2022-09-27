@@ -19,6 +19,9 @@ public interface MeetingPostRepository extends JpaRepository<MeetingPost, Long> 
     List<MeetingPost> findAllByMember_IdOrderByCreatedAtDesc(Long id);
 
     @Query("SELECT m FROM MeetingPost m WHERE m.roomCloseDate > :date ORDER BY m.createdAt DESC")
-    Page<MeetingPost> getRoomCloseDateOpen(@Param(value = "date") String date, PageRequest pageRequest);
+    Page<MeetingPost> getOpenMeetingRoom(@Param(value = "date") String date, PageRequest pageRequest);
+
+    @Query("SELECT m FROM MeetingPost m WHERE m.roomCloseDate > :date and m.themeCategory.id = :id ORDER BY m.createdAt DESC ")
+    Page<MeetingPost> getOpenMeetingRoomAndCategory(@Param(value = "date") String date, @Param(value = "countryName") Long id, PageRequest pageRequest);
 
 }

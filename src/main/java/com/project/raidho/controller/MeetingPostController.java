@@ -49,12 +49,19 @@ public class MeetingPostController {
         return meetingPostService.getAllMyMeetingPost(userDetails);
     }
 
-    @GetMapping("/{num}")
+    @GetMapping("/filter/{num}/{category}")
     public ResponseEntity<?> getOpenMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                                 @RequestParam (value = "size",defaultValue = "20")int size,
                                                 @AuthenticationPrincipal UserDetails userDetails,
-                                                @PathVariable int num) throws ParseException {
-        return ResponseEntity.ok().body(meetingPostService.getRoomCloseDate(page, size, userDetails, num));
+                                                @PathVariable int num,
+                                                @PathVariable String category) throws RaidhoException {
+        if (num == 1 && category == null) {
+            return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoom(page, size, userDetails));
+        }
+        if (num == 1) {
+            return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoomAndCategory(page, size, userDetails, category));
+        }
+        return ResponseEntity.badRequest().body("Bad Request");
     }
 
     @DeleteMapping("/{meetingId}")

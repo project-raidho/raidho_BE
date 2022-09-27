@@ -210,22 +210,28 @@ public class MeetingPostService {
         return ResponseDto.success(meetingPostResponseDtos);
     }
 
-    // Todo ::
+    // Todo :: 1111
     @Transactional(readOnly = true)
-    public ResponseDto<?> getRoomCloseDate(int page, int size, UserDetails userDetails, int num) throws ParseException {
+    public ResponseDto<?> getOpenMeetingRoom(int page, int size, UserDetails userDetails) {
         PageRequest pageRequest = PageRequest.of(page, size);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        if (num == 1) {
-            System.out.println("09803948230948230948302948320948230948230948230948230948230498");
-            Page<MeetingPost> meetingPosts = meetingPostRepository.getRoomCloseDateOpen(date, pageRequest);
-            System.out.println("dofmdsoidsoifcjdpsoifjcs[d,fij[sdpifcj,[dspfc,j[sdpf,jc[dpsif,jc[pi");
-            Page<MeetingPostResponseDto> meetingPostResponseDtos = convertToRoomCloseDate(meetingPosts, userDetails);
-            return ResponseDto.success(meetingPostResponseDtos);
-        }
-        return null;
+        Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoom(date, pageRequest);
+        Page<MeetingPostResponseDto> meetingPostResponseDtoPage = convertToOpenMeetingRoom(meetingPosts, userDetails);
+        return ResponseDto.success(meetingPostResponseDtoPage);
     }
 
-    private Page<MeetingPostResponseDto> convertToRoomCloseDate(Page<MeetingPost> meetingPosts, UserDetails userDetails) {
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getOpenMeetingRoomAndCategory(int page, int size, UserDetails userDetails, String countryName) throws RaidhoException {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        ThemeCategory category = themeCategoryRepository.findByCountryName(countryName)
+                .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CATEGORY));
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoomAndCategory(date, category.getId(), pageRequest);
+        Page<MeetingPostResponseDto> meetingPostResponseDtoPage = convertToOpenMeetingRoom(meetingPosts, userDetails);
+        return ResponseDto.success(meetingPostResponseDtoPage);
+    }
+
+    private Page<MeetingPostResponseDto> convertToOpenMeetingRoom(Page<MeetingPost> meetingPosts, UserDetails userDetails) {
         Member member = new Member();
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
