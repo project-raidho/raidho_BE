@@ -23,6 +23,7 @@ public class CommentController {
     public ResponseEntity<?> createComment(@PathVariable Long postId, @AuthenticationPrincipal UserDetails userDetails, @RequestBody CommentRequestDto commentRequestDto)throws RaidhoException {
         return ResponseEntity.ok().body(commentService.createComment(postId,userDetails,commentRequestDto));
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getAllCommentsByPost(@PathVariable Long id,
                                                   @RequestParam (value = "page",defaultValue = "0")int page,

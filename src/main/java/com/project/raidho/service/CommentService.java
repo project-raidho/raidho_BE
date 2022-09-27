@@ -122,6 +122,16 @@ public class CommentService {
         if (member.getProviderId() !=null) {
             if (member.getProviderId().equals(comment.getMember().getProviderId())) {
                 comment.updateComment(userDetailsCommentDto);
+                return ResponseEntity.ok().body(
+                        CommentResponseDto.builder()
+                                .id(comment.getId())
+                                .memberImage(comment.getMember().getMemberImage())
+                                .memberName(comment.getMember().getMemberName())
+                                .content(comment.getContent())
+                                .createdAt(comment.getCreatedAt().toLocalDate())
+                                .modifiedAt(comment.getModifiedAt().toLocalDate())
+                                .build()
+                );
             }
 
         } else {
