@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Slf4j
@@ -312,12 +314,13 @@ public class MeetingPostService {
             }
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
             Date dt = new Date();
-            Date tomorrow = new Date(dt.getTime() + (1000 * 60 * 60 * 24));
+            Instant instant = dt.toInstant();
+            Instant nextDay = instant.plus(1, ChronoUnit.DAYS);
             if (date.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
                 meetingStatus = 1;
             } else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
                 meetingStatus = 2;
-            } else if (date.before(tomorrow)) {
+            } else if (date.before(Date.from(nextDay))) {
                 meetingStatus = 3;
             }
             List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
