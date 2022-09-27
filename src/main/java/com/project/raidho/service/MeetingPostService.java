@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -207,6 +208,76 @@ public class MeetingPostService {
         Page<MeetingPost> meetingPostList = meetingPostRepository.findAllByThemeCategory_IdOrderByCreatedAtDesc(category.getId(), pageRequest);
         Page<MeetingPostResponseDto> meetingPostResponseDtos = convertToBasicResponseDto(meetingPostList, userDetails);
         return ResponseDto.success(meetingPostResponseDtos);
+    }
+
+    // Todo ::
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getRoomCloseDate(int page, int size, UserDetails userDetails, int num) throws ParseException {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        if (num == 1) {
+            System.out.println("09803948230948230948302948320948230948230948230948230948230498");
+            Page<MeetingPost> meetingPosts = meetingPostRepository.getRoomCloseDateOpen(date, pageRequest);
+            System.out.println("dofmdsoidsoifcjdpsoifjcs[d,fij[sdpifcj,[dspfc,j[sdpf,jc[dpsif,jc[pi");
+            Page<MeetingPostResponseDto> meetingPostResponseDtos = convertToRoomCloseDate(meetingPosts, userDetails);
+            return ResponseDto.success(meetingPostResponseDtos);
+        }
+        return null;
+    }
+
+    private Page<MeetingPostResponseDto> convertToRoomCloseDate(Page<MeetingPost> meetingPosts, UserDetails userDetails) {
+        Member member = new Member();
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
+        Boolean isMine = false;
+        Boolean isAlreadyJoin = false;
+
+        List<MeetingPostResponseDto> meetingPostList = new ArrayList<>();
+        for (MeetingPost meetingPost : meetingPosts) {
+            RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
+            int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
+            if (member.getProviderId() != null) {
+                if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
+                    isMine = true;
+                }
+                RoomDetail roomDetails = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
+                if (roomDetails != null) {
+                    isAlreadyJoin = true;
+                }
+            }
+            List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
+            List<String> stringTagList = new ArrayList<>();
+            for (MeetingTags mt : meetingTags) {
+                stringTagList.add(mt.getMeetingTag());
+            }
+            if (meetingPost.getPeople() > memberCount) {
+                meetingPostList.add(
+                        MeetingPostResponseDto.builder()
+                                .id(meetingPost.getId())
+                                .themeCategory(meetingPost.getThemeCategory().getCountryName())
+                                .title(meetingPost.getTitle())
+                                .desc(meetingPost.getDesc())
+                                .departLocation(meetingPost.getDepartLocation())
+                                .startDate(meetingPost.getStartDate())
+                                .endDate(meetingPost.getEndDate())
+                                .people(meetingPost.getPeople())
+                                .memberCount(memberCount)
+                                .roomCloseDate(meetingPost.getRoomCloseDate())
+                                .isMine(isMine)
+                                .isAlreadyJoin(isAlreadyJoin)
+                                .meetingTags(stringTagList)
+                                .meetingStatus(1)
+                                .memberName(meetingPost.getMember().getMemberName())
+                                .memberImage(meetingPost.getMember().getMemberImage())
+                                .build()
+                );
+            }
+            isMine = false;
+            isAlreadyJoin = false;
+        }
+        return new PageImpl<>(meetingPostList, meetingPosts.getPageable(), meetingPosts.getTotalElements());
     }
 
     private Page<MeetingPostResponseDto> convertToBasicResponseDto(Page<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException {

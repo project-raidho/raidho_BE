@@ -49,6 +49,14 @@ public class MeetingPostController {
         return meetingPostService.getAllMyMeetingPost(userDetails);
     }
 
+    @GetMapping("/{num}")
+    public ResponseEntity<?> getOpenMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
+                                                @RequestParam (value = "size",defaultValue = "20")int size,
+                                                @AuthenticationPrincipal UserDetails userDetails,
+                                                @PathVariable int num) throws ParseException {
+        return ResponseEntity.ok().body(meetingPostService.getRoomCloseDate(page, size, userDetails, num));
+    }
+
     @DeleteMapping("/{meetingId}")
     public ResponseDto<?> deleteMeetingPost(@PathVariable("meetingId") Long meetingId, @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
         return meetingPostService.deleteMeetingPost(meetingId, userDetails);
