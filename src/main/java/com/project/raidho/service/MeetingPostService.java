@@ -313,7 +313,10 @@ public class MeetingPostService {
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
             Date dt = new Date();
             Date tomorrow = new Date(dt.getTime() + (1000 * 60 * 60 * 24));
+            Date tttt = formatter.parse(meetingPost.getRoomCloseDate() + (1000 * 60 * 60 * 24));
             System.out.println("948320948230948302498304982309583-05823-50823-05823");
+            System.out.println(meetingPost.getId());
+            System.out.println(meetingPost.getTitle());
             System.out.println(date);
             System.out.println(tomorrow);
             System.out.println("elcjclk a;e rlknre;nre ckfa;kcf ;rofcjhae;lckfsdfsdfewfwefwef");
@@ -321,7 +324,7 @@ public class MeetingPostService {
                 meetingStatus = 1;
             } else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
                 meetingStatus = 2;
-            } else if (date.before(new Date())) {
+            } else if (date.before(tttt)) {
                 meetingStatus = 3;
             }
             List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
