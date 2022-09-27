@@ -153,11 +153,12 @@ public class MeetingPostService {
                 }
             }
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
-            if (date.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
+            Date tomorrow = new Date( date.getTime() + (1000 * 60 * 60 * 24));
+            if (tomorrow.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
                 meetingStatus = 1;
-            } else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
+            } else if (tomorrow.after(new Date()) && memberCount >= meetingPost.getPeople()) {
                 meetingStatus = 2;
-            } else if (date.before(new Date())) {
+            } else if (tomorrow.before(new Date())) {
                 meetingStatus = 3;
             }
             List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
@@ -311,15 +312,7 @@ public class MeetingPostService {
                 }
             }
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
-            Date date2 = new Date();
-
             Date tomorrow = new Date( date.getTime() + (1000 * 60 * 60 * 24));
-
-            System.out.println("948320948230948302498304982309583-05823-50823-05823");
-            System.out.println(meetingPost.getTitle());
-            System.out.println(date);
-            System.out.println(tomorrow);
-            System.out.println("elcjclk a;e rlknre;nre ckfa;kcf ;rofcjhae;lckfsdfsdfewfwefwef");
             if (tomorrow.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
                 meetingStatus = 1;
             } else if (tomorrow.after(new Date()) && memberCount >= meetingPost.getPeople()) {
