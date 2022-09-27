@@ -233,9 +233,11 @@ public class MeetingPostService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> getOpenMeetingRoomWhereStartDate(int page, int size, UserDetails userDetails, String start, String end) {
+    public ResponseDto<?> getOpenMeetingRoomWhereStartDate(int page, int size, UserDetails userDetails) {
         PageRequest pageRequest = PageRequest.of(page, size);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        String start = "2022-09-28";
+        String end = "2022-09-30";
         Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoomWhereStartDate(start, end, date, pageRequest);
         Page<MeetingPostResponseDto> meetingPostResponseDtoPage = convertToOpenMeetingRoom(meetingPosts, userDetails);
         return ResponseDto.success(meetingPostResponseDtoPage);
