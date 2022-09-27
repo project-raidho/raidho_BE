@@ -311,11 +311,13 @@ public class MeetingPostService {
                 }
             }
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
+            Date dt = new Date();
+            Date tomorrow = new Date(dt.getTime() + (1000 * 60 * 60 * 24));
             if (date.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
                 meetingStatus = 1;
             } else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
                 meetingStatus = 2;
-            } else if (date.before(new Date())) {
+            } else if (date.before(tomorrow)) {
                 meetingStatus = 3;
             }
             List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
