@@ -55,14 +55,23 @@ public class MeetingPostController {
                                                 @AuthenticationPrincipal UserDetails userDetails,
                                                 @PathVariable int num,
                                                 @PathVariable String category) throws RaidhoException {
-        if (num == 1 && category == null) {
-            return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoom(page, size, userDetails));
-        }
         if (num == 1) {
             return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoomAndCategory(page, size, userDetails, category));
         }
         return ResponseEntity.badRequest().body("Bad Request");
     }
+
+    @GetMapping("/filter/{num}")
+    public ResponseEntity<?> getOpenMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
+                                                @RequestParam (value = "size",defaultValue = "20")int size,
+                                                @AuthenticationPrincipal UserDetails userDetails,
+                                                @PathVariable int num) {
+        if (num == 1) {
+            return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoom(page, size, userDetails));
+        }
+        return ResponseEntity.badRequest().body("Bad Request");
+    }
+
 
     @DeleteMapping("/{meetingId}")
     public ResponseDto<?> deleteMeetingPost(@PathVariable("meetingId") Long meetingId, @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {

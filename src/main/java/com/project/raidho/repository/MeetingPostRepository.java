@@ -22,6 +22,6 @@ public interface MeetingPostRepository extends JpaRepository<MeetingPost, Long> 
     Page<MeetingPost> getOpenMeetingRoom(@Param(value = "date") String date, PageRequest pageRequest);
 
     @Query("SELECT m FROM MeetingPost m WHERE m.roomCloseDate > :date and m.themeCategory.id = :id ORDER BY m.createdAt DESC ")
-    Page<MeetingPost> getOpenMeetingRoomAndCategory(@Param(value = "date") String date, @Param(value = "countryName") Long id, PageRequest pageRequest);
+    Page<MeetingPost> getOpenMeetingRoomAndCategory(@Param(value = "date") String date, @Param(value = "id") Long id, PageRequest pageRequest);
 
 }
