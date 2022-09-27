@@ -20,19 +20,19 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/{postId}")
-    public ResponseEntity<?> createComment(@PathVariable Long postId, UserDetails userDetails, CommentRequestDto commentRequestDto)throws RaidhoException {
+    public ResponseEntity<?> createComment(@PathVariable Long postId, @AuthenticationPrincipal UserDetails userDetails, @RequestBody CommentRequestDto commentRequestDto)throws RaidhoException {
         return ResponseEntity.ok().body(commentService.createComment(postId,userDetails,commentRequestDto));
     }
     @GetMapping("/{id}")
     public ResponseEntity<?> getAllCommentsByPost(@PathVariable Long id,
                                                   @RequestParam (value = "page",defaultValue = "0")int page,
                                                   @RequestParam (value = "size",defaultValue = "15")int size,
-                                                  UserDetails userDetails) throws RaidhoException {
+                                                  @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
         return ResponseEntity.ok().body(commentService.getAllCommentsByPost(id,userDetails,page,size));
     }
 
     @PutMapping("/{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable("commentId") Long commentId, @AuthenticationPrincipal UserDetails userDetails, UserDetailsCommentDto userDetailsCommentDto){
+    public ResponseEntity<?> updateComment(@PathVariable("commentId") Long commentId, @AuthenticationPrincipal UserDetails userDetails, @RequestBody UserDetailsCommentDto userDetailsCommentDto){
         return commentService.updateComment(commentId,userDetails,userDetailsCommentDto);
     }
 
