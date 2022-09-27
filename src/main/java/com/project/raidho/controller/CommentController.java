@@ -25,11 +25,11 @@ public class CommentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAllCommentsByPost(@PathVariable Long id,
+    public ResponseEntity<?> getAllCommentsByPost(@PathVariable Long postId,
                                                   @RequestParam (value = "page",defaultValue = "0")int page,
                                                   @RequestParam (value = "size",defaultValue = "15")int size,
                                                   @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
-        return ResponseEntity.ok().body(commentService.getAllCommentsByPost(id,userDetails,page,size));
+        return ResponseEntity.ok().body(commentService.getAllCommentsByPost(postId,userDetails,page,size));
     }
 
     @PutMapping("/{commentId}")

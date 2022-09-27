@@ -71,8 +71,8 @@ public class CommentService {
     }
 
     @Transactional
-    public ResponseDto<?> getAllCommentsByPost(Long id, UserDetails userDetails, int page, int size) throws RaidhoException {
-        Post post = postRepository.findById(id).orElse(null);
+    public ResponseDto<?> getAllCommentsByPost(Long postId, UserDetails userDetails, int page, int size) throws RaidhoException {
+        Post post = postRepository.findById(postId).orElse(null);
         if (post == null) {
             return ResponseDto.fail(404,"해단 게시글을 찾을 수 없습니다.");
         }

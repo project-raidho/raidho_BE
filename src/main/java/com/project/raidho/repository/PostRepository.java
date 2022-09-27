@@ -13,7 +13,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
 
     Page<Post> findAllByOrderByHeartCountDesc (PageRequest pageRequest);
 
-    Optional<Post> findById(Long id);
+    Optional<Post> findById(Long postId);
 
     List<Post> findAllByMember_IdOrderByCreatedAtDesc(Long id);
 
