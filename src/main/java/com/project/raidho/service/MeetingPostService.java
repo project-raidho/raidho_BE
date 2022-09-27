@@ -211,7 +211,6 @@ public class MeetingPostService {
         return ResponseDto.success(meetingPostResponseDtos);
     }
 
-    // Todo :: 1111
     @Transactional(readOnly = true)
     public ResponseDto<?> getOpenMeetingRoom(int page, int size, UserDetails userDetails) {
         PageRequest pageRequest = PageRequest.of(page, size);

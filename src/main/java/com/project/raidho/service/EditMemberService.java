@@ -28,10 +28,16 @@ public class EditMemberService {
     public ResponseEntity<?> editMyPage(Long memberId, MemberUpdateDto memberDto) throws RaidhoException, IOException {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
         MultipartFile multipartFile = memberDto.getMemberImage();
-        String updateImage = s3Service.upload(multipartFile);
-        member.update(memberDto, updateImage);
+        if (multipartFile != null) {
+            String updateImage = s3Service.upload(multipartFile);
+            member.update(memberDto, updateImage);
+        }
+        if (multipartFile == null) {
+            String updateImage = member.getMemberImage();
+            member.update(memberDto, updateImage);
+        }
         log.info("{} 님의 마이페이미지가 변경되었습니다.", member.getMemberName());
-        return ResponseEntity.ok().body(updateImage);
+        return ResponseEntity.ok().body("마이페이지가 정상적으로 변경되었습니다.");
     }
 
 }
