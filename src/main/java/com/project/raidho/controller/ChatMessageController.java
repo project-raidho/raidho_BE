@@ -25,6 +25,7 @@ public class ChatMessageController {
 
     @MessageMapping("/chat/send/{roomId}")
     public void getRoomChats(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto) {
+        roomService.enterChatRoom(String.valueOf(roomId));
         ChatMessageDto returnChatMessageDto = chatMessageService.saveChatMessage(roomId, chatMessageDto); // db 메시지 저장
         redisPublisher.publish(roomService.getTopic(String.valueOf(roomId)),chatMessageDto);
         //messageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, returnChatMessageDto);

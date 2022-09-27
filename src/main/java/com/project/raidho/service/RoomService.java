@@ -88,7 +88,7 @@ public class RoomService {
     // 채팅방 입장
     @Transactional
     public ResponseEntity<?> joinChatRoom(Long roomId, UserDetails userDetails) throws RaidhoException {
-        enterChatRoom(String.valueOf(roomId));
+        //enterChatRoom(String.valueOf(roomId));
         Long memberId = ((PrincipalDetails) userDetails).getMember().getId();
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
