@@ -204,6 +204,15 @@ public class RoomService {
             meetingPostRepository.delete(meetingPost);
             log.info("{} 모집글이 삭제되었습니다.", meetingPost.getTitle());
         } else {
+            ChatMessageDto chatMessageDto = ChatMessageDto.builder()
+                    .sender(member.getMemberName())
+                    .message(member.getMemberName() + "님이 채팅방에서 퇴장하셨습니다.")
+                    .roomId(String.valueOf(roomId))
+                    .type(ChatMessage.Type.QUIT).build();
+            simpMessageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, chatMessageDto);
+            ChatMessage chatMessage = ChatMessage.builder().message(chatMessageDto.getMessage()).member(member)
+                    .type(chatMessageDto.getType()).sender(chatMessageDto.getSender()).roomId(roomId).build();
+            chatMessageRepository.save(chatMessage);
             roomDetailRepository.deleteByRoomMasterAndMember(roomMaster, member);
             log.info("{} 채팅방에서 탈퇴하셨습니다.", meetingPost.getTitle());
         }
