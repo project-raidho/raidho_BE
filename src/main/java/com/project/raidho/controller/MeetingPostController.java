@@ -1,7 +1,6 @@
 package com.project.raidho.controller;
 
 import com.project.raidho.domain.ResponseDto;
-import com.project.raidho.domain.meetingPost.dto.DateRequestDto;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostRequestDto;
 import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
 import com.project.raidho.exception.RaidhoException;
@@ -13,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.text.ParseException;
 
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class MeetingPostController {
 
     private final MeetingPostService meetingPostService;
     @PostMapping
-    public ResponseEntity<?> createMeetingPost(@RequestBody MeetingPostRequestDto meetingPostRequestDto, HttpServletRequest request) throws IOException {
+    public ResponseEntity<?> createMeetingPost(@RequestBody MeetingPostRequestDto meetingPostRequestDto, HttpServletRequest request) {
         return ResponseEntity.ok().body(meetingPostService.createMeetingPost(meetingPostRequestDto, request));
     }
 
@@ -62,13 +60,25 @@ public class MeetingPostController {
         return ResponseEntity.badRequest().body("Bad Request");
     }
 
-    @GetMapping("/filter/date")
+    // 기간별 모집중 모집글 조회
+    @GetMapping("/filter/date/{start}/{end}")
     public ResponseEntity<?> getOpenMeetingPostByDate(@RequestParam (value = "page",defaultValue = "0")int page,
                                                       @RequestParam (value = "size",defaultValue = "20")int size,
-                                                      //@RequestParam (value = "start") String start,
-                                                      //@RequestParam (value = "end") String end,
+                                                      @PathVariable String start,
+                                                      @PathVariable String end,
                                                       @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoomWhereStartDate(page, size, userDetails));
+        return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoomWhereStartDate(page, size, userDetails, start, end));
+    }
+
+    // 카테고리 기간별 모집중 모집글 조회
+    @GetMapping("/filter/date/{countryName}/{start}/{end}")
+    public ResponseEntity<?> getOpenMeetingPostByDateAndCategory(@RequestParam (value = "page",defaultValue = "0")int page,
+                                                                 @RequestParam (value = "size",defaultValue = "20")int size,
+                                                                 @PathVariable String countryName,
+                                                                 @PathVariable String start,
+                                                                 @PathVariable String end,
+                                                                 @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
+        return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoomWhereStartDateAndCategory(page, size, userDetails, countryName, start, end));
     }
 
     @GetMapping("/filter/{num}")

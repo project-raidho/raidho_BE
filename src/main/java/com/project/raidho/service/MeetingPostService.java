@@ -233,12 +233,23 @@ public class MeetingPostService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> getOpenMeetingRoomWhereStartDate(int page, int size, UserDetails userDetails) {
+    public ResponseDto<?> getOpenMeetingRoomWhereStartDate(int page, int size, UserDetails userDetails, String start, String end) {
         PageRequest pageRequest = PageRequest.of(page, size);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        String start = "2022-09-28";
-        String end = "2022-09-30";
         Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoomWhereStartDate(start, end, date, pageRequest);
+        Page<MeetingPostResponseDto> meetingPostResponseDtoPage = convertToOpenMeetingRoom(meetingPosts, userDetails);
+        return ResponseDto.success(meetingPostResponseDtoPage);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getOpenMeetingRoomWhereStartDateAndCategory(int page, int size, UserDetails userDetails, String countryName, String start, String end) throws RaidhoException {
+        ThemeCategory category = themeCategoryRepository.findByCountryName(countryName)
+                .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CATEGORY));
+        PageRequest pageRequest = PageRequest.of(page, size);
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoomWhereStartDateAndCategory(
+                start, start, date, category.getId(), pageRequest
+        );
         Page<MeetingPostResponseDto> meetingPostResponseDtoPage = convertToOpenMeetingRoom(meetingPosts, userDetails);
         return ResponseDto.success(meetingPostResponseDtoPage);
     }

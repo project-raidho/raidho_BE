@@ -21,10 +21,15 @@ public interface MeetingPostRepository extends JpaRepository<MeetingPost, Long> 
     @Query("SELECT m FROM MeetingPost m WHERE m.roomCloseDate >= :date ORDER BY m.createdAt DESC")
     Page<MeetingPost> getOpenMeetingRoom(@Param(value = "date") String date, PageRequest pageRequest);
 
-    @Query("SELECT m FROM MeetingPost m WHERE m.roomCloseDate >= :date and m.themeCategory.id = :id ORDER BY m.createdAt DESC ")
+    @Query("SELECT m FROM MeetingPost m WHERE m.roomCloseDate >= :date and m.themeCategory.id = :id ORDER BY m.createdAt DESC")
     Page<MeetingPost> getOpenMeetingRoomAndCategory(@Param(value = "date") String date, @Param(value = "id") Long id, PageRequest pageRequest);
 
     @Query("SELECT m FROM MeetingPost m WHERE m.startDate >= :start and m.endDate <= :end and m.roomCloseDate >= :date ORDER BY m.startDate DESC")
     Page<MeetingPost> getOpenMeetingRoomWhereStartDate(@Param(value = "start") String start, @Param(value = "end") String end, @Param(value = "date") String date, PageRequest pageRequest);
+
+    @Query("SELECT m FROM MeetingPost m WHERE m.startDate >= :start and m.endDate <= :end and m.roomCloseDate >= :date and m.themeCategory.id = :id ORDER BY m.startDate DESC")
+    Page<MeetingPost> getOpenMeetingRoomWhereStartDateAndCategory(
+            @Param(value = "start") String start, @Param(value = "end") String end, @Param(value = "date") String date, @Param(value = "category") Long id, PageRequest pageRequest
+    );
 
 }
