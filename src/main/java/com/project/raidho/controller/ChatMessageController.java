@@ -26,6 +26,10 @@ public class ChatMessageController {
 
     @MessageMapping("/chat/send/{roomId}")
     public void getRoomChats(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto) {
+
+        System.out.println("22222222222222222222222222");
+
+
         if (ChatMessage.Type.ENTER.equals(chatMessageDto.getType())) {
             System.out.println("======================================================");
             chatMessageDto.setMessage(chatMessageDto.getSender() + "님이 입장하셨습니다.");

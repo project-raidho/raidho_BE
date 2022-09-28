@@ -88,6 +88,12 @@ public class RoomService {
     // 채팅방 입장
     @Transactional
     public ResponseEntity<?> joinChatRoom(Long roomId, UserDetails userDetails) throws RaidhoException {
+
+
+        System.out.println("1111111111111111111111111111111");
+
+
+
         //enterChatRoom(String.valueOf(roomId));
         Long memberId = ((PrincipalDetails) userDetails).getMember().getId();
         Member member = memberRepository.findById(memberId)
