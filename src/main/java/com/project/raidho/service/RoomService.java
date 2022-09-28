@@ -110,7 +110,7 @@ public class RoomService {
                     .roomId(String.valueOf(roomId))
                     .type(ChatMessage.Type.ENTER).build();
             simpMessageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, chatMessageDto);
-            ChatMessage chatMessage = ChatMessage.builder().message(chatMessageDto.getMessage())
+            ChatMessage chatMessage = ChatMessage.builder().message(chatMessageDto.getMessage()).member(member)
                     .type(chatMessageDto.getType()).sender(chatMessageDto.getSender()).roomId(roomId).build();
             chatMessageRepository.save(chatMessage);
         }
