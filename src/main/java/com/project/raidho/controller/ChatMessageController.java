@@ -8,6 +8,7 @@ import com.project.raidho.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,19 +26,19 @@ public class ChatMessageController {
     private final RoomService roomService;
 
     @MessageMapping("/chat/send/{roomId}")
-    public void getRoomChats(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto) {
+    public void getRoomChats(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto, @Header("token") String token, @Header("Authorization") String auth) {
 
-        System.out.println("22222222222222222222222222");
-
+        System.out.println("===================================");
+        System.out.println(token);
+        System.out.println("===================================");
+        System.out.println(auth);
 
         if (ChatMessage.Type.ENTER.equals(chatMessageDto.getType())) {
-            System.out.println("======================================================");
             chatMessageDto.setMessage(chatMessageDto.getSender() + "님이 입장하셨습니다.");
             roomService.enterChatRoom(String.valueOf(roomId));
             ChatMessageDto returnChatMessageDto = chatMessageService.saveChatMessage(roomId, chatMessageDto); // db 메시지 저장
             redisPublisher.publish(roomService.getTopic(String.valueOf(roomId)),chatMessageDto);
         } else {
-            System.out.println("======================sdsdasdasdasdsadasdasdsdasd======================");
             roomService.enterChatRoom(String.valueOf(roomId));
             ChatMessageDto returnChatMessageDto = chatMessageService.saveChatMessage(roomId, chatMessageDto); // db 메시지 저장
             redisPublisher.publish(roomService.getTopic(String.valueOf(roomId)), chatMessageDto);
