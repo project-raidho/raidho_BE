@@ -104,10 +104,13 @@ public class RoomService {
             roomMaster.getRoomDetails().add(newRoomDetail);
             roomDetailRepository.save(newRoomDetail);
             log.info("{} 님께서 {} 채팅방에 참여하셨습니다.", member.getMemberName(), roomMaster.getMeetingPost().getTitle());
+            ChatMessageDto chatMessageDto = ChatMessageDto.builder()
+                    .sender(member.getMemberName())
+                    .message(member.getMemberName() + "님이 채팅방에 입장하셨습니다.")
+                    .roomId(String.valueOf(roomId))
+                    .type(ChatMessage.Type.ENTER).build();
+            simpMessageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, chatMessageDto);
         }
-//        ChatMessageDto chatMessageDto = ChatMessageDto.builder()
-//                .message(member.getMemberName() + "님이 채팅방에 입장하셨습니다.").build();
-//        simpMessageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, chatMessageDto);
         RoomDetailResponseDto responseDto = RoomDetailResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
                 .roomName(roomMaster.getRoomName())

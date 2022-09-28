@@ -34,18 +34,21 @@ public class ChatMessageController {
     @MessageMapping("/chat/send/{roomId}")
     public void getRoomChats(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto, @Header("token") String token) {
 
-        if (ChatMessage.Type.ENTER.equals(chatMessageDto.getType())) {
-            chatMessageDto.setMessage(chatMessageDto.getSender() + " 님이 입장하셨습니다.");
-            ChatMessage chatMessage = ChatMessage.builder().message(chatMessageDto.getMessage())
-                            .type(chatMessageDto.getType()).sender(chatMessageDto.getSender()).roomId(roomId).build();
-            chatMessageRepository.save(chatMessage);
-            roomService.enterChatRoom(String.valueOf(roomId));
-            redisPublisher.publish(roomService.getTopic(String.valueOf(roomId)),chatMessageDto);
-        } else {
-            roomService.enterChatRoom(String.valueOf(roomId));
-            ChatMessageDto returnChatMessageDto = chatMessageService.saveChatMessage(roomId, chatMessageDto); // db 메시지 저장
-            redisPublisher.publish(roomService.getTopic(String.valueOf(roomId)), chatMessageDto);
-        }
+//        if (ChatMessage.Type.ENTER.equals(chatMessageDto.getType())) {
+//            chatMessageDto.setMessage(chatMessageDto.getSender() + " 님이 입장하셨습니다.");
+//            ChatMessage chatMessage = ChatMessage.builder().message(chatMessageDto.getMessage())
+//                            .type(chatMessageDto.getType()).sender(chatMessageDto.getSender()).roomId(roomId).build();
+//            chatMessageRepository.save(chatMessage);
+//            roomService.enterChatRoom(String.valueOf(roomId));
+//            redisPublisher.publish(roomService.getTopic(String.valueOf(roomId)),chatMessageDto);
+//        } else {
+//            roomService.enterChatRoom(String.valueOf(roomId));
+//            ChatMessageDto returnChatMessageDto = chatMessageService.saveChatMessage(roomId, chatMessageDto); // db 메시지 저장
+//            redisPublisher.publish(roomService.getTopic(String.valueOf(roomId)), chatMessageDto);
+//        }
+        roomService.enterChatRoom(String.valueOf(roomId));
+        ChatMessageDto returnChatMessageDto = chatMessageService.saveChatMessage(roomId, chatMessageDto); // db 메시지 저장
+        redisPublisher.publish(roomService.getTopic(String.valueOf(roomId)), chatMessageDto);
         //messageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, returnChatMessageDto);
     }
 }
