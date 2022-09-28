@@ -92,6 +92,10 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.DELETE, "/api/meeting/**").hasAnyAuthority("USER","ADMIN")
                 .antMatchers(HttpMethod.PUT, "/api/meeting/**").hasAnyAuthority("USER","ADMIN")
                 .antMatchers("/api/chat/**").hasAnyAuthority("USER","ADMIN")
+                .antMatchers("/api/mypage/**").hasAnyAuthority("USER","ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/comment/**").hasAnyAuthority("USER", "ADMIN")
+                .antMatchers(HttpMethod.PUT, "/api/comment/**").hasAnyAuthority("USER", "ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/api/comment/**").hasAnyAuthority("USER", "ADMIN")
 
                 .anyRequest().authenticated(); // 설정된 값들 이외 나머지 URL 들을 나타낸다. (인증된 사용자들만)
 

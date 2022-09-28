@@ -1,6 +1,7 @@
 package com.project.raidho.controller;
 
 import com.project.raidho.domain.chat.ChatDto.ChatMessageDto;
+import com.project.raidho.domain.chat.ChatMessage;
 import com.project.raidho.redis.RedisPublisher;
 import com.project.raidho.service.ChatMessageService;
 import com.project.raidho.service.RoomService;

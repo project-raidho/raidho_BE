@@ -2,18 +2,16 @@ package com.project.raidho.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.project.raidho.Util.RoomUtils;
-import com.project.raidho.domain.chat.ChatDto.EachRoomInfoDto;
-import com.project.raidho.domain.chat.ChatDto.RoomMasterRequestDto;
-import com.project.raidho.domain.chat.ChatDto.RoomMasterResponseDto;
+import com.project.raidho.domain.chat.ChatDto.*;
 import com.project.raidho.domain.chat.ChatMessage;
 import com.project.raidho.domain.chat.RoomDetail;
 import com.project.raidho.domain.chat.RoomMaster;
 import com.project.raidho.domain.meetingPost.MeetingPost;
-import com.project.raidho.domain.chat.ChatDto.RoomDetailResponseDto;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.tags.MeetingTags;
 import com.project.raidho.exception.ErrorCode;
 import com.project.raidho.exception.RaidhoException;
+import com.project.raidho.redis.RedisPublisher;
 import com.project.raidho.redis.RedisSubscriber;
 import com.project.raidho.repository.*;
 import com.project.raidho.security.PrincipalDetails;
@@ -52,6 +50,7 @@ public class RoomService {
 
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
+    private final RedisPublisher redisPublisher;
 
     // 채팅방 생성
     @Transactional
@@ -105,6 +104,9 @@ public class RoomService {
             roomDetailRepository.save(newRoomDetail);
             log.info("{} 님께서 {} 채팅방에 참여하셨습니다.", member.getMemberName(), roomMaster.getMeetingPost().getTitle());
         }
+        ChatMessageDto chatMessageDto = ChatMessageDto.builder()
+                .message(member.getMemberName() + "님이 채팅방에 입장하셨습니다.").build();
+        redisPublisher.publish(getTopic(String.valueOf(roomId)), chatMessageDto);
         RoomDetailResponseDto responseDto = RoomDetailResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
                 .roomName(roomMaster.getRoomName())
@@ -133,7 +135,7 @@ public class RoomService {
                             .roomMasterId(rm.getRoomId())
                             .roomName(rm.getRoomName())
                             .roomPic(rm.getRoomPic())
-                         //   .unReadCount(unReadCount)
+                            //   .unReadCount(unReadCount)
                             .build()
             );
         }
@@ -202,7 +204,7 @@ public class RoomService {
 
     @Transactional
     public void updateLastReadChat(Long roomId, Long memberId) {
-        RoomDetail roomDetail = roomDetailRepository.findByRoomMaster_RoomIdAndMember_Id(roomId,memberId)
+        RoomDetail roomDetail = roomDetailRepository.findByRoomMaster_RoomIdAndMember_Id(roomId, memberId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방에 속해있지 않는 회원입니다."));
         ChatMessage chatMessage = chatMessageRepository.findFirstByRoomIdOrderByCreatedAtDesc(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅 내역이 존재하지 않습니다."));
