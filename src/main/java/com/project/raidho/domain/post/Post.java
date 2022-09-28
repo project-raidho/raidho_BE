@@ -1,5 +1,6 @@
 package com.project.raidho.domain.post;
 
+import com.project.raidho.domain.comment.Comment;
 import com.project.raidho.domain.s3.MultipartFiles;
 import com.project.raidho.domain.postHeart.PostHeart;
 import com.project.raidho.domain.Timestamped;
@@ -41,11 +42,18 @@ public class Post extends Timestamped {
     @Column
     private int heartCount;
 
+    @Column
+    private int commentCount;
+
     public void update(List<PostHeart> postHearts){
         this.heartCount = postHearts.size();
     }
     public void updatePost(UpdatePostRequestDto updatePostRequestDto){
         this.content= updatePostRequestDto.getContent();
+    }
+
+    public void commentCount(List<Comment> comments){
+        this.commentCount = comments.size();
     }
 
 }

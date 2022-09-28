@@ -46,6 +46,7 @@ public class PostService extends Timestamped {
     private final PostHeartRepository postHeartRepository;
     private final S3Service s3Service;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CommentRepository commentRepository;
 
     // 자랑글 등록
     @Transactional
@@ -147,6 +148,7 @@ public class PostService extends Timestamped {
             }
         }
         int heartCount = postHeartRepository.getCountOfPostHeart(post);
+        int commentCount = commentRepository.getCountOfComment(post);
         if (member.getProviderId() != null) {
             int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
             if (isHeartMineCh >= 1) {
@@ -160,6 +162,7 @@ public class PostService extends Timestamped {
                 .memberImage(post.getMember().getMemberImage())
                 .tags(tags)
                 .heartCount(heartCount)
+                .commentCount(commentCount)
                 .isMine(isMine)
                 .isHeartMine(isHeartMine)
                 .createdAt(post.getCreatedAt().toLocalDate())
@@ -219,6 +222,7 @@ public class PostService extends Timestamped {
                 }
             }
             int heartCount = postHeartRepository.getCountOfPostHeart(post);
+            int commentCount = commentRepository.getCountOfComment(post);
             if (member.getProviderId() != null) {
                 int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
                 if (isHeartMineCh >= 1) {
@@ -240,6 +244,7 @@ public class PostService extends Timestamped {
                             .memberImage(post.getMember().getMemberImage())
                             .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
                             .heartCount(heartCount)
+                            .commentCount(commentCount)
                             .isMine(isMine)
                             .isHeartMine(isHeartMine)
                             .isImages(isImages)
@@ -270,6 +275,7 @@ public class PostService extends Timestamped {
                 }
             }
             int heartCount = postHeartRepository.getCountOfPostHeart(post);
+            int commentCount = commentRepository.getCountOfComment(post);
             if (member.getProviderId() != null) {
                 int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
                 if (isHeartMineCh >= 1) {
@@ -291,6 +297,7 @@ public class PostService extends Timestamped {
                             .memberImage(post.getMember().getMemberImage())
                             .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
                             .heartCount(heartCount)
+                            .commentCount(commentCount)
                             .isMine(isMine)
                             .isHeartMine(isHeartMine)
                             .isImages(isImages)

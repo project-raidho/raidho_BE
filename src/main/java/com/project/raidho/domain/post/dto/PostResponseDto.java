@@ -21,6 +21,7 @@ public class PostResponseDto {
     private List<String> multipartFiles;
     private List<String> tags;
     private int heartCount;
+    private int commentCount;
     private LocalDate createdAt;
     private LocalDate modifiedAt;
 

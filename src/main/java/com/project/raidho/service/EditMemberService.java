@@ -37,7 +37,7 @@ public class EditMemberService {
             member.update(memberDto, updateImage);
         }
         log.info("{} 님의 마이페이미지가 변경되었습니다.", member.getMemberName());
-        return ResponseEntity.ok().body("마이페이지가 정상적으로 변경되었습니다.");
+        return ResponseEntity.ok().body(member.getMemberImage());
     }
 
 }

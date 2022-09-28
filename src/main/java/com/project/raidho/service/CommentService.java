@@ -8,6 +8,7 @@ import com.project.raidho.domain.comment.dto.CommentResponseDto;
 import com.project.raidho.domain.comment.dto.UserDetailsCommentDto;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
+import com.project.raidho.domain.postHeart.PostHeart;
 import com.project.raidho.exception.ErrorCode;
 import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.repository.CommentRepository;
@@ -56,6 +57,9 @@ public class CommentService {
                 .post(post)
                 .build();
         commentRepository.save(comment);
+
+        List<Comment> comments = commentRepository.findByPost(post);
+        post.commentCount(comments);
 
         return ResponseDto.success(
                 CommentResponseDto.builder()

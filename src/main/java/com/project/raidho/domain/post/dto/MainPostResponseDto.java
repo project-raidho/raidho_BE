@@ -22,6 +22,7 @@ public class MainPostResponseDto {
     private String memberImage;
     private List<String> multipartFiles;
     private int heartCount;
+    private int commentCount;
     private LocalDate createdAt;
     private LocalDate modifiedAt;
 
