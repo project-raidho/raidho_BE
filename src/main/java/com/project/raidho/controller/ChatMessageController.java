@@ -26,7 +26,12 @@ public class ChatMessageController {
 
     @MessageMapping("/chat/send/{roomId}")
     public void getRoomChats(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto) {
+        System.out.println("879879879879879879879798798798798798");
+        System.out.println(chatMessageDto.getType());
+        System.out.println(chatMessageDto.getRoomId());
+        System.out.println(chatMessageDto.getSender());
         roomService.enterChatRoom(String.valueOf(roomId));
+        System.out.println("93402394320948320948320498320948320948");
         ChatMessageDto returnChatMessageDto = chatMessageService.saveChatMessage(roomId, chatMessageDto); // db 메시지 저장
         redisPublisher.publish(roomService.getTopic(String.valueOf(roomId)),chatMessageDto);
         //messageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, returnChatMessageDto);
