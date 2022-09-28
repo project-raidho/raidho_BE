@@ -248,7 +248,7 @@ public class MeetingPostService {
         PageRequest pageRequest = PageRequest.of(page, size);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoomWhereStartDateAndCategory(
-                start, start, date, category.getId(), pageRequest
+                start, end, date, category.getId(), pageRequest
         );
         Page<MeetingPostResponseDto> meetingPostResponseDtoPage = convertToOpenMeetingRoom(meetingPosts, userDetails);
         return ResponseDto.success(meetingPostResponseDtoPage);

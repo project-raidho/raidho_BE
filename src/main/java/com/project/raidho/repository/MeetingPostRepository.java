@@ -29,7 +29,7 @@ public interface MeetingPostRepository extends JpaRepository<MeetingPost, Long> 
 
     @Query("SELECT m FROM MeetingPost m WHERE m.startDate >= :start and m.endDate <= :end and m.roomCloseDate >= :date and m.themeCategory.id = :id ORDER BY m.startDate DESC")
     Page<MeetingPost> getOpenMeetingRoomWhereStartDateAndCategory(
-            @Param(value = "start") String start, @Param(value = "end") String end, @Param(value = "date") String date, @Param(value = "category") Long id, PageRequest pageRequest
+            @Param(value = "start") String start, @Param(value = "end") String end, @Param(value = "date") String date, @Param(value = "id") Long id, PageRequest pageRequest
     );
 
 }
