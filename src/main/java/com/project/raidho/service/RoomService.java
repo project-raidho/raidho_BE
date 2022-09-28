@@ -21,6 +21,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,7 @@ public class RoomService {
 
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
-    private final RedisPublisher redisPublisher;
+    private final SimpMessageSendingOperations simpMessageSendingOperations;
 
     // 채팅방 생성
     @Transactional
@@ -106,8 +107,7 @@ public class RoomService {
         }
         ChatMessageDto chatMessageDto = ChatMessageDto.builder()
                 .message(member.getMemberName() + "님이 채팅방에 입장하셨습니다.").build();
-        enterChatRoom(String.valueOf(roomId));
-        redisPublisher.publish(getTopic(String.valueOf(roomId)), chatMessageDto);
+        simpMessageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, chatMessageDto);
         RoomDetailResponseDto responseDto = RoomDetailResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
                 .roomName(roomMaster.getRoomName())
