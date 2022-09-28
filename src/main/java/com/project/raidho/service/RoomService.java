@@ -106,6 +106,7 @@ public class RoomService {
         }
         ChatMessageDto chatMessageDto = ChatMessageDto.builder()
                 .message(member.getMemberName() + "님이 채팅방에 입장하셨습니다.").build();
+        enterChatRoom(String.valueOf(roomId));
         redisPublisher.publish(getTopic(String.valueOf(roomId)), chatMessageDto);
         RoomDetailResponseDto responseDto = RoomDetailResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
