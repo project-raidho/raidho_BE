@@ -26,12 +26,11 @@ public class ChatMessageController {
     private final RoomService roomService;
 
     @MessageMapping("/chat/send/{roomId}")
-    public void getRoomChats(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto, @Header("token") String token, @Header("Authorization") String auth) {
+    public void getRoomChats(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto, @Header("token") String token) {
 
-        System.out.println("===================================");
+        System.out.println("================================================");
         System.out.println(token);
-        System.out.println("===================================");
-        System.out.println(auth);
+        System.out.println("================================================");
 
         if (ChatMessage.Type.ENTER.equals(chatMessageDto.getType())) {
             chatMessageDto.setMessage(chatMessageDto.getSender() + "님이 입장하셨습니다.");
