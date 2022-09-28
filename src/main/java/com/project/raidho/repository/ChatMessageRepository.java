@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
@@ -18,6 +19,11 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
 
     @Query(value = COUNT_QUERY_STRING, nativeQuery = true)
     Long countFromLastReadChat(@Param(value = "chatId") Long chatId);
+
+    @Query("SELECT cm FROM ChatMessage cm WHERE cm.roomId = :roomId and cm.createdAt >= :createdAt ORDER BY cm.createdAt ASC")
+    Page<ChatMessage> findAllByRoomIdAndCreateAtOrderByCreatedAtAsc(
+            @Param(value = "roomId") Long roomId, @Param(value = "createdAt") LocalDateTime createdAt, Pageable pageable
+            );
 
     Page<ChatMessage> findByRoomIdOrderByCreatedAtAsc(Long roomId, Pageable pageable);
 
