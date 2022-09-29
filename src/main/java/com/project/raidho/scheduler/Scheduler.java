@@ -31,8 +31,8 @@ public class Scheduler {
         List<MeetingPost> meetingPosts = meetingPostRepository.findAll();
         for (MeetingPost meetingPost : meetingPosts) {
             Date date = formatter.parse(meetingPost.getEndDate());
-            Date tomorrow = new Date(date.getTime() + (1000 * 60 * 60 * 24));
-            if (tomorrow.before(new Date())) {
+            Date deleteMeetingDate = new Date(date.getTime() + (1000 * 60 * 60 * 24));
+            if (date.before(new Date())) {
                 chatMessageRepository.deleteAllByRoomId(meetingPost.getId());
                 roomDetailRepository.deleteByRoomMaster_RoomId(meetingPost.getId());
                 meetingPostRepository.delete(meetingPost);
