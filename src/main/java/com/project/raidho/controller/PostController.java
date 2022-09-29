@@ -53,6 +53,12 @@ public class PostController {
         return postService.getMyCommentedPost(userDetails);
     }
 
+    // 내가 좋아요를 남긴 포스트 조회
+    @GetMapping("/liked")
+    public ResponseEntity<?> getMyHeartPost(@AuthenticationPrincipal UserDetails userDetails) {
+        return postService.getMyHeartPost(userDetails);
+    }
+
     //단건조회
     @GetMapping("/{postId}")
     public ResponseEntity<?> getPostDetail(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
@@ -69,6 +75,5 @@ public class PostController {
     public ResponseEntity<?> updatePost(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails, UpdatePostRequestDto updatePostRequestDto) throws RaidhoException {
         return postService.updatePost(postId,userDetails,updatePostRequestDto);
     }
-
 
 }

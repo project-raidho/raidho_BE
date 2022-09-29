@@ -190,12 +190,26 @@ public class PostService extends Timestamped {
     }
 
     // 내가 코멘트를 남긴 포스트 조회하기
-    @Transactional
+    @Transactional(readOnly = true)
     public ResponseEntity<?> getMyCommentedPost(UserDetails userDetails) {
         if (userDetails != null) {
             Member member = ((PrincipalDetails) userDetails).getMember();
             if (member != null) {
                 List<Post> postList = commentRepository.getMyCommentedPost(member);
+                return ResponseEntity.ok().body(ResponseDto.success(convertToMyPageResponseDto(postList, userDetails)));
+            }
+        }
+        log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
+    }
+
+    // 내가 좋아요를 누른 포스트 조회하기
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getMyHeartPost(UserDetails userDetails) {
+        if (userDetails != null) {
+            Member member = ((PrincipalDetails) userDetails).getMember();
+            if (member != null) {
+                List<Post> postList = postHeartRepository.getMyHeartPost(member);
                 return ResponseEntity.ok().body(ResponseDto.success(convertToMyPageResponseDto(postList, userDetails)));
             }
         }
