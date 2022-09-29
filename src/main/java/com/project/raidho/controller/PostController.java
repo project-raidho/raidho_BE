@@ -47,6 +47,12 @@ public class PostController {
         return postService.getAllMyPost(userDetails);
     }
 
+    // 내가 코멘트를 남긴 포스트 조회
+    @GetMapping("/commented")
+    public ResponseEntity<?> getMyCommentedPost(@AuthenticationPrincipal UserDetails userDetails) {
+        return postService.getMyCommentedPost(userDetails);
+    }
+
     //단건조회
     @GetMapping("/{postId}")
     public ResponseEntity<?> getPostDetail(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {

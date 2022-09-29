@@ -2,6 +2,7 @@ package com.project.raidho.repository;
 
 import com.project.raidho.domain.chat.ChatMessage;
 import com.project.raidho.domain.comment.Comment;
+import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
 import com.project.raidho.domain.postHeart.PostHeart;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 //    Page<Comment> findAllByOrderByCreatedAtDesc(PageRequest pageRequest);
 
     List<Comment> findByPost(Post post);
+
+    List<Comment> findAllByMember(Member member);
 
     Page<Comment> findByPostIdOrderByCreatedAtDesc(Long postId, Pageable pageable);
 

@@ -1,6 +1,7 @@
 package com.project.raidho.service;
 
 import com.project.raidho.domain.*;
+import com.project.raidho.domain.comment.Comment;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
 import com.project.raidho.domain.post.dto.MainPostResponseDto;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
@@ -180,6 +182,24 @@ public class PostService extends Timestamped {
             Member member = ((PrincipalDetails) userDetails).getMember();
             if (member != null) {
                 List<Post> postList = postRepository.findAllByMember_IdOrderByCreatedAtDesc(member.getId());
+                return ResponseEntity.ok().body(ResponseDto.success(convertToMyPageResponseDto(postList, userDetails)));
+            }
+        }
+        log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
+    }
+
+    // 내가 코멘트를 남긴 포스트 조회하기
+    @Transactional
+    public ResponseEntity<?> getMyCommentedPost(UserDetails userDetails) {
+        if (userDetails != null) {
+            Member member = ((PrincipalDetails) userDetails).getMember();
+            if (member != null) {
+                List<Comment> commentList = commentRepository.findAllByMember(member);
+                List<Post> postList = new ArrayList<>();
+                for (Comment comment : commentList) {
+                    postRepository.findById(comment.getPost().getId()).ifPresent(postList::add);
+                }
                 return ResponseEntity.ok().body(ResponseDto.success(convertToMyPageResponseDto(postList, userDetails)));
             }
         }
