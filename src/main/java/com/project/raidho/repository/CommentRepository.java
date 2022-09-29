@@ -20,10 +20,12 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByPost(Post post);
 
-    List<Comment> findAllByMember(Member member);
-
     Page<Comment> findByPostIdOrderByCreatedAtDesc(Long postId, Pageable pageable);
 
     @Query("SELECT COUNT(u) FROM Comment u WHERE u.post = :post")
     int getCountOfComment(@Param(value = "post") Post post);
+
+    @Query("SELECT DISTINCT c.post FROM Comment c WHERE c.member = :member")
+    List<Post> getMyCommentedPost(@Param(value = "member") Member member);
+
 }

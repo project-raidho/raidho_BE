@@ -195,11 +195,7 @@ public class PostService extends Timestamped {
         if (userDetails != null) {
             Member member = ((PrincipalDetails) userDetails).getMember();
             if (member != null) {
-                List<Comment> commentList = commentRepository.findAllByMember(member);
-                List<Post> postList = new ArrayList<>();
-                for (Comment comment : commentList) {
-                    postRepository.findById(comment.getPost().getId()).ifPresent(postList::add);
-                }
+                List<Post> postList = commentRepository.getMyCommentedPost(member);
                 return ResponseEntity.ok().body(ResponseDto.success(convertToMyPageResponseDto(postList, userDetails)));
             }
         }
