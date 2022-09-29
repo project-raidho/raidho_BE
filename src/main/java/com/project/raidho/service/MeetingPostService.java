@@ -164,6 +164,21 @@ public class MeetingPostService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
     }
 
+    // Todo :: 내가 찜한 모집글 가져오기
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getMyStarMeetingPost(UserDetails userDetails) throws ParseException {
+        if (userDetails != null) {
+            Member member = ((PrincipalDetails) userDetails).getMember();
+            if (member != null) {
+                List<MeetingPost> meetingPostList = meetingPostStarRepository.findMyStarMeetingPost(member);
+                return ResponseEntity.ok().body(ResponseDto.success(convertToMyPageResponseDto(meetingPostList, userDetails)));
+            }
+        }
+        log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
+    }
+
+
     // Todo :: 카테고리별 모집글 가져오기
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllCategoryMeetingPost(int page, int size, UserDetails userDetails, String theme) throws ParseException, RaidhoException {
@@ -290,6 +305,7 @@ public class MeetingPostService {
             );
             isMine = false;
             isAlreadyJoin = false;
+            isStarMine = false;
         }
         return new PageImpl<>(meetingPosts, meetingPostList.getPageable(), meetingPostList.getTotalElements());
     }

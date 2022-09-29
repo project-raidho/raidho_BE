@@ -8,6 +8,7 @@ import com.project.raidho.service.MeetingPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,6 +91,12 @@ public class MeetingPostController {
             return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoom(page, size, userDetails));
         }
         return ResponseEntity.badRequest().body("Bad Request");
+    }
+
+    // Todo :: new
+    @GetMapping("/myHeartMeetingPost")
+    public ResponseEntity<?> getMyHeartMeetingPost(@AuthenticationPrincipal UserDetails userDetails) throws ParseException {
+        return meetingPostService.getMyStarMeetingPost(userDetails);
     }
 
 
