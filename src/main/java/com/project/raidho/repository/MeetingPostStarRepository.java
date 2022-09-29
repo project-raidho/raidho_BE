@@ -15,6 +15,8 @@ public interface MeetingPostStarRepository extends JpaRepository<MeetingPostStar
 
     List<MeetingPostStar> findByMeetingPost(MeetingPost meetingPost);
     Optional<MeetingPostStar> findByMeetingPostAndMember(MeetingPost meetingPost, Member member);
-    @Query("SELECT COUNT(u) FROM MeetingPostStar u WHERE u.meetingPost = :meetingPost")
-    int getCountOfMeetingPostStar(@Param(value = "meetingPost") MeetingPost meetingPost);
+//    @Query("SELECT COUNT(u) FROM MeetingPostStar u WHERE u.meetingPost = :meetingPost")
+//    int getCountOfMeetingPostStar(@Param(value = "meetingPost") MeetingPost meetingPost);
+    @Query("SELECT COUNT(u) FROM MeetingPostStar u WHERE u.meetingPost = :meetingPost and u.member = :member")
+    int getCountOfMeetingPostAndMemberMeetingPostStar(@Param(value = "meetingPost") MeetingPost meetingPost, @Param(value = "member") Member member);
 }

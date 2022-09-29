@@ -139,6 +139,7 @@ public class MeetingPostService {
         }
         Boolean isMine = false;
         Boolean isAlreadyJoin = false;
+        Boolean isStarMine = false;
         int meetingStatus = 0;
         List<MeetingPostResponseDto> meetingPosts = new ArrayList<>();
         for (MeetingPost meetingPost : meetingPostList) {
@@ -168,6 +169,13 @@ public class MeetingPostService {
             for (MeetingTags mt : meetingTags) {
                 stringTagList.add(mt.getMeetingTag());
             }
+
+            if (member.getProviderId() != null) {
+                int isStarMineCh = meetingPostStarRepository.getCountOfMeetingPostAndMemberMeetingPostStar(meetingPost, member);
+                if (isStarMineCh >= 1) {
+                    isStarMine = true;
+                }
+            }
 //            int starCount = meetingPostStarRepository.getCountOfMeetingPostStar(meetingPost);
             meetingPosts.add(
                     MeetingPostResponseDto.builder()
@@ -180,6 +188,7 @@ public class MeetingPostService {
                             .endDate(meetingPost.getEndDate())
                             .people(meetingPost.getPeople())
                             .memberCount(memberCount)
+                            .isStarMine(isStarMine)
 /*                            .starCount(starCount)*/
                             .roomCloseDate(meetingPost.getRoomCloseDate())
                             .isMine(isMine)
@@ -193,6 +202,7 @@ public class MeetingPostService {
 
             isMine = false;
             isAlreadyJoin = false;
+            isStarMine = false;
         }
         return meetingPosts;
     }
