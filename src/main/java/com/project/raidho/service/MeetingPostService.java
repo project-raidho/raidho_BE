@@ -248,9 +248,6 @@ public class MeetingPostService {
                 }
                 int isStarMineCh = meetingPostStarRepository.getCountOfMeetingPostAndMemberMeetingPostStar(meetingPost, member);
                 if (isStarMineCh >= 1) {
-                    System.out.println("===================================");
-                    System.out.println(isStarMineCh);
-                    System.out.println("===================================");
                     isStarMine = true;
                 }
             }
@@ -321,6 +318,10 @@ public class MeetingPostService {
                 if (roomDetails != null) {
                     isAlreadyJoin = true;
                 }
+                int isStarMineCh = meetingPostStarRepository.getCountOfMeetingPostAndMemberMeetingPostStar(meetingPost, member);
+                if (isStarMineCh >= 1) {
+                    isStarMine = true;
+                }
             }
             Date date = formatter.parse(meetingPost.getRoomCloseDate());
             Date tomorrow = new Date(date.getTime() + (1000 * 60 * 60 * 24));
@@ -335,12 +336,6 @@ public class MeetingPostService {
             List<String> stringTagList = new ArrayList<>();
             for (MeetingTags mt : meetingTags) {
                 stringTagList.add(mt.getMeetingTag());
-            }
-            if (member.getProviderId() != null) {
-                int isStarMineCh = meetingPostStarRepository.getCountOfMeetingPostAndMemberMeetingPostStar(meetingPost, member);
-                if (isStarMineCh >= 1) {
-                    isStarMine = true;
-                }
             }
 //            int starCount = meetingPostStarRepository.getCountOfMeetingPostStar(meetingPost);
             meetingPosts.add(
@@ -381,6 +376,7 @@ public class MeetingPostService {
         }
         Boolean isMine = false;
         Boolean isAlreadyJoin = false;
+        Boolean isStarMine = false;
 
         List<MeetingPostResponseDto> meetingPostList = new ArrayList<>();
         for (MeetingPost meetingPost : meetingPosts) {
@@ -394,6 +390,10 @@ public class MeetingPostService {
                 RoomDetail roomDetails = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
                 if (roomDetails != null) {
                     isAlreadyJoin = true;
+                }
+                int isStarMineCh = meetingPostStarRepository.getCountOfMeetingPostAndMemberMeetingPostStar(meetingPost, member);
+                if (isStarMineCh >= 1) {
+                    isStarMine = true;
                 }
             }
             List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
@@ -414,6 +414,7 @@ public class MeetingPostService {
                                 .endDate(meetingPost.getEndDate())
                                 .people(meetingPost.getPeople())
                                 .memberCount(memberCount)
+                                .isStarMine(isStarMine)
 //                                .starCount(starCount)
                                 .roomCloseDate(meetingPost.getRoomCloseDate())
                                 .isMine(isMine)
@@ -427,6 +428,7 @@ public class MeetingPostService {
             }
             isMine = false;
             isAlreadyJoin = false;
+            isStarMine = false;
         }
         return new PageImpl<>(meetingPostList, meetingPosts.getPageable(), meetingPosts.getTotalElements());
     }
