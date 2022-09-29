@@ -65,8 +65,8 @@ public class MeetingPostStarService {
         MeetingPost meetingPost = meetingPostRepository.findById(meetingPostId).orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_POST));
         Optional<MeetingPostStar> meetingPostStarOptional = meetingPostStarRepository.findByMeetingPostAndMember(meetingPost, member);
         if (!meetingPostStarOptional.isPresent()) {
-            log.error(ErrorCode.DIDNT_CHECK_LIKE.getErrorMessage());
-            throw new RaidhoException(ErrorCode.DIDNT_CHECK_LIKE);
+            log.error(ErrorCode.DIDNT_CHECK_STAR.getErrorMessage());
+            throw new RaidhoException(ErrorCode.DIDNT_CHECK_STAR);
         }
         meetingPostStarRepository.delete(meetingPostStarOptional.get());
         log.info("{} 번 자랑글에 {} 님께서 별을 취소하셨습니다.", meetingPost.getId(), member.getMemberName());
