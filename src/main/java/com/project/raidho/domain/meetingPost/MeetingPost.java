@@ -2,7 +2,9 @@ package com.project.raidho.domain.meetingPost;
 
 import com.project.raidho.domain.Timestamped;
 import com.project.raidho.domain.meetingPost.dto.UpdateMeetingPost;
+import com.project.raidho.domain.meetingPostStar.MeetingPostStar;
 import com.project.raidho.domain.member.Member;
+import com.project.raidho.domain.postHeart.PostHeart;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -63,4 +65,13 @@ public class MeetingPost extends Timestamped {
         this.roomCloseDate= updateMeetingPost.getRoomCloseDate();
         this.departLocation= updateMeetingPost.getDepartLocation();
     }
+
+    @Column
+    private int starCount;
+
+    public void update(List<MeetingPostStar> meetingPostStars){
+        this.starCount = meetingPostStars.size();
+    }
+
+
 }
