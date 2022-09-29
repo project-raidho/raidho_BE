@@ -46,9 +46,9 @@ public class MeetingPostStarService {
                     .meetingPost(meetingPost)
                     .build();
             meetingPostStarRepository.save(meetingPostStar);
-            log.info("{} 번 자랑글에 {} 님께서 좋아요 하셨습니다.", meetingPost.getId(), member.getMemberName());
+            log.info("{} 번 자랑글에 {} 님께서 별을눌렀습니다.", meetingPost.getId(), member.getMemberName());
             List<MeetingPostStar> meetingPostStars = meetingPostStarRepository.findByMeetingPost(meetingPost);
-            meetingPost.update(meetingPostStars);
+//            meetingPost.update(meetingPostStars);
             return ResponseEntity.ok().body(ResponseDto.success("별찍힘"));
 
         }
@@ -69,9 +69,9 @@ public class MeetingPostStarService {
             throw new RaidhoException(ErrorCode.DIDNT_CHECK_LIKE);
         }
         meetingPostStarRepository.delete(meetingPostStarOptional.get());
-        log.info("{} 번 자랑글에 {} 님께서 좋아요를 취소하셨습니다.", meetingPost.getId(), member.getMemberName());
+        log.info("{} 번 자랑글에 {} 님께서 별을 취소하셨습니다.", meetingPost.getId(), member.getMemberName());
         List<MeetingPostStar> postHearts = meetingPostStarRepository.findByMeetingPost(meetingPost);
-        meetingPost.update(postHearts);
+//        meetingPost.update(postHearts);
         return ResponseEntity.ok().body(ResponseDto.success("별을 취소하셨습니다."));
     }
 

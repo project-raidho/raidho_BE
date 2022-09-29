@@ -168,7 +168,7 @@ public class MeetingPostService {
             for (MeetingTags mt : meetingTags) {
                 stringTagList.add(mt.getMeetingTag());
             }
-            int starCount = meetingPostStarRepository.getCountOfMeetingPostStar(meetingPost);
+//            int starCount = meetingPostStarRepository.getCountOfMeetingPostStar(meetingPost);
             meetingPosts.add(
                     MeetingPostResponseDto.builder()
                             .id(meetingPost.getId())
@@ -180,7 +180,7 @@ public class MeetingPostService {
                             .endDate(meetingPost.getEndDate())
                             .people(meetingPost.getPeople())
                             .memberCount(memberCount)
-                            .starCount(starCount)
+/*                            .starCount(starCount)*/
                             .roomCloseDate(meetingPost.getRoomCloseDate())
                             .isMine(isMine)
                             .isAlreadyJoin(isAlreadyJoin)
@@ -284,7 +284,7 @@ public class MeetingPostService {
             for (MeetingTags mt : meetingTags) {
                 stringTagList.add(mt.getMeetingTag());
             }
-            int starCount = meetingPostStarRepository.getCountOfMeetingPostStar(meetingPost);
+//            int starCount = meetingPostStarRepository.getCountOfMeetingPostStar(meetingPost);
             if (meetingPost.getPeople() > memberCount) {
                 meetingPostList.add(
                         MeetingPostResponseDto.builder()
@@ -297,7 +297,7 @@ public class MeetingPostService {
                                 .endDate(meetingPost.getEndDate())
                                 .people(meetingPost.getPeople())
                                 .memberCount(memberCount)
-                                .starCount(starCount)
+//                                .starCount(starCount)
                                 .roomCloseDate(meetingPost.getRoomCloseDate())
                                 .isMine(isMine)
                                 .isAlreadyJoin(isAlreadyJoin)
@@ -352,7 +352,7 @@ public class MeetingPostService {
             for (MeetingTags mt : meetingTags) {
                 stringTagList.add(mt.getMeetingTag());
             }
-            int starCount = meetingPostStarRepository.getCountOfMeetingPostStar(meetingPost);
+//            int starCount = meetingPostStarRepository.getCountOfMeetingPostStar(meetingPost);
             meetingPosts.add(
                     MeetingPostResponseDto.builder()
                             .id(meetingPost.getId())
@@ -364,7 +364,7 @@ public class MeetingPostService {
                             .endDate(meetingPost.getEndDate())
                             .people(meetingPost.getPeople())
                             .memberCount(memberCount)
-                            .starCount(starCount)
+//                            .starCount(starCount)
                             .roomCloseDate(meetingPost.getRoomCloseDate())
                             .isMine(isMine)
                             .isAlreadyJoin(isAlreadyJoin)

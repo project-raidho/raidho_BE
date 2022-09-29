@@ -66,12 +66,12 @@ public class MeetingPost extends Timestamped {
         this.departLocation= updateMeetingPost.getDepartLocation();
     }
 
-    @Column
-    private int starCount;
-
-    public void update(List<MeetingPostStar> meetingPostStars){
-        this.starCount = meetingPostStars.size();
-    }
+//    @Column
+//    private int starCount;
+//
+//    public void update(List<MeetingPostStar> meetingPostStars){
+//        this.starCount = meetingPostStars.size();
+//    }
 
 
 }
