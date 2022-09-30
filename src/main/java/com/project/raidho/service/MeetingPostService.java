@@ -134,6 +134,7 @@ public class MeetingPostService {
             log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
             throw new RaidhoException(ErrorCode.UNAUTHORIZATION_MEMBER);
         } else {
+            meetingPostStarRepository.deleteAllByMeetingPost(meetingPost);
             chatMessageRepository.deleteAllByRoomId(meetingId);
             roomDetailRepository.deleteByRoomMaster_RoomId(meetingId);
             meetingPostRepository.delete(meetingPost);
