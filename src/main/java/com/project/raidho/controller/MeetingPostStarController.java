@@ -14,12 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 public class MeetingPostStarController {
 
     private final MeetingPostStarService meetingPostStarService;
-
+    // 모집글 북마크 추가
     @PostMapping("/{meetingPostId}")
     public ResponseEntity<?> meetingPostStarCreate(@PathVariable("meetingPostId") Long meetingPostId, HttpServletRequest httpServletRequest) throws RaidhoException {
         return meetingPostStarService.createMeetingPostStar(meetingPostId, httpServletRequest);
     }
-
+    // 모집글 북마크 삭제
     @DeleteMapping("/{meetingPostId}")
     public ResponseEntity<?> meetingPostStarDelete(@PathVariable("meetingPostId") Long meetingPostId, HttpServletRequest httpServletRequest) throws RaidhoException {
         return meetingPostStarService.deleteMeetingPostStar(meetingPostId, httpServletRequest);

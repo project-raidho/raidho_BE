@@ -23,7 +23,6 @@ public class TagSearchController {
                                        @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok().body(tagSearchService.searchTag(page, size, tag, userDetails));
     }
-
     // 관련 여행 후기 태그 검색용
     @GetMapping("/review/{tag}/{id}")
     public ResponseEntity<?> distinctMyPostSearchTag(@PathVariable(value = "tag") String tag,
@@ -33,7 +32,6 @@ public class TagSearchController {
                                                      @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok().body(tagSearchService.distinctMyPostSearchTag(page, size, tag, id, userDetails));
     }
-
     // 구인글 태그 검색
     @GetMapping("/meeting/{meetingTag}")
     public ResponseEntity<?> MeetingTagSearch(@PathVariable(value = "meetingTag") String meetingTag,

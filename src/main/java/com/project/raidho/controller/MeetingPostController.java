@@ -8,7 +8,6 @@ import com.project.raidho.service.MeetingPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +20,12 @@ import java.text.ParseException;
 public class MeetingPostController {
 
     private final MeetingPostService meetingPostService;
+    // 모집글 작성
     @PostMapping
     public ResponseEntity<?> createMeetingPost(@RequestBody MeetingPostRequestDto meetingPostRequestDto, HttpServletRequest request) {
         return ResponseEntity.ok().body(meetingPostService.createMeetingPost(meetingPostRequestDto, request));
     }
-
+    // 전체 모집글 리스트 가져오기
     @GetMapping
     public ResponseEntity<?> getAllMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                                @RequestParam (value = "size",defaultValue = "20")int size,
@@ -33,7 +33,7 @@ public class MeetingPostController {
 
         return ResponseEntity.ok().body(meetingPostService.getAllMeetingPost(page,size,userDetails));
     }
-
+    // 테마별 모집글 리스트 가져오기
     @GetMapping("/{themeName}")
     public ResponseEntity<?> getCategoryMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                                     @RequestParam (value = "size",defaultValue = "20")int size,
@@ -43,12 +43,11 @@ public class MeetingPostController {
 
         return ResponseEntity.ok().body(meetingPostService.getAllCategoryMeetingPost(page,size,userDetails,themeName));
     }
-
+    // 내가 작성한 모집글 가져오기
     @GetMapping("/myMeetingPost")
     public ResponseEntity<?> getAllMyMeetingPost(@AuthenticationPrincipal UserDetails userDetails) throws ParseException {
         return meetingPostService.getAllMyMeetingPost(userDetails);
     }
-
     @GetMapping("/filter/{num}/{category}")
     public ResponseEntity<?> getOpenMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                                 @RequestParam (value = "size",defaultValue = "20")int size,

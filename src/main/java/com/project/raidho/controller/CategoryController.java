@@ -41,7 +41,7 @@ public class CategoryController {
 
         return categoryService.deleteCategoryTest(id);
     }
-
+    // 카테고리 생성
     @PostMapping("/api/category")
     public ResponseEntity<?> createCategory(@RequestBody ThemeCategoryRequestDto requestDto,
                                             @AuthenticationPrincipal UserDetails userDetails) {
@@ -50,7 +50,7 @@ public class CategoryController {
         }
         return ResponseEntity.ok().body(categoryService.createCategory(requestDto,userDetails));
     }
-
+    // 카테고리 수정
     @PutMapping("/api/category/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable Long id,
                                          @RequestBody ThemeCategoryRequestDto requestDto,
@@ -60,7 +60,7 @@ public class CategoryController {
         }
         return ResponseEntity.ok().body(categoryService.updateCategory(id, requestDto, userDetails));
     }
-
+    // 카테고리 삭제
     @DeleteMapping("/api/category/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable Long id,
                                          @AuthenticationPrincipal UserDetails userDetails) {

@@ -15,7 +15,7 @@ import java.io.IOException;
 @RequestMapping("/api/mypage")
 public class EditMemberController {
     private final EditMemberService editMemberService;
-
+    // 마이페이지 수정
     @PutMapping("/{memberId}")
     public ResponseEntity<?> editMyPage (@PathVariable("memberId") Long memberId, @ModelAttribute MemberUpdateDto memberDto) throws RaidhoException, IOException {
         return editMemberService.editMyPage(memberId, memberDto);

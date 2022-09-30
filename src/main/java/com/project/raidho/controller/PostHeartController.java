@@ -14,12 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 public class PostHeartController {
 
     private final PostHeartService postHeartService;
-
+    // 게시글 좋아요
     @PostMapping("/{postId}")
     public ResponseEntity<?> postHeart(@PathVariable("postId") Long postId, HttpServletRequest request) throws RaidhoException {
         return postHeartService.createPostHeart(postId, request);
     }
-
+    // 게시글 좋아요 삭제
     @DeleteMapping("/{postId}")
     public ResponseEntity<?> postHeartDelete(@PathVariable("postId") Long postId, HttpServletRequest request) throws RaidhoException {
         return postHeartService.deletePostHeart(postId, request);

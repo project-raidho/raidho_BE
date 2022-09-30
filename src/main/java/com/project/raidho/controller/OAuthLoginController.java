@@ -1,16 +1,13 @@
 package com.project.raidho.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import com.project.raidho.logging.Logging;
 import com.project.raidho.service.KakaoMemberService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
@@ -20,10 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 public class OAuthLoginController {
 
     private final KakaoMemberService kakaoMemberService;
-//    private final NaverMemberService naverMemberService;
-//    private final FacebookMemberService facebookMemberService;
-
-
     // 카카오 로그인
     @GetMapping("/kakao")
     public ResponseEntity<?> kakaoLogin (@RequestParam String code, HttpServletResponse response) {
