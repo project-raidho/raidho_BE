@@ -17,9 +17,9 @@ public class OauthMemberInfoImpl {
 
     private String providerId;
 
-    public OauthMemberInfoImpl(String memberName, String email, String providerId, String provider) {
+    public OauthMemberInfoImpl(String memberName, String providerId, String provider) {
         this.memberName = memberName;
-        this.email = email;
+//        this.email = email;
         this.providerId = providerId;
         this.provider = provider;
     }

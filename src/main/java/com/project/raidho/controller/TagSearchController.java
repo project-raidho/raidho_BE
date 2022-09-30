@@ -19,7 +19,7 @@ public class TagSearchController {
     @GetMapping("/{tag}")
     public ResponseEntity<?> TagSearch(@PathVariable(value = "tag") String tag,
                                        @RequestParam (value = "page",defaultValue = "0")int page,
-                                       @RequestParam (value = "size",defaultValue = "5")int size,
+                                       @RequestParam (value = "size",defaultValue = "10000")int size,
                                        @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok().body(tagSearchService.searchTag(page, size, tag, userDetails));
     }
@@ -27,7 +27,7 @@ public class TagSearchController {
     @GetMapping("/meeting/{meetingTag}")
     public ResponseEntity<?> MeetingTagSearch(@PathVariable(value = "meetingTag") String meetingTag,
                                               @RequestParam (value = "page",defaultValue = "0")int page,
-                                              @RequestParam (value = "size",defaultValue = "5")int size,
+                                              @RequestParam (value = "size",defaultValue = "10000")int size,
                                               @AuthenticationPrincipal UserDetails userDetails) throws ParseException {
         return ResponseEntity.ok().body(tagSearchService.meetingTagSearch(page, size, meetingTag, userDetails));
     }
