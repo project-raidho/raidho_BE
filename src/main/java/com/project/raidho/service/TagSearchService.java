@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,11 +47,19 @@ public class TagSearchService {
 
     @Transactional(readOnly = true)
     public ResponseDto<?> searchTag(int page, int size, String tag, UserDetails userDetails) {
-
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Post> postList = tagRepository.SearchTag(tag, pageRequest);
         Page<MainPostResponseDto> mainPostResponseDtos = convertToMainPostResponseDto(postList, userDetails);
         return ResponseDto.success(mainPostResponseDtos);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseDto<?> distinctMyPostSearchTag(int page, int size, String tag, UserDetails userDetails) {
+        Member member = ((PrincipalDetails) userDetails).getMember();
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Post> postPage = tagRepository.distinctMyPostSearchTag(tag,member,pageRequest);
+        Page<MainPostResponseDto> mainPostResponseDtoPage = convertToMainPostResponseDto(postPage, userDetails);
+        return ResponseDto.success(mainPostResponseDtoPage);
     }
 
     // Todo :: pagenation 처리

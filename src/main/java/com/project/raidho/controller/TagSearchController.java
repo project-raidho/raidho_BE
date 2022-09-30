@@ -23,6 +23,16 @@ public class TagSearchController {
                                        @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok().body(tagSearchService.searchTag(page, size, tag, userDetails));
     }
+
+    // 관련 여행 후기 태그 검색용
+    @GetMapping("/review/{tag}")
+    public ResponseEntity<?> distinctMyPostSearchTag(@PathVariable(value = "tag") String tag,
+                                                     @RequestParam (value = "page",defaultValue = "0")int page,
+                                                     @RequestParam (value = "size",defaultValue = "10000")int size,
+                                                     @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok().body(tagSearchService.distinctMyPostSearchTag(page, size, tag, userDetails));
+    }
+
     // 구인글 태그 검색
     @GetMapping("/meeting/{meetingTag}")
     public ResponseEntity<?> MeetingTagSearch(@PathVariable(value = "meetingTag") String meetingTag,
