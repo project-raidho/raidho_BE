@@ -54,10 +54,9 @@ public class TagSearchService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> distinctMyPostSearchTag(int page, int size, String tag, UserDetails userDetails) {
-        Member member = ((PrincipalDetails) userDetails).getMember();
+    public ResponseDto<?> distinctMyPostSearchTag(int page, int size, String tag, Long id, UserDetails userDetails) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Post> postPage = tagRepository.distinctMyPostSearchTag(tag,member,pageRequest);
+        Page<Post> postPage = tagRepository.distinctMyPostSearchTag(tag ,id ,pageRequest);
         Page<MainPostResponseDto> mainPostResponseDtoPage = convertToMainPostResponseDto(postPage, userDetails);
         return ResponseDto.success(mainPostResponseDtoPage);
     }

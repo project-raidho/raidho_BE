@@ -20,7 +20,7 @@ public interface TagRepository extends JpaRepository<Tags, Long> {
     @Query("SELECT DISTINCT t.post FROM Tags t WHERE t.tag like %:tag%")
     Page<Post> SearchTag(@Param(value = "tag") String tag, PageRequest pageRequest);
 
-    @Query("SELECT DISTINCT t.post FROM Tags t WHERE t.tag like %:tag% and t.post.member <> :member ")
-    Page<Post> distinctMyPostSearchTag(@Param(value = "tag") String tag, @Param(value = "member") Member member, PageRequest pageRequest);
+    @Query("SELECT DISTINCT t.post FROM Tags t WHERE t.tag like %:tag% and t.post.id <> :id ")
+    Page<Post> distinctMyPostSearchTag(@Param(value = "tag") String tag, @Param(value = "id") Long id, PageRequest pageRequest);
 
 }
