@@ -242,20 +242,13 @@ public class MeetingPostService {
 
     // Todo :: 전체용
     private Page<MeetingPostResponseDto> convertToBasicResponseDto(Page<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException, RaidhoException {
-
         Member member = ((PrincipalDetails) userDetails).getMember();
-        if (member == null) {
-            throw new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER);
-        }
         return new PageImpl<>(serviceProvider.meetingPostPage(meetingPostList, member), meetingPostList.getPageable(), meetingPostList.getTotalElements());
     }
 
     // Todo :: 마이페이지용
     private List<MeetingPostResponseDto> convertToMyPageResponseDto(List<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException, RaidhoException {
             Member member = ((PrincipalDetails) userDetails).getMember();
-            if (member == null) {
-                throw new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER);
-            }
             return serviceProvider.meetingPost(meetingPostList, member);
     }
 
