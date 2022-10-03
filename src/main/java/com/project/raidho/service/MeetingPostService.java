@@ -242,14 +242,20 @@ public class MeetingPostService {
 
     // Todo :: 전체용
     private Page<MeetingPostResponseDto> convertToBasicResponseDto(Page<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException, RaidhoException {
-        Member member = ((PrincipalDetails) userDetails).getMember();
+        Member member = new Member();
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
         return new PageImpl<>(serviceProvider.meetingPostPage(meetingPostList, member), meetingPostList.getPageable(), meetingPostList.getTotalElements());
     }
 
     // Todo :: 마이페이지용
     private List<MeetingPostResponseDto> convertToMyPageResponseDto(List<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException, RaidhoException {
-            Member member = ((PrincipalDetails) userDetails).getMember();
-            return serviceProvider.meetingPost(meetingPostList, member);
+        Member member = new Member();
+        if (userDetails != null) {
+            member = ((PrincipalDetails) userDetails).getMember();
+        }
+        return serviceProvider.meetingPost(meetingPostList, member);
     }
 
     // Todo :: 모집중인 모집글 용
@@ -264,7 +270,7 @@ public class MeetingPostService {
                     .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
             int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
             IsMineDto isMineDto = serviceProvider.isMineCheck_MeetingPost(member, roomMaster, meetingPost);
-            MeetingStatusDto meetingStatusDto = serviceProvider.dateCheck(meetingPost,memberCount);
+            MeetingStatusDto meetingStatusDto = serviceProvider.dateCheck(meetingPost, memberCount);
             List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
             List<String> stringTagList = new ArrayList<>();
             for (MeetingTags mt : meetingTags) {
