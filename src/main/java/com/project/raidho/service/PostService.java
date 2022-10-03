@@ -1,5 +1,6 @@
 package com.project.raidho.service;
 
+import com.project.raidho.domain.IsMineDto;
 import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.domain.Timestamped;
 import com.project.raidho.domain.member.Member;
@@ -47,6 +48,7 @@ public class PostService extends Timestamped {
     private final S3Service s3Service;
     private final JwtTokenProvider jwtTokenProvider;
     private final CommentRepository commentRepository;
+    private final ServiceProvider serviceProvider;
 
     // 자랑글 등록
     @Transactional
@@ -235,8 +237,6 @@ public class PostService extends Timestamped {
     }
 
     private Page<MainPostResponseDto> convertToMainPostResponseDto(Page<Post> postList, UserDetails userDetails) {
-        Boolean isMine = false;
-        Boolean isHeartMine = false;
         Boolean isImages = false;
         Member member = new Member();
         if (userDetails != null) {
@@ -244,19 +244,7 @@ public class PostService extends Timestamped {
         }
         List<MainPostResponseDto> posts = new ArrayList<>();
         for (Post post : postList) {
-            if (member.getProviderId() != null) {
-                if (member.getProviderId().equals(post.getMember().getProviderId())) {
-                    isMine = true;
-                }
-            }
-            int heartCount = postHeartRepository.getCountOfPostHeart(post);
-            int commentCount = commentRepository.getCountOfComment(post);
-            if (member.getProviderId() != null) {
-                int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
-                if (isHeartMineCh >= 1) {
-                    isHeartMine = true;
-                }
-            }
+            IsMineDto isMineDto = serviceProvider.isMineCheck_Post(member,post);
             List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
             if (multipartFile.size() > 1) {
                 isImages = true;
@@ -271,25 +259,21 @@ public class PostService extends Timestamped {
                             .memberName(post.getMember().getMemberName())
                             .memberImage(post.getMember().getMemberImage())
                             .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
-                            .heartCount(heartCount)
-                            .commentCount(commentCount)
-                            .isMine(isMine)
-                            .isHeartMine(isHeartMine)
+                            .heartCount(isMineDto.getHeartCount())
+                            .commentCount(isMineDto.getCommentCount())
+                            .isMine(isMineDto.isMine())
+                            .isHeartMine(isMineDto.isHeartMine())
                             .isImages(isImages)
                             .createdAt(post.getCreatedAt().toLocalDate())
                             .modifiedAt(post.getModifiedAt().toLocalDate())
                             .build()
             );
-            isMine = false;
-            isHeartMine = false;
             isImages = false;
         }
         return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
     }
 
     private List<MainPostResponseDto> convertToMyPageResponseDto(List<Post> postList, UserDetails userDetails) {
-        Boolean isMine = false;
-        Boolean isHeartMine = false;
         Boolean isImages = false;
         Member member = new Member();
         if (userDetails != null) {
@@ -297,19 +281,8 @@ public class PostService extends Timestamped {
         }
         List<MainPostResponseDto> posts = new ArrayList<>();
         for (Post post : postList) {
-            if (member.getProviderId() != null) {
-                if (member.getProviderId().equals(post.getMember().getProviderId())) {
-                    isMine = true;
-                }
-            }
-            int heartCount = postHeartRepository.getCountOfPostHeart(post);
-            int commentCount = commentRepository.getCountOfComment(post);
-            if (member.getProviderId() != null) {
-                int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
-                if (isHeartMineCh >= 1) {
-                    isHeartMine = true;
-                }
-            }
+            IsMineDto isMineDto = new IsMineDto();
+            isMineDto = serviceProvider.isMineCheck_Post(member,post);
             List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
             if (multipartFile.size() > 1) {
                 isImages = true;
@@ -324,17 +297,15 @@ public class PostService extends Timestamped {
                             .memberName(post.getMember().getMemberName())
                             .memberImage(post.getMember().getMemberImage())
                             .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
-                            .heartCount(heartCount)
-                            .commentCount(commentCount)
-                            .isMine(isMine)
-                            .isHeartMine(isHeartMine)
+                            .heartCount(isMineDto.getHeartCount())
+                            .commentCount(isMineDto.getCommentCount())
+                            .isMine(isMineDto.isMine())
+                            .isHeartMine(isMineDto.isHeartMine())
                             .isImages(isImages)
                             .createdAt(post.getCreatedAt().toLocalDate())
                             .modifiedAt(post.getModifiedAt().toLocalDate())
                             .build()
             );
-            isMine = false;
-            isHeartMine = false;
             isImages = false;
         }
         return posts;

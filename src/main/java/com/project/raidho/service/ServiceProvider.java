@@ -8,11 +8,11 @@ import com.project.raidho.domain.chat.RoomMaster;
 import com.project.raidho.domain.meetingPost.MeetingPost;
 import com.project.raidho.domain.meetingPost.dto.MeetingPostResponseDto;
 import com.project.raidho.domain.member.Member;
+import com.project.raidho.domain.post.Post;
+import com.project.raidho.domain.post.dto.MainPostResponseDto;
+import com.project.raidho.domain.s3.MultipartFiles;
 import com.project.raidho.domain.tags.MeetingTags;
-import com.project.raidho.repository.MeetingPostStarRepository;
-import com.project.raidho.repository.MeetingTagRepository;
-import com.project.raidho.repository.RoomDetailRepository;
-import com.project.raidho.repository.RoomMasterRepository;
+import com.project.raidho.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -31,9 +31,23 @@ public class ServiceProvider {
     private final MeetingPostStarRepository meetingPostStarRepository;
     private final RoomMasterRepository roomMasterRepository;
     private final MeetingTagRepository meetingTagRepository;
+    private final PostHeartRepository postHeartRepository;
+    private final CommentRepository commentRepository;
 
-    public IsMineDto isMineCheck_Post(Member member) {
-        return null;
+    public IsMineDto isMineCheck_Post(Member member, Post post) {
+        IsMineDto isMineDto = new IsMineDto();
+        if (member.getProviderId() != null) {
+            if (member.getProviderId().equals(post.getMember().getProviderId())) {
+                isMineDto.setMine(true);
+                int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
+                if (isHeartMineCh >= 1) {
+                    isMineDto.setHeartMine(true);
+                }
+            }
+        }
+        isMineDto.setHeartCount(postHeartRepository.getCountOfPostHeart(post));
+        isMineDto.setCommentCount(commentRepository.getCountOfComment(post));
+        return isMineDto;
     }
 
     public IsMineDto isMineCheck_MeetingPost(Member member, RoomMaster roomMaster, MeetingPost meetingPost) {
@@ -144,4 +158,5 @@ public class ServiceProvider {
         }
         return meetingPostResponseDtos;
     }
+
 }
