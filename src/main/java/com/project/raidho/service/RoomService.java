@@ -98,21 +98,23 @@ public class RoomService {
         if (memberCount >= roomMaster.getMemberCount()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RaidhoException(ErrorCode.CHATTING_ROOM_ALREADY_FULL));
         }
-        RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
-        if (roomDetail == null) {
-            RoomDetail newRoomDetail = new RoomDetail(roomMaster, member);
-            roomMaster.getRoomDetails().add(newRoomDetail);
-            roomDetailRepository.save(newRoomDetail);
-            log.info("{} 님께서 {} 채팅방에 참여하셨습니다.", member.getMemberName(), roomMaster.getMeetingPost().getTitle());
-            ChatMessageDto chatMessageDto = ChatMessageDto.builder()
-                    .sender(member.getMemberName())
-                    .message(member.getMemberName() + "님이 채팅방에 입장하셨습니다.")
-                    .roomId(String.valueOf(roomId))
-                    .type(ChatMessage.Type.ENTER).build();
-            simpMessageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, chatMessageDto);
-            ChatMessage chatMessage = ChatMessage.builder().message(chatMessageDto.getMessage()).member(member)
-                    .type(chatMessageDto.getType()).sender(chatMessageDto.getSender()).roomId(roomId).build();
-            chatMessageRepository.save(chatMessage);
+        synchronized (this) {
+            RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
+            if (roomDetail == null) {
+                RoomDetail newRoomDetail = new RoomDetail(roomMaster, member);
+                roomMaster.getRoomDetails().add(newRoomDetail);
+                roomDetailRepository.save(newRoomDetail);
+                log.info("{} 님께서 {} 채팅방에 참여하셨습니다.", member.getMemberName(), roomMaster.getMeetingPost().getTitle());
+                ChatMessageDto chatMessageDto = ChatMessageDto.builder()
+                        .sender(member.getMemberName())
+                        .message(member.getMemberName() + "님이 채팅방에 입장하셨습니다.")
+                        .roomId(String.valueOf(roomId))
+                        .type(ChatMessage.Type.ENTER).build();
+                simpMessageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, chatMessageDto);
+                ChatMessage chatMessage = ChatMessage.builder().message(chatMessageDto.getMessage()).member(member)
+                        .type(chatMessageDto.getType()).sender(chatMessageDto.getSender()).roomId(roomId).build();
+                chatMessageRepository.save(chatMessage);
+            }
         }
         RoomDetailResponseDto responseDto = RoomDetailResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
