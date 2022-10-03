@@ -1,6 +1,8 @@
 package com.project.raidho.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import com.project.raidho.domain.IsMineDto;
+import com.project.raidho.domain.MeetingStatusDto;
 import com.project.raidho.domain.chat.RoomDetail;
 import com.project.raidho.domain.chat.RoomMaster;
 import com.project.raidho.domain.meetingPost.MeetingPost;
@@ -50,6 +52,8 @@ public class MeetingPostService {
     private final RoomDetailRepository roomDetailRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final MeetingPostStarRepository meetingPostStarRepository;
+    private final ServiceProvider serviceProvider;
+    private final DateCheckProvider dateCheckProvider;
 
     @Transactional
     public ResponseDto<?> createMeetingPost(MeetingPostRequestDto meetingPostRequestDto, HttpServletRequest request) {
@@ -313,48 +317,23 @@ public class MeetingPostService {
 
     // Todo :: 마이페이지용
     private List<MeetingPostResponseDto> convertToMyPageResponseDto(List<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Member member = new Member();
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
-        Boolean isMine = false;
-        Boolean isAlreadyJoin = false;
-        Boolean isStarMine = false;
-        int meetingStatus = 0;
         List<MeetingPostResponseDto> meetingPosts = new ArrayList<>();
         for (MeetingPost meetingPost : meetingPostList) {
             RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
                     .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
             int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
-            if (member.getProviderId() != null) {
-                if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
-                    isMine = true;
-                }
-                RoomDetail roomDetails = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
-                if (roomDetails != null) {
-                    isAlreadyJoin = true;
-                }
-                int isStarMineCh = meetingPostStarRepository.getCountOfMeetingPostAndMemberMeetingPostStar(meetingPost, member);
-                if (isStarMineCh >= 1) {
-                    isStarMine = true;
-                }
-            }
-            Date date = formatter.parse(meetingPost.getRoomCloseDate());
-            Date tomorrow = new Date(date.getTime() + (1000 * 60 * 60 * 24));
-            if (tomorrow.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
-                meetingStatus = 1;
-            } else if (tomorrow.after(new Date()) && memberCount >= meetingPost.getPeople()) {
-                meetingStatus = 2;
-            } else if (tomorrow.before(new Date())) {
-                meetingStatus = 3;
-            }
+            IsMineDto isMineDto = serviceProvider.isMineCheck_MeetingPost(member, roomMaster, meetingPost);
+            MeetingStatusDto meetingStatusDto = dateCheckProvider.dateCheck(meetingPost,memberCount);
+
             List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
             List<String> stringTagList = new ArrayList<>();
             for (MeetingTags mt : meetingTags) {
                 stringTagList.add(mt.getMeetingTag());
             }
-//            int starCount = meetingPostStarRepository.getCountOfMeetingPostStar(meetingPost);
             meetingPosts.add(
                     MeetingPostResponseDto.builder()
                             .id(meetingPost.getId())
@@ -366,21 +345,17 @@ public class MeetingPostService {
                             .endDate(meetingPost.getEndDate())
                             .people(meetingPost.getPeople())
                             .memberCount(memberCount)
-                            .isStarMine(isStarMine)
+                            .isStarMine(isMineDto.isStarMine())
 /*                            .starCount(starCount)*/
                             .roomCloseDate(meetingPost.getRoomCloseDate())
-                            .isMine(isMine)
-                            .isAlreadyJoin(isAlreadyJoin)
+                            .isMine(isMineDto.isMine())
+                            .isAlreadyJoin(isMineDto.isAlreadyMine())
                             .meetingTags(stringTagList)
-                            .meetingStatus(meetingStatus)
+                            .meetingStatus(meetingStatusDto.getMeetingStatus())
                             .memberName(meetingPost.getMember().getMemberName())
                             .memberImage(meetingPost.getMember().getMemberImage())
                             .build()
             );
-
-            isMine = false;
-            isAlreadyJoin = false;
-            isStarMine = false;
         }
         return meetingPosts;
     }
