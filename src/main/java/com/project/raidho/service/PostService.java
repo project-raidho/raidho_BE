@@ -1,16 +1,15 @@
 package com.project.raidho.service;
 
-import com.project.raidho.domain.*;
-import com.project.raidho.domain.comment.Comment;
+import com.project.raidho.domain.ResponseDto;
+import com.project.raidho.domain.Timestamped;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
 import com.project.raidho.domain.post.dto.MainPostResponseDto;
 import com.project.raidho.domain.post.dto.PostRequestDto;
-import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
 import com.project.raidho.domain.post.dto.PostResponseDto;
+import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
 import com.project.raidho.domain.s3.MultipartFiles;
 import com.project.raidho.domain.tags.Tags;
-import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.exception.ErrorCode;
 import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.jwt.JwtTokenProvider;
@@ -34,7 +33,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 
 @Slf4j
@@ -54,7 +52,7 @@ public class PostService extends Timestamped {
     @Transactional
     public ResponseDto<?> createPost(PostRequestDto postRequestDto, HttpServletRequest request) throws RaidhoException, IOException {
         Member member = validateMember(request);
-        if (member == null) {
+        if (validateMember(request) == null) {
             log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
             throw new RaidhoException(ErrorCode.UNAUTHORIZATION_MEMBER);
         }
