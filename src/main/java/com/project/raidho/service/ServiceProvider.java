@@ -38,16 +38,18 @@ public class ServiceProvider {
 
     public IsMineDto isMineCheck_MeetingPost(Member member, RoomMaster roomMaster, MeetingPost meetingPost) {
         IsMineDto isMineDto = new IsMineDto();
-        if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
-            isMineDto.setMine(true);
-        }
-        RoomDetail roomDetails = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
-        if (roomDetails != null) {
-            isMineDto.setAlreadyMine(true);
-        }
-        int isStarMineCh = meetingPostStarRepository.getCountOfMeetingPostAndMemberMeetingPostStar(meetingPost, member);
-        if (isStarMineCh >= 1) {
-            isMineDto.setStarMine(true);
+        if (member.getProviderId() != null) {
+            if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
+                isMineDto.setMine(true);
+            }
+            RoomDetail roomDetails = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
+            if (roomDetails != null) {
+                isMineDto.setAlreadyMine(true);
+            }
+            int isStarMineCh = meetingPostStarRepository.getCountOfMeetingPostAndMemberMeetingPostStar(meetingPost, member);
+            if (isStarMineCh >= 1) {
+                isMineDto.setStarMine(true);
+            }
         }
         return isMineDto;
     }
