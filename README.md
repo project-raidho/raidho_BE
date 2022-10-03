@@ -122,8 +122,9 @@
 ---
 
 ## API 명세서
-[API 명세서 바로가기 <클릭>](https://docs.google.com/spreadsheets/d/1yF2awtaIPyzk1X7WkjB2KvOp6AnWkhKdqcXWjgv-Pwc/edit#gid=908212804)
-
+<img src="https://ifh.cc/g/86bk31.png" width="900px" />
+<img src="https://ifh.cc/g/dyXVDO.png" width="900px" />
+<img src="https://ifh.cc/g/mJrTsN.png" width="900px" />
 ---
 
 ## ✍ 커밋 메세지 규칙
