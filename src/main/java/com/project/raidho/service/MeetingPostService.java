@@ -53,7 +53,6 @@ public class MeetingPostService {
     private final ChatMessageRepository chatMessageRepository;
     private final MeetingPostStarRepository meetingPostStarRepository;
     private final ServiceProvider serviceProvider;
-    private final DateCheckProvider dateCheckProvider;
 
     @Transactional
     public ResponseDto<?> createMeetingPost(MeetingPostRequestDto meetingPostRequestDto, HttpServletRequest request) {
@@ -149,7 +148,7 @@ public class MeetingPostService {
 
     // Todo :: 모든 모집글 가져오기
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllMeetingPost(int page, int size, UserDetails userDetails) throws ParseException {
+    public ResponseDto<?> getAllMeetingPost(int page, int size, UserDetails userDetails) throws ParseException, RaidhoException {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<MeetingPost> meetingPostList = meetingPostRepository.findAllByOrderByCreatedAtDesc(pageRequest);
         Page<MeetingPostResponseDto> meetingPostResponseDtos = convertToBasicResponseDto(meetingPostList, userDetails);
@@ -158,7 +157,7 @@ public class MeetingPostService {
 
     // Todo :: 내가 작성한 모든 모집글 가져오기
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getAllMyMeetingPost(UserDetails userDetails) throws ParseException {
+    public ResponseEntity<?> getAllMyMeetingPost(UserDetails userDetails) throws ParseException, RaidhoException {
         if (userDetails != null) {
             Member member = ((PrincipalDetails) userDetails).getMember();
             if (member != null) {
@@ -171,7 +170,7 @@ public class MeetingPostService {
 
     // Todo :: 내가 찜한 모집글 가져오기
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getMyStarMeetingPost(UserDetails userDetails) throws ParseException {
+    public ResponseEntity<?> getMyStarMeetingPost(UserDetails userDetails) throws ParseException, RaidhoException {
         if (userDetails != null) {
             Member member = ((PrincipalDetails) userDetails).getMember();
             if (member != null) {
@@ -197,7 +196,7 @@ public class MeetingPostService {
 
     // Todo :: 모집중인 모집글 가져오기
     @Transactional(readOnly = true)
-    public ResponseDto<?> getOpenMeetingRoom(int page, int size, UserDetails userDetails) {
+    public ResponseDto<?> getOpenMeetingRoom(int page, int size, UserDetails userDetails) throws ParseException {
         PageRequest pageRequest = PageRequest.of(page, size);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoom(date, pageRequest);
@@ -207,7 +206,7 @@ public class MeetingPostService {
 
     // Todo :: 카테고리별 모집중인 모집글 가져오기
     @Transactional(readOnly = true)
-    public ResponseDto<?> getOpenMeetingRoomAndCategory(int page, int size, UserDetails userDetails, String countryName) throws RaidhoException {
+    public ResponseDto<?> getOpenMeetingRoomAndCategory(int page, int size, UserDetails userDetails, String countryName) throws RaidhoException, ParseException {
         PageRequest pageRequest = PageRequest.of(page, size);
         ThemeCategory category = themeCategoryRepository.findByCountryName(countryName)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CATEGORY));
@@ -219,7 +218,7 @@ public class MeetingPostService {
 
     // Todo :: 기간내 모집중인 모집글 가져오기
     @Transactional(readOnly = true)
-    public ResponseDto<?> getOpenMeetingRoomWhereStartDate(int page, int size, UserDetails userDetails, String start, String end) {
+    public ResponseDto<?> getOpenMeetingRoomWhereStartDate(int page, int size, UserDetails userDetails, String start, String end) throws ParseException {
         PageRequest pageRequest = PageRequest.of(page, size);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoomWhereStartDate(start, end, date, pageRequest);
@@ -229,7 +228,7 @@ public class MeetingPostService {
 
     // Todo :: 카테고리별 기간내 모집중인 모집글 가져오기
     @Transactional(readOnly = true)
-    public ResponseDto<?> getOpenMeetingRoomWhereStartDateAndCategory(int page, int size, UserDetails userDetails, String countryName, String start, String end) throws RaidhoException {
+    public ResponseDto<?> getOpenMeetingRoomWhereStartDateAndCategory(int page, int size, UserDetails userDetails, String countryName, String start, String end) throws RaidhoException, ParseException {
         ThemeCategory category = themeCategoryRepository.findByCountryName(countryName)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CATEGORY));
         PageRequest pageRequest = PageRequest.of(page, size);
@@ -242,160 +241,44 @@ public class MeetingPostService {
     }
 
     // Todo :: 전체용
-    private Page<MeetingPostResponseDto> convertToBasicResponseDto(Page<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException {
+    private Page<MeetingPostResponseDto> convertToBasicResponseDto(Page<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException, RaidhoException {
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Member member = new Member();
-        if (userDetails != null) {
-            member = ((PrincipalDetails) userDetails).getMember();
+        Member member = ((PrincipalDetails) userDetails).getMember();
+        if (member == null) {
+            throw new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER);
         }
-        Boolean isMine = false;
-        Boolean isAlreadyJoin = false;
-        Boolean isStarMine = false;
-        int meetingStatus = 0;
-        List<MeetingPostResponseDto> meetingPosts = new ArrayList<>();
-        for (MeetingPost meetingPost : meetingPostList) {
-            RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
-                    .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
-            int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
-            if (member.getProviderId() != null) {
-                if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
-                    isMine = true;
-                }
-                RoomDetail roomDetails = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
-                if (roomDetails != null) {
-                    isAlreadyJoin = true;
-                }
-                int isStarMineCh = meetingPostStarRepository.getCountOfMeetingPostAndMemberMeetingPostStar(meetingPost, member);
-                if (isStarMineCh >= 1) {
-                    isStarMine = true;
-                }
-            }
-            Date date = formatter.parse(meetingPost.getRoomCloseDate());
-            Date tomorrow = new Date(date.getTime() + (1000 * 60 * 60 * 24));
-            if (tomorrow.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
-                meetingStatus = 1;
-            } else if (tomorrow.after(new Date()) && memberCount >= meetingPost.getPeople()) {
-                meetingStatus = 2;
-            } else if (tomorrow.before(new Date())) {
-                meetingStatus = 3;
-            }
-            List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
-            List<String> stringTagList = new ArrayList<>();
-            for (MeetingTags mt : meetingTags) {
-                stringTagList.add(mt.getMeetingTag());
-            }
-//            int starCount = meetingPostStarRepository.getCountOfMeetingPostStar(meetingPost);
-            meetingPosts.add(
-                    MeetingPostResponseDto.builder()
-                            .id(meetingPost.getId())
-                            .themeCategory(meetingPost.getThemeCategory().getCountryName())
-                            .title(meetingPost.getTitle())
-                            .desc(meetingPost.getDesc())
-                            .departLocation(meetingPost.getDepartLocation())
-                            .startDate(meetingPost.getStartDate())
-                            .endDate(meetingPost.getEndDate())
-                            .people(meetingPost.getPeople())
-                            .memberCount(memberCount)
-//                            .starCount(starCount)
-                            .roomCloseDate(meetingPost.getRoomCloseDate())
-                            .isMine(isMine)
-                            .isAlreadyJoin(isAlreadyJoin)
-                            .isStarMine(isStarMine)
-                            .meetingTags(stringTagList)
-                            .meetingStatus(meetingStatus)
-                            .memberName(meetingPost.getMember().getMemberName())
-                            .memberImage(meetingPost.getMember().getMemberImage())
-                            .build()
-            );
-            isMine = false;
-            isAlreadyJoin = false;
-            isStarMine = false;
-        }
-        return new PageImpl<>(meetingPosts, meetingPostList.getPageable(), meetingPostList.getTotalElements());
+        return new PageImpl<>(serviceProvider.meetingPostPage(meetingPostList, member), meetingPostList.getPageable(), meetingPostList.getTotalElements());
     }
 
     // Todo :: 마이페이지용
-    private List<MeetingPostResponseDto> convertToMyPageResponseDto(List<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException {
+    private List<MeetingPostResponseDto> convertToMyPageResponseDto(List<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException, RaidhoException {
+            Member member = ((PrincipalDetails) userDetails).getMember();
+            if (member == null) {
+                throw new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER);
+            }
+            return serviceProvider.meetingPost(meetingPostList, member);
+    }
+
+    // Todo :: 모집중인 모집글 용
+    private Page<MeetingPostResponseDto> convertToOpenMeetingRoom(Page<MeetingPost> meetingPosts, UserDetails userDetails) throws ParseException {
         Member member = new Member();
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
-        List<MeetingPostResponseDto> meetingPosts = new ArrayList<>();
-        for (MeetingPost meetingPost : meetingPostList) {
+        List<MeetingPostResponseDto> meetingPostResponseDtos = new ArrayList<>();
+        for (MeetingPost meetingPost : meetingPosts) {
             RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
                     .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
             int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
             IsMineDto isMineDto = serviceProvider.isMineCheck_MeetingPost(member, roomMaster, meetingPost);
-            MeetingStatusDto meetingStatusDto = dateCheckProvider.dateCheck(meetingPost,memberCount);
-
+            MeetingStatusDto meetingStatusDto = serviceProvider.dateCheck(meetingPost,memberCount);
             List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
             List<String> stringTagList = new ArrayList<>();
             for (MeetingTags mt : meetingTags) {
                 stringTagList.add(mt.getMeetingTag());
             }
-            meetingPosts.add(
-                    MeetingPostResponseDto.builder()
-                            .id(meetingPost.getId())
-                            .themeCategory(meetingPost.getThemeCategory().getCountryName())
-                            .title(meetingPost.getTitle())
-                            .desc(meetingPost.getDesc())
-                            .departLocation(meetingPost.getDepartLocation())
-                            .startDate(meetingPost.getStartDate())
-                            .endDate(meetingPost.getEndDate())
-                            .people(meetingPost.getPeople())
-                            .memberCount(memberCount)
-                            .isStarMine(isMineDto.isStarMine())
-/*                            .starCount(starCount)*/
-                            .roomCloseDate(meetingPost.getRoomCloseDate())
-                            .isMine(isMineDto.isMine())
-                            .isAlreadyJoin(isMineDto.isAlreadyMine())
-                            .meetingTags(stringTagList)
-                            .meetingStatus(meetingStatusDto.getMeetingStatus())
-                            .memberName(meetingPost.getMember().getMemberName())
-                            .memberImage(meetingPost.getMember().getMemberImage())
-                            .build()
-            );
-        }
-        return meetingPosts;
-    }
-
-    // Todo :: 모집중인 모집글 용
-    private Page<MeetingPostResponseDto> convertToOpenMeetingRoom(Page<MeetingPost> meetingPosts, UserDetails userDetails) {
-        Member member = new Member();
-        if (userDetails != null) {
-            member = ((PrincipalDetails) userDetails).getMember();
-        }
-        Boolean isMine = false;
-        Boolean isAlreadyJoin = false;
-        Boolean isStarMine = false;
-
-        List<MeetingPostResponseDto> meetingPostList = new ArrayList<>();
-        for (MeetingPost meetingPost : meetingPosts) {
-            RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
-            int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
-            if (member.getProviderId() != null) {
-                if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
-                    isMine = true;
-                }
-                RoomDetail roomDetails = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
-                if (roomDetails != null) {
-                    isAlreadyJoin = true;
-                }
-                int isStarMineCh = meetingPostStarRepository.getCountOfMeetingPostAndMemberMeetingPostStar(meetingPost, member);
-                if (isStarMineCh >= 1) {
-                    isStarMine = true;
-                }
-            }
-            List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
-            List<String> stringTagList = new ArrayList<>();
-            for (MeetingTags mt : meetingTags) {
-                stringTagList.add(mt.getMeetingTag());
-            }
-//            int starCount = meetingPostStarRepository.getCountOfMeetingPostStar(meetingPost);
             if (meetingPost.getPeople() > memberCount) {
-                meetingPostList.add(
+                meetingPostResponseDtos.add(
                         MeetingPostResponseDto.builder()
                                 .id(meetingPost.getId())
                                 .themeCategory(meetingPost.getThemeCategory().getCountryName())
@@ -406,23 +289,19 @@ public class MeetingPostService {
                                 .endDate(meetingPost.getEndDate())
                                 .people(meetingPost.getPeople())
                                 .memberCount(memberCount)
-                                .isStarMine(isStarMine)
-//                                .starCount(starCount)
+                                .isStarMine(isMineDto.isStarMine())
                                 .roomCloseDate(meetingPost.getRoomCloseDate())
-                                .isMine(isMine)
-                                .isAlreadyJoin(isAlreadyJoin)
+                                .isMine(isMineDto.isMine())
+                                .isAlreadyJoin(isMineDto.isAlreadyMine())
                                 .meetingTags(stringTagList)
-                                .meetingStatus(1)
+                                .meetingStatus(meetingStatusDto.getMeetingStatus())
                                 .memberName(meetingPost.getMember().getMemberName())
                                 .memberImage(meetingPost.getMember().getMemberImage())
                                 .build()
                 );
             }
-            isMine = false;
-            isAlreadyJoin = false;
-            isStarMine = false;
         }
-        return new PageImpl<>(meetingPostList, meetingPosts.getPageable(), meetingPosts.getTotalElements());
+        return new PageImpl<>(meetingPostResponseDtos, meetingPosts.getPageable(), meetingPosts.getTotalElements());
     }
 
     @Transactional
