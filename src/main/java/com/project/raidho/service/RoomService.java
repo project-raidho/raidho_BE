@@ -95,10 +95,10 @@ public class RoomService {
         RoomMaster roomMaster = roomMasterRepository.findByRoomId(roomId)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CHATTING_ROOM));
         int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
+        synchronized (this) {
         if (memberCount >= roomMaster.getMemberCount()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RaidhoException(ErrorCode.CHATTING_ROOM_ALREADY_FULL));
         }
-        synchronized (this) {
             RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
             if (roomDetail == null) {
                 RoomDetail newRoomDetail = new RoomDetail(roomMaster, member);
