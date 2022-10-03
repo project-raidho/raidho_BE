@@ -29,7 +29,7 @@ public class MeetingPostController {
     @GetMapping
     public ResponseEntity<?> getAllMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                                @RequestParam (value = "size",defaultValue = "20")int size,
-                                               @AuthenticationPrincipal UserDetails userDetails) throws ParseException {
+                                               @AuthenticationPrincipal UserDetails userDetails) throws ParseException, RaidhoException {
 
         return ResponseEntity.ok().body(meetingPostService.getAllMeetingPost(page,size,userDetails));
     }
@@ -45,7 +45,7 @@ public class MeetingPostController {
     }
     // 내가 작성한 모집글 가져오기
     @GetMapping("/myMeetingPost")
-    public ResponseEntity<?> getAllMyMeetingPost(@AuthenticationPrincipal UserDetails userDetails) throws ParseException {
+    public ResponseEntity<?> getAllMyMeetingPost(@AuthenticationPrincipal UserDetails userDetails) throws ParseException, RaidhoException {
         return meetingPostService.getAllMyMeetingPost(userDetails);
     }
     @GetMapping("/filter/{num}/{category}")
@@ -53,7 +53,7 @@ public class MeetingPostController {
                                                 @RequestParam (value = "size",defaultValue = "20")int size,
                                                 @AuthenticationPrincipal UserDetails userDetails,
                                                 @PathVariable int num,
-                                                @PathVariable String category) throws RaidhoException {
+                                                @PathVariable String category) throws RaidhoException, ParseException {
         if (num == 1) {
             return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoomAndCategory(page, size, userDetails, category));
         }
@@ -66,7 +66,7 @@ public class MeetingPostController {
                                                       @RequestParam (value = "size",defaultValue = "20")int size,
                                                       @PathVariable String start,
                                                       @PathVariable String end,
-                                                      @AuthenticationPrincipal UserDetails userDetails) {
+                                                      @AuthenticationPrincipal UserDetails userDetails) throws ParseException {
         return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoomWhereStartDate(page, size, userDetails, start, end));
     }
 
@@ -77,7 +77,7 @@ public class MeetingPostController {
                                                                  @PathVariable String countryName,
                                                                  @PathVariable String start,
                                                                  @PathVariable String end,
-                                                                 @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
+                                                                 @AuthenticationPrincipal UserDetails userDetails) throws RaidhoException, ParseException {
         return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoomWhereStartDateAndCategory(page, size, userDetails, countryName, start, end));
     }
 
@@ -85,7 +85,7 @@ public class MeetingPostController {
     public ResponseEntity<?> getOpenMeetingPost(@RequestParam (value = "page",defaultValue = "0")int page,
                                                 @RequestParam (value = "size",defaultValue = "20")int size,
                                                 @AuthenticationPrincipal UserDetails userDetails,
-                                                @PathVariable int num) {
+                                                @PathVariable int num) throws ParseException {
         if (num == 1) {
             return ResponseEntity.ok().body(meetingPostService.getOpenMeetingRoom(page, size, userDetails));
         }
@@ -94,7 +94,7 @@ public class MeetingPostController {
 
     // Todo :: new
     @GetMapping("/myHeartMeetingPost")
-    public ResponseEntity<?> getMyHeartMeetingPost(@AuthenticationPrincipal UserDetails userDetails) throws ParseException {
+    public ResponseEntity<?> getMyHeartMeetingPost(@AuthenticationPrincipal UserDetails userDetails) throws ParseException, RaidhoException {
         return meetingPostService.getMyStarMeetingPost(userDetails);
     }
 
