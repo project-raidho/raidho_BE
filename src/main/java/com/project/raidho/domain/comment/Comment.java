@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 
@@ -33,8 +32,6 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "member_id",nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
-
-
 
     @JoinColumn(name = "post_id",nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)

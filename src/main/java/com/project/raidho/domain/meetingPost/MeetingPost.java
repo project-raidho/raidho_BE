@@ -63,4 +63,5 @@ public class MeetingPost extends Timestamped {
         this.roomCloseDate= updateMeetingPost.getRoomCloseDate();
         this.departLocation= updateMeetingPost.getDepartLocation();
     }
+
 }

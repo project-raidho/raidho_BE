@@ -39,17 +39,17 @@ public class ChatRoomController {
     public ResponseEntity<?> myChatRooms(@AuthenticationPrincipal UserDetails userDetails) throws RaidhoException {
         return ResponseEntity.ok().body(roomService.myChatRooms(userDetails));
     }
-
+    // 채팅방작성한 모든 메세지 불러오기
     @GetMapping("/messages/{roomId}")
-    public Page<ChatMessageDto> getAllChatMessageList(@PathVariable Long roomId, @PageableDefault Pageable pageable) {
-        return chatMessageService.getAllChatMessageList(roomId, pageable);
+    public Page<ChatMessageDto> getAllChatMessageList(@PathVariable Long roomId, @PageableDefault Pageable pageable, @AuthenticationPrincipal UserDetails userDetails) {
+        return chatMessageService.getAllChatMessageList(roomId, pageable, userDetails);
     }
-
+    // 채팅방 정보
     @GetMapping("/rooms/{roomId}")
     public ResponseEntity<?> eachChatRoomInfo(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long roomId) throws RaidhoException {
         return ResponseEntity.ok().body(roomService.eachChatRoomInfo(userDetails,roomId));
     }
-
+    // 채팅방 나가기
     @DeleteMapping("/rooms/{roomId}")
     public ResponseEntity<?> exitChatRoom(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long roomId) {
         roomService.exitChatRoom(userDetails, roomId);

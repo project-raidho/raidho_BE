@@ -1,15 +1,16 @@
 package com.project.raidho.service;
 
-import com.project.raidho.domain.*;
+import com.project.raidho.domain.IsMineDto;
+import com.project.raidho.domain.ResponseDto;
+import com.project.raidho.domain.Timestamped;
 import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
 import com.project.raidho.domain.post.dto.MainPostResponseDto;
 import com.project.raidho.domain.post.dto.PostRequestDto;
-import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
 import com.project.raidho.domain.post.dto.PostResponseDto;
+import com.project.raidho.domain.post.dto.UpdatePostRequestDto;
 import com.project.raidho.domain.s3.MultipartFiles;
 import com.project.raidho.domain.tags.Tags;
-import com.project.raidho.domain.ResponseDto;
 import com.project.raidho.exception.ErrorCode;
 import com.project.raidho.exception.RaidhoException;
 import com.project.raidho.jwt.JwtTokenProvider;
@@ -47,12 +48,13 @@ public class PostService extends Timestamped {
     private final S3Service s3Service;
     private final JwtTokenProvider jwtTokenProvider;
     private final CommentRepository commentRepository;
+    private final ServiceProvider serviceProvider;
 
     // 자랑글 등록
     @Transactional
     public ResponseDto<?> createPost(PostRequestDto postRequestDto, HttpServletRequest request) throws RaidhoException, IOException {
         Member member = validateMember(request);
-        if (member == null) {
+        if (validateMember(request) == null) {
             log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
             throw new RaidhoException(ErrorCode.UNAUTHORIZATION_MEMBER);
         }
@@ -187,6 +189,34 @@ public class PostService extends Timestamped {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
     }
 
+    // 내가 코멘트를 남긴 포스트 조회하기
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getMyCommentedPost(UserDetails userDetails) {
+        if (userDetails != null) {
+            Member member = ((PrincipalDetails) userDetails).getMember();
+            if (member != null) {
+                List<Post> postList = commentRepository.getMyCommentedPost(member);
+                return ResponseEntity.ok().body(ResponseDto.success(convertToMyPageResponseDto(postList, userDetails)));
+            }
+        }
+        log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
+    }
+
+    // 내가 좋아요를 누른 포스트 조회하기
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getMyHeartPost(UserDetails userDetails) {
+        if (userDetails != null) {
+            Member member = ((PrincipalDetails) userDetails).getMember();
+            if (member != null) {
+                List<Post> postList = postHeartRepository.getMyHeartPost(member);
+                return ResponseEntity.ok().body(ResponseDto.success(convertToMyPageResponseDto(postList, userDetails)));
+            }
+        }
+        log.error(ErrorCode.UNAUTHORIZATION_MEMBER.getErrorMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));
+    }
+
 
     // 게시글 삭제
     @Transactional
@@ -207,109 +237,20 @@ public class PostService extends Timestamped {
     }
 
     private Page<MainPostResponseDto> convertToMainPostResponseDto(Page<Post> postList, UserDetails userDetails) {
-        Boolean isMine = false;
-        Boolean isHeartMine = false;
         Boolean isImages = false;
         Member member = new Member();
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
-        List<MainPostResponseDto> posts = new ArrayList<>();
-        for (Post post : postList) {
-            if (member.getProviderId() != null) {
-                if (member.getProviderId().equals(post.getMember().getProviderId())) {
-                    isMine = true;
-                }
-            }
-            int heartCount = postHeartRepository.getCountOfPostHeart(post);
-            int commentCount = commentRepository.getCountOfComment(post);
-            if (member.getProviderId() != null) {
-                int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
-                if (isHeartMineCh >= 1) {
-                    isHeartMine = true;
-                }
-            }
-            List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
-            if (multipartFile.size() > 1) {
-                isImages = true;
-            }
-            List<String> multipartFiles = new ArrayList<>();
-            for (MultipartFiles c : multipartFile) {
-                multipartFiles.add(c.getMultipartFiles());
-            }
-            posts.add(
-                    MainPostResponseDto.builder()
-                            .id(post.getId())
-                            .memberName(post.getMember().getMemberName())
-                            .memberImage(post.getMember().getMemberImage())
-                            .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
-                            .heartCount(heartCount)
-                            .commentCount(commentCount)
-                            .isMine(isMine)
-                            .isHeartMine(isHeartMine)
-                            .isImages(isImages)
-                            .createdAt(post.getCreatedAt().toLocalDate())
-                            .modifiedAt(post.getModifiedAt().toLocalDate())
-                            .build()
-            );
-            isMine = false;
-            isHeartMine = false;
-            isImages = false;
-        }
-        return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
+        return new PageImpl<>(serviceProvider.postPage(postList, member), postList.getPageable(), postList.getTotalElements());
     }
 
     private List<MainPostResponseDto> convertToMyPageResponseDto(List<Post> postList, UserDetails userDetails) {
-        Boolean isMine = false;
-        Boolean isHeartMine = false;
-        Boolean isImages = false;
         Member member = new Member();
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
-        List<MainPostResponseDto> posts = new ArrayList<>();
-        for (Post post : postList) {
-            if (member.getProviderId() != null) {
-                if (member.getProviderId().equals(post.getMember().getProviderId())) {
-                    isMine = true;
-                }
-            }
-            int heartCount = postHeartRepository.getCountOfPostHeart(post);
-            int commentCount = commentRepository.getCountOfComment(post);
-            if (member.getProviderId() != null) {
-                int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
-                if (isHeartMineCh >= 1) {
-                    isHeartMine = true;
-                }
-            }
-            List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
-            if (multipartFile.size() > 1) {
-                isImages = true;
-            }
-            List<String> multipartFiles = new ArrayList<>();
-            for (MultipartFiles c : multipartFile) {
-                multipartFiles.add(c.getMultipartFiles());
-            }
-            posts.add(
-                    MainPostResponseDto.builder()
-                            .id(post.getId())
-                            .memberName(post.getMember().getMemberName())
-                            .memberImage(post.getMember().getMemberImage())
-                            .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
-                            .heartCount(heartCount)
-                            .commentCount(commentCount)
-                            .isMine(isMine)
-                            .isHeartMine(isHeartMine)
-                            .isImages(isImages)
-                            .createdAt(post.getCreatedAt().toLocalDate())
-                            .modifiedAt(post.getModifiedAt().toLocalDate())
-                            .build()
-            );
-            isMine = false;
-            isHeartMine = false;
-            isImages = false;
-        }
-        return posts;
+        return serviceProvider.post(postList, member);
     }
 
     // accessToken validation

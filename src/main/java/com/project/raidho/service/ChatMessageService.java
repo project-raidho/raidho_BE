@@ -8,12 +8,15 @@ import com.project.raidho.domain.member.Member;
 import com.project.raidho.repository.ChatMessageRepository;
 import com.project.raidho.repository.RoomDetailRepository;
 import com.project.raidho.repository.RoomMasterRepository;
+import com.project.raidho.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,11 +53,20 @@ public class ChatMessageService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ChatMessageDto> getAllChatMessageList(Long roomId, Pageable pageable) {
+    public Page<ChatMessageDto> getAllChatMessageList(Long roomId, Pageable pageable, UserDetails userDetails) {
+
+        Long memberId = ((PrincipalDetails) userDetails).getMember().getId();
+        RoomDetail roomDetail = roomDetailRepository.findByRoomMaster_RoomIdAndMember_Id(roomId, memberId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방에 속해있지 않은 회원입니다."));
+        LocalDateTime ldt = roomDetail.getCreatedAt();
+
         int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() -1);
         pageable = PageRequest.of(page, 1000);
         //return chatMessageRepository.findByRoomId(roomId, pageable);
-        Page<ChatMessage> chatMessagePage = chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId, pageable);
+
+        Page<ChatMessage> chatMessagePage = chatMessageRepository.findAllByRoomIdAndCreateAtOrderByCreatedAtAsc(roomId, ldt, pageable);
+
+        //Page<ChatMessage> chatMessagePage = chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId, pageable);
         List<ChatMessageDto> chatMessageDtoPage = new ArrayList<>();
         for (ChatMessage chatMessage : chatMessagePage) {
             chatMessageDtoPage.add(

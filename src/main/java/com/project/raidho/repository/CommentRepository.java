@@ -2,6 +2,7 @@ package com.project.raidho.repository;
 
 import com.project.raidho.domain.chat.ChatMessage;
 import com.project.raidho.domain.comment.Comment;
+import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
 import com.project.raidho.domain.postHeart.PostHeart;
 import org.springframework.data.domain.Page;
@@ -23,4 +24,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("SELECT COUNT(u) FROM Comment u WHERE u.post = :post")
     int getCountOfComment(@Param(value = "post") Post post);
+
+    @Query("SELECT DISTINCT c.post FROM Comment c WHERE c.member = :member")
+    List<Post> getMyCommentedPost(@Param(value = "member") Member member);
+
 }

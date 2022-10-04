@@ -112,10 +112,10 @@ public class KakaoMemberService {
 
         String providerId = jsonNode.get("id").asText();
         String memberName = jsonNode.get("kakao_account").get("profile").get("nickname").asText();
-        String email = jsonNode.get("kakao_account").get("email").asText();
+//        String email = jsonNode.get("kakao_account").get("email").asText();
         String provider = "kakao";
 
-        return new OauthMemberInfoImpl(memberName, email, providerId, provider);
+        return new OauthMemberInfoImpl(memberName, providerId, provider);
     }
 
     // Raidho 회원가입 (회원정보 존재시 바로 로그인)
@@ -128,14 +128,14 @@ public class KakaoMemberService {
                 .orElse(null);
         // 회원가입이 되어있지 않으면 Null
         if (kakaoMember == null) {
-            String email = kakaoMemberInfo.getEmail();
-            String memberImage = null; // Todo :: default image 필요
+//            String email = kakaoMemberInfo.getEmail();
+            String memberImage = "https://hgdjt-s3-bucket.s3.ap-northeast-2.amazonaws.com/raidho_member_image_7281664459628953.jpeg"; // Todo :: default image 필요
             String memberIntro = "인사말을 등록해주세요.";
             MemberRole role = MemberRole.USER;
 
             Member member = Member.builder()
                     .memberName(memberName)
-                    .email(email)
+//                    .email(email)
                     .memberImage(memberImage)
                     .memberIntro(memberIntro)
                     .provider(provider)

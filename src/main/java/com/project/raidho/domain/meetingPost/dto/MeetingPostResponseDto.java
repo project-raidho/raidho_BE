@@ -25,6 +25,8 @@ public class MeetingPostResponseDto {
     private Boolean isMine;
     private Boolean isAlreadyJoin;
     private int meetingStatus;
+    private Boolean isStarMine;
+//    private int starCount;
     private String memberName;
     private String memberImage;
     private LocalDate createdAt;

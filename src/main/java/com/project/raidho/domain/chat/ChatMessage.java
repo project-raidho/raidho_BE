@@ -43,4 +43,9 @@ public class ChatMessage extends Timestamped {
     @Column
     private String messageTime;
 
+    public void MessageMemberUpdate(Member member) {
+        this.sender = member.getMemberName();
+        this.memberImage = member.getMemberImage();
+    }
+
 }

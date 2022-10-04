@@ -1,5 +1,6 @@
 package com.project.raidho.repository;
 
+import com.project.raidho.domain.member.Member;
 import com.project.raidho.domain.post.Post;
 import com.project.raidho.domain.tags.Tags;
 import org.springframework.data.domain.Page;
@@ -18,5 +19,8 @@ public interface TagRepository extends JpaRepository<Tags, Long> {
 
     @Query("SELECT DISTINCT t.post FROM Tags t WHERE t.tag like %:tag%")
     Page<Post> SearchTag(@Param(value = "tag") String tag, PageRequest pageRequest);
+
+    @Query("SELECT DISTINCT t.post FROM Tags t WHERE t.tag like %:tag% and t.post.id <> :id ")
+    Page<Post> distinctMyPostSearchTag(@Param(value = "tag") String tag, @Param(value = "id") Long id, PageRequest pageRequest);
 
 }
