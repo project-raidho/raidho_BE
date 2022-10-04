@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class RoomService {
 
 
     // 채팅방 입장
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public synchronized ResponseEntity<?> joinChatRoom(Long roomId, UserDetails userDetails) throws RaidhoException {
 
         Long memberId = ((PrincipalDetails) userDetails).getMember().getId();
@@ -96,7 +97,7 @@ public class RoomService {
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CHATTING_ROOM));
         int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
         if (memberCount >= roomMaster.getMemberCount()) {
-            ResponseEntity.badRequest().body(new RaidhoException(ErrorCode.CHATTING_ROOM_ALREADY_FULL));
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RaidhoException(ErrorCode.CHATTING_ROOM_ALREADY_FULL));
         }
             RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
             if (roomDetail == null) {
@@ -119,7 +120,7 @@ public class RoomService {
                         .build();
                 return ResponseEntity.ok().body(responseDto);
             }
-        return ResponseEntity.badRequest().body(new RaidhoException(ErrorCode.CHATTING_ROOM_ALREADY_FULL));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RaidhoException(ErrorCode.CHATTING_ROOM_ALREADY_FULL));
     }
 
     // 내가 구독한 채팅방 리스트 가져오기
