@@ -39,10 +39,10 @@ public class ServiceProvider {
         if (member.getProviderId() != null) {
             if (member.getProviderId().equals(post.getMember().getProviderId())) {
                 isMineDto.setMine(true);
-                int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
-                if (isHeartMineCh >= 1) {
-                    isMineDto.setHeartMine(true);
-                }
+            }
+            int isHeartMineCh = postHeartRepository.getCountOfPostAndMemberPostHeart(post, member);
+            if (isHeartMineCh >= 1) {
+                isMineDto.setHeartMine(true);
             }
         }
         isMineDto.setHeartCount(postHeartRepository.getCountOfPostHeart(post));

@@ -2,6 +2,7 @@ package com.project.raidho.controller;
 
 import com.project.raidho.domain.chat.ChatDto.ChatMessageDto;
 import com.project.raidho.redis.RedisPublisher;
+import com.project.raidho.service.ChatMessageService;
 import com.project.raidho.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -15,6 +16,7 @@ public class ChatMessageController {
 
     private final RedisPublisher redisPublisher;
     private final RoomService roomService;
+    private final ChatMessageService chatMessageService;
     // 채팅 보내기
     @MessageMapping("/chat/send/{roomId}")
     public void getRoomChats(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto, @Header("token") String token) {
@@ -32,7 +34,7 @@ public class ChatMessageController {
 //            redisPublisher.publish(roomService.getTopic(String.valueOf(roomId)), chatMessageDto);
 //        }
         roomService.enterChatRoom(String.valueOf(roomId));
-//        ChatMessageDto returnChatMessageDto = chatMessageService.saveChatMessage(roomId, chatMessageDto); // db 메시지 저장
+        ChatMessageDto returnChatMessageDto = chatMessageService.saveChatMessage(roomId, chatMessageDto); // db 메시지 저장
         redisPublisher.publish(roomService.getTopic(String.valueOf(roomId)), chatMessageDto);
         //messageSendingOperations.convertAndSend("/sub/chat/message/" + roomId, returnChatMessageDto);
     }
