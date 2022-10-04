@@ -212,7 +212,8 @@ public class MeetingPostService {
         ThemeCategory category = themeCategoryRepository.findByCountryName(countryName)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CATEGORY));
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoomAndCategory(date, category.getId(), pageRequest);
+        Page<MeetingPost> meetingPosts = meetingPostRepository.findGetOpenMeetingRoomAndCategory(date, category.getId(),pageRequest);
+        //Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoomAndCategory(date, category.getId(), pageRequest);
         Page<MeetingPostResponseDto> meetingPostResponseDtoPage = convertToOpenMeetingRoom(meetingPosts, userDetails);
         return ResponseDto.success(meetingPostResponseDtoPage);
     }

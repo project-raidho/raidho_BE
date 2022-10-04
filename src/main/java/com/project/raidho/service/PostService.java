@@ -109,7 +109,8 @@ public class PostService extends Timestamped {
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllPost(int page, int size, UserDetails userDetails) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
+        Page<Post> postList = postRepository.getAllPost(pageRequest);
+        //Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
         Page<MainPostResponseDto> mainPostResponseDtos = convertToMainPostResponseDto(postList, userDetails);
         return ResponseDto.success(mainPostResponseDtos);
     }
