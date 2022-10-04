@@ -54,4 +54,24 @@ public class QueryDslRepositoryImpl implements QueryDslRepository{
                 .fetchResults();
         return new PageImpl<>(results.getResults(),pageable, results.getTotal());
     }
+
+    @Override
+    public Page<MeetingPost> findGetOpenMeetingRoomWhereStartDate(String start, String end, String date, Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Page<MeetingPost> findGetOpenMeetingRoomWhereStartDateAndCategory(String start, String end, String date, Long id, Pageable pageable) {
+        QueryResults<MeetingPost> results = queryFactory
+                .selectFrom(meetingPost)
+                .where(meetingPost.roomCloseDate.goe(date),
+                        meetingPost.startDate.goe(start),
+                        meetingPost.endDate.loe(end),
+                        meetingPost.themeCategory.id.eq(id))
+                .orderBy(meetingPost.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+        return new PageImpl<>(results.getResults(),pageable, results.getTotal());
+    }
 }

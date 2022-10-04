@@ -14,4 +14,7 @@ public interface QueryDslRepository {
     // Todo :: MeetingPost 구현할게 더 남음
     Page<MeetingPost> findGetOpenMeetingRoom(String date, Pageable pageable);
     Page<MeetingPost> findGetOpenMeetingRoomAndCategory(String date, Long id, Pageable pageable);
+    Page<MeetingPost> findGetOpenMeetingRoomWhereStartDate(String start, String end, String date, Pageable pageable);
+    Page<MeetingPost> findGetOpenMeetingRoomWhereStartDateAndCategory(String start, String end, String date, Long id, Pageable pageable);
+
 }

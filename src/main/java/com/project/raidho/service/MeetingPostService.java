@@ -235,9 +235,12 @@ public class MeetingPostService {
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CATEGORY));
         PageRequest pageRequest = PageRequest.of(page, size);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoomWhereStartDateAndCategory(
+        Page<MeetingPost> meetingPosts = meetingPostRepository.findGetOpenMeetingRoomWhereStartDateAndCategory(
                 start, end, date, category.getId(), pageRequest
         );
+//        Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoomWhereStartDateAndCategory(
+//                start, end, date, category.getId(), pageRequest
+//        );
         Page<MeetingPostResponseDto> meetingPostResponseDtoPage = convertToOpenMeetingRoom(meetingPosts, userDetails);
         return ResponseDto.success(meetingPostResponseDtoPage);
     }
