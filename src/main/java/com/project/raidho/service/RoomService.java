@@ -87,7 +87,7 @@ public class RoomService {
 
 
     // 채팅방 입장
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional
     public synchronized ResponseEntity<?> joinChatRoom(Long roomId, UserDetails userDetails) throws RaidhoException {
 
         Long memberId = ((PrincipalDetails) userDetails).getMember().getId();
@@ -152,7 +152,7 @@ public class RoomService {
     }
 
     // 단체방 정보 단건 조회
-    @Transactional(readOnly = true)
+    @Transactional
     public EachRoomInfoDto eachChatRoomInfo(UserDetails userDetails, Long roomId) throws RaidhoException {
         Boolean isMine = false;
         Member userDetailsMember = ((PrincipalDetails) userDetails).getMember();
