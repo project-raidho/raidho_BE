@@ -242,73 +242,15 @@ public class PostService extends Timestamped {
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
-        List<MainPostResponseDto> posts = new ArrayList<>();
-        for (Post post : postList) {
-            IsMineDto isMineDto = serviceProvider.isMineCheck_Post(member,post);
-            List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
-            if (multipartFile.size() > 1) {
-                isImages = true;
-            }
-            List<String> multipartFiles = new ArrayList<>();
-            for (MultipartFiles c : multipartFile) {
-                multipartFiles.add(c.getMultipartFiles());
-            }
-            posts.add(
-                    MainPostResponseDto.builder()
-                            .id(post.getId())
-                            .memberName(post.getMember().getMemberName())
-                            .memberImage(post.getMember().getMemberImage())
-                            .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
-                            .heartCount(isMineDto.getHeartCount())
-                            .commentCount(isMineDto.getCommentCount())
-                            .isMine(isMineDto.isMine())
-                            .isHeartMine(isMineDto.isHeartMine())
-                            .isImages(isImages)
-                            .createdAt(post.getCreatedAt().toLocalDate())
-                            .modifiedAt(post.getModifiedAt().toLocalDate())
-                            .build()
-            );
-            isImages = false;
-        }
-        return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
+        return new PageImpl<>(serviceProvider.postPage(postList, member), postList.getPageable(), postList.getTotalElements());
     }
 
     private List<MainPostResponseDto> convertToMyPageResponseDto(List<Post> postList, UserDetails userDetails) {
-        Boolean isImages = false;
         Member member = new Member();
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
-        List<MainPostResponseDto> posts = new ArrayList<>();
-        for (Post post : postList) {
-            IsMineDto isMineDto = new IsMineDto();
-            isMineDto = serviceProvider.isMineCheck_Post(member,post);
-            List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
-            if (multipartFile.size() > 1) {
-                isImages = true;
-            }
-            List<String> multipartFiles = new ArrayList<>();
-            for (MultipartFiles c : multipartFile) {
-                multipartFiles.add(c.getMultipartFiles());
-            }
-            posts.add(
-                    MainPostResponseDto.builder()
-                            .id(post.getId())
-                            .memberName(post.getMember().getMemberName())
-                            .memberImage(post.getMember().getMemberImage())
-                            .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
-                            .heartCount(isMineDto.getHeartCount())
-                            .commentCount(isMineDto.getCommentCount())
-                            .isMine(isMineDto.isMine())
-                            .isHeartMine(isMineDto.isHeartMine())
-                            .isImages(isImages)
-                            .createdAt(post.getCreatedAt().toLocalDate())
-                            .modifiedAt(post.getModifiedAt().toLocalDate())
-                            .build()
-            );
-            isImages = false;
-        }
-        return posts;
+        return serviceProvider.post(postList, member);
     }
 
     // accessToken validation

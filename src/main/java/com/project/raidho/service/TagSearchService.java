@@ -40,6 +40,7 @@ public class TagSearchService {
     private final ImgRepository imgRepository;
 
     private final MeetingTagRepository meetingTagRepository;
+    private final ServiceProvider serviceProvider;
 
     private final RoomMasterRepository roomMasterRepository;
 
@@ -123,73 +124,11 @@ public class TagSearchService {
     }
 
     private Page<MeetingPostResponseDto> convertToMainMeetingPostResponseDto(Page<MeetingPost> meetingPostList, UserDetails userDetails) throws ParseException {
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Boolean isMine = false;
-        Boolean isAlreadyJoin = false;
         Member member = new Member();
-        int meetingStatus = 0;
         if (userDetails != null) {
             member = ((PrincipalDetails) userDetails).getMember();
         }
-            List<MeetingPostResponseDto> meetingPosts = new ArrayList<>();
-            for (MeetingPost meetingPost : meetingPostList) {
-
-                RoomMaster roomMaster = roomMasterRepository.findByRoomId(meetingPost.getId())
-                        .orElseThrow(() -> new NotFoundException("존재하지 않는 채팅방입니다."));
-
-                int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
-                List<MeetingTags> meetingTags = meetingTagRepository.findAllByMeetingPost(meetingPost);
-                List<String> stringMeetingTagList = new ArrayList<>();
-                for (MeetingTags mt : meetingTags) {
-                    stringMeetingTagList.add(mt.getMeetingTag());
-                }
-
-                Date date = formatter.parse(meetingPost.getRoomCloseDate());
-
-                if (date.after(new Date()) && (meetingPost.getPeople() > memberCount)) {
-                    meetingStatus = 1;
-                } else if (date.after(new Date()) && memberCount >= meetingPost.getPeople()) {
-                    meetingStatus = 2;
-                } else if (date.before(new Date())) {
-                    meetingStatus = 3;
-                }
-
-                if (member.getProviderId() != null) {
-                    if (member.getProviderId().equals(meetingPost.getMember().getProviderId())) {
-                        isMine = true;
-                    }
-                    RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
-                    if (roomDetail != null) {
-                        isAlreadyJoin = true;
-                    }
-                }
-                meetingPosts.add(
-                        MeetingPostResponseDto.builder()
-                                .themeCategory(meetingPost.getThemeCategory().getCountryName())
-                                .meetingTags(stringMeetingTagList)
-                                .title(meetingPost.getTitle())
-                                .desc(meetingPost.getDesc())
-                                .startDate(meetingPost.getStartDate())
-                                .endDate(meetingPost.getEndDate())
-                                .people(meetingPost.getPeople())
-                                .memberCount(memberCount)
-                                .roomCloseDate(meetingPost.getRoomCloseDate())
-                                .departLocation(meetingPost.getDepartLocation())
-                                .isMine(isMine)
-                                .isAlreadyJoin(isAlreadyJoin)
-                                .meetingStatus(meetingStatus)
-                                .memberName(meetingPost.getMember().getMemberName())
-                                .memberImage(meetingPost.getMember().getMemberImage())
-                                .createdAt(meetingPost.getCreatedAt().toLocalDate())
-                                .modifiedAt(meetingPost.getModifiedAt().toLocalDate())
-                                .id(meetingPost.getId())
-                                .build()
-                );
-                isMine = false;
-                isAlreadyJoin = false;
-            }
-        return new PageImpl<>(meetingPosts, meetingPostList.getPageable(), meetingPostList.getTotalElements());
+        return new PageImpl<>(serviceProvider.meetingPostPage(meetingPostList, member), meetingPostList.getPageable(), meetingPostList.getTotalElements());
     }
 
 }

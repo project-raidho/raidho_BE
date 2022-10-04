@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class ServiceProvider {
     private final MeetingTagRepository meetingTagRepository;
     private final PostHeartRepository postHeartRepository;
     private final CommentRepository commentRepository;
+    private final ImgRepository imgRepository;
 
     public IsMineDto isMineCheck_Post(Member member, Post post) {
         IsMineDto isMineDto = new IsMineDto();
@@ -159,4 +161,65 @@ public class ServiceProvider {
         return meetingPostResponseDtos;
     }
 
+    public List<MainPostResponseDto> post(List<Post> postList, Member member) {
+        List<MainPostResponseDto> posts = new ArrayList<>();
+        for (Post post : postList) {
+            IsMineDto isMineDto = isMineCheck_Post(member,post);
+            List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
+            if (multipartFile.size() > 1) {
+                isMineDto.setImages(true);
+            }
+            List<String> multipartFiles = new ArrayList<>();
+            for (MultipartFiles c : multipartFile) {
+                multipartFiles.add(c.getMultipartFiles());
+            }
+            posts.add(
+                    MainPostResponseDto.builder()
+                            .id(post.getId())
+                            .memberName(post.getMember().getMemberName())
+                            .memberImage(post.getMember().getMemberImage())
+                            .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
+                            .heartCount(isMineDto.getHeartCount())
+                            .commentCount(isMineDto.getCommentCount())
+                            .isMine(isMineDto.isMine())
+                            .isHeartMine(isMineDto.isHeartMine())
+                            .isImages(isMineDto.isImages())
+                            .createdAt(post.getCreatedAt().toLocalDate())
+                            .modifiedAt(post.getModifiedAt().toLocalDate())
+                            .build()
+            );
+        }
+        return posts;
+    }
+
+    public List<MainPostResponseDto> postPage(Page<Post> postList, Member member) {
+        List<MainPostResponseDto> posts = new ArrayList<>();
+        for (Post post : postList) {
+            IsMineDto isMineDto = isMineCheck_Post(member,post);
+            List<MultipartFiles> multipartFile = imgRepository.findAllByPost_Id(post.getId());
+            if (multipartFile.size() > 1) {
+                isMineDto.setImages(true);
+            }
+            List<String> multipartFiles = new ArrayList<>();
+            for (MultipartFiles c : multipartFile) {
+                multipartFiles.add(c.getMultipartFiles());
+            }
+            posts.add(
+                    MainPostResponseDto.builder()
+                            .id(post.getId())
+                            .memberName(post.getMember().getMemberName())
+                            .memberImage(post.getMember().getMemberImage())
+                            .multipartFiles(Collections.singletonList(multipartFiles.get(0)))
+                            .heartCount(isMineDto.getHeartCount())
+                            .commentCount(isMineDto.getCommentCount())
+                            .isMine(isMineDto.isMine())
+                            .isHeartMine(isMineDto.isHeartMine())
+                            .isImages(isMineDto.isImages())
+                            .createdAt(post.getCreatedAt().toLocalDate())
+                            .modifiedAt(post.getModifiedAt().toLocalDate())
+                            .build()
+            );
+        }
+        return posts;
+    }
 }

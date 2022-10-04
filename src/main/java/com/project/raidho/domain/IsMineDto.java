@@ -14,6 +14,7 @@ public class IsMineDto {
     private boolean isHeartMine = false;
     private boolean isAlreadyMine = false;
     private boolean isStarMine = false;
+    private boolean isImages = false;
     private int heartCount = 0;
     private int commentCount = 0;
 }
