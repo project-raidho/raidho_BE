@@ -95,13 +95,8 @@ public class RoomService {
         RoomMaster roomMaster = roomMasterRepository.findByRoomId(roomId)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CHATTING_ROOM));
         int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
-        System.out.println("=================================================================");
-        System.out.println("dfkjsdlfkjsdlfkjslfkjsdlkfjlsdkfjsdlkfjdslkfjlsdkfjsdlkfjsdlkfj");
-        System.out.println(memberCount);
-        System.out.println("slkjfqpijoeiwfjpwoeifjpweoifjpweoifjwpoeifjwpeifjewpifjwepoifjpw");
-        System.out.println("=================================================================");
         if (memberCount >= roomMaster.getMemberCount()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RaidhoException(ErrorCode.CHATTING_ROOM_ALREADY_FULL));
+            ResponseEntity.badRequest().body(new RaidhoException(ErrorCode.CHATTING_ROOM_ALREADY_FULL));
         }
             RoomDetail roomDetail = roomDetailRepository.findByRoomMasterAndMember(roomMaster, member);
             if (roomDetail == null) {
@@ -124,7 +119,7 @@ public class RoomService {
                         .build();
                 return ResponseEntity.ok().body(responseDto);
             }
-        throw new RaidhoException(ErrorCode.THIS_ROOM_IS_FULL);
+        return ResponseEntity.badRequest().body(new RaidhoException(ErrorCode.CHATTING_ROOM_ALREADY_FULL));
     }
 
     // 내가 구독한 채팅방 리스트 가져오기
