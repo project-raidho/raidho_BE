@@ -87,7 +87,7 @@ public class RoomService {
 
     // 채팅방 입장
     @Transactional
-    public ResponseEntity<?> joinChatRoom(Long roomId, UserDetails userDetails) throws RaidhoException {
+    public synchronized ResponseEntity<?> joinChatRoom(Long roomId, UserDetails userDetails) throws RaidhoException {
 
         Long memberId = ((PrincipalDetails) userDetails).getMember().getId();
         Member member = memberRepository.findById(memberId)
@@ -95,7 +95,6 @@ public class RoomService {
         RoomMaster roomMaster = roomMasterRepository.findByRoomId(roomId)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_CHATTING_ROOM));
         int memberCount = roomDetailRepository.getCountJoinRoomMember(roomMaster);
-        synchronized (this) {
         if (memberCount >= roomMaster.getMemberCount()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RaidhoException(ErrorCode.CHATTING_ROOM_ALREADY_FULL));
         }
@@ -115,7 +114,6 @@ public class RoomService {
                         .type(chatMessageDto.getType()).sender(chatMessageDto.getSender()).roomId(roomId).build();
                 chatMessageRepository.save(chatMessage);
             }
-        }
         RoomDetailResponseDto responseDto = RoomDetailResponseDto.builder()
                 .roomMasterId(roomMaster.getRoomId())
                 .roomName(roomMaster.getRoomName())
