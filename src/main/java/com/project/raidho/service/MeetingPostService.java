@@ -199,7 +199,8 @@ public class MeetingPostService {
     public ResponseDto<?> getOpenMeetingRoom(int page, int size, UserDetails userDetails) throws ParseException {
         PageRequest pageRequest = PageRequest.of(page, size);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoom(date, pageRequest);
+        Page<MeetingPost> meetingPosts = meetingPostRepository.findGetOpenMeetingRoom(date, pageRequest);
+        //Page<MeetingPost> meetingPosts = meetingPostRepository.getOpenMeetingRoom(date, pageRequest);
         Page<MeetingPostResponseDto> meetingPostResponseDtoPage = convertToOpenMeetingRoom(meetingPosts, userDetails);
         return ResponseDto.success(meetingPostResponseDtoPage);
     }
