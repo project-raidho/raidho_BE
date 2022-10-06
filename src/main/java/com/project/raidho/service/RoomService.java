@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
 @Slf4j
 @Service
@@ -37,19 +38,12 @@ import java.util.Map;
 public class RoomService {
 
     private final MemberRepository memberRepository;
-
     private final RoomMasterRepository roomMasterRepository;
-
     private final MeetingPostRepository meetingPostRepository;
-
     private final RoomDetailRepository roomDetailRepository;
-
     private final MeetingTagRepository meetingTagRepository;
-
     private final ChatMessageRepository chatMessageRepository;
-
     private final Map<String, ChannelTopic> topics;
-
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
     private final SimpMessageSendingOperations simpMessageSendingOperations;
@@ -89,7 +83,6 @@ public class RoomService {
     // 채팅방 입장
     @Transactional
     public synchronized ResponseEntity<?> joinChatRoom(Long roomId, UserDetails userDetails) throws RaidhoException {
-
         Long memberId = ((PrincipalDetails) userDetails).getMember().getId();
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RaidhoException(ErrorCode.DOESNT_EXIST_MEMBER));

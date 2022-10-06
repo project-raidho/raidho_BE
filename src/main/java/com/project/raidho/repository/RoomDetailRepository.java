@@ -22,7 +22,6 @@ public interface RoomDetailRepository extends JpaRepository<RoomDetail, Long> {
 
     void deleteByRoomMasterAndMember(RoomMaster roomMaster, Member member);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT COUNT(d) FROM RoomDetail d WHERE d.roomMaster = :roomMaster")
     int getCountJoinRoomMember(@Param(value = "roomMaster") RoomMaster roomMaster);
 

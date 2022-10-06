@@ -39,7 +39,7 @@ public class QueryDslRepositoryImpl implements QueryDslRepository{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
-        return new PageImpl<>(results.getResults(),pageable, results.getTotal());
+        return new PageImpl<>(results.getResults(), pageable, results.getTotal());
     }
 
     @Override
@@ -52,12 +52,21 @@ public class QueryDslRepositoryImpl implements QueryDslRepository{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
-        return new PageImpl<>(results.getResults(),pageable, results.getTotal());
+        return new PageImpl<>(results.getResults(), pageable, results.getTotal());
     }
 
     @Override
     public Page<MeetingPost> findGetOpenMeetingRoomWhereStartDate(String start, String end, String date, Pageable pageable) {
-        return null;
+        QueryResults<MeetingPost> results = queryFactory
+                .selectFrom(meetingPost)
+                .where(meetingPost.roomCloseDate.goe(date),
+                        meetingPost.startDate.goe(start),
+                        meetingPost.endDate.loe(end))
+                .orderBy(meetingPost.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+        return new PageImpl<>(results.getResults(), pageable, results.getTotal());
     }
 
     @Override
@@ -72,6 +81,6 @@ public class QueryDslRepositoryImpl implements QueryDslRepository{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
-        return new PageImpl<>(results.getResults(),pageable, results.getTotal());
+        return new PageImpl<>(results.getResults(), pageable, results.getTotal());
     }
 }
